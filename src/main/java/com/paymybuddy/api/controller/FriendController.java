@@ -33,13 +33,13 @@ public class FriendController {
 	 * 
 	 * Liste de tous les couples amis dans l'application
 	 * 
-	 * @return Iterable<Friend>
+	 * @return ArrayList<String>
 	 * 
 	 */
 	@GetMapping("/friends")
-	public Iterable<Friend> findAll() {
+	public ArrayList<String> findAllFriends() {
 		logger.info("INFO: Liste tous les couples amis de l'application");
-		return friendService.findAll();
+		return friendService.findAllFriends();
 	}
 	
 	/**
@@ -47,7 +47,7 @@ public class FriendController {
 	 * 
 	 * Retourne les couples amis associés à l'adresse email donné en paramètre
 	 * 
-	 * @return Account
+	 * @return ArrayList<String>
 	 * 
 	 */
 	@RequestMapping(value = "/friends/withme", method = RequestMethod.GET, params = { "email" })
@@ -61,7 +61,7 @@ public class FriendController {
 	 * 
 	 * Retourne uniquement les amis associés à l'adresse email donné en paramètre
 	 * 
-	 * @return Account
+	 * @return HashSet<String>
 	 * 
 	 */
 	@RequestMapping(value = "/friends/withme/list", method = RequestMethod.GET, params = { "email" })
@@ -77,12 +77,12 @@ public class FriendController {
 	 * 
 	 * Creation d'un couple ami dans la base de donnée
 	 * 
-	 * @return Friend
+	 * @return boolean
 	 * 
 	 */
-	@PostMapping("/friends/savefriend")
+	@PostMapping("/friends/save")
 	@ResponseStatus(HttpStatus.CREATED)
-	public boolean save(@RequestBody Friend friend) {
+	public Friend save(@RequestBody Friend friend) {
 		logger.info("INFO: Creation d'un nouveau couple ami : "+ friend );
 		return friendService.save(friend);
 	}
@@ -92,15 +92,15 @@ public class FriendController {
 	/**
 	 * DELETE http://localhost:8080/friend?emailUser=francois.hollande@gmail.com
 	 * 
-	 * Supprime les couples amis dans la base de donnée dont l'emailUser est donné en paramètre
+	 * Supprimer le couple ami dont l'emailUser et l'emailFriend sont donnés en paramètre
 	 * 
-	 * @return void
+	 * @return boolean
 	 * 
 	 */
-	@RequestMapping(value = "/friends/deletefriend", method = RequestMethod.DELETE, params = { "emailUser", "emailFriend" })
-	public boolean deleteFriends(String emailUser, String emailFriend) throws ParseException {
+	@RequestMapping(value = "/friends/delete", method = RequestMethod.DELETE, params = { "emailUser", "emailFriend" })
+	public ArrayList<String> delete(String emailUser, String emailFriend) throws ParseException {
 		logger.info("INFO: Supprimer les couples amis suivant : " + emailUser + " & " + emailFriend);
-		return friendService.deleteFriends(emailUser,emailFriend);
+		return friendService.delete(emailUser,emailFriend);
 	}
 	
 }

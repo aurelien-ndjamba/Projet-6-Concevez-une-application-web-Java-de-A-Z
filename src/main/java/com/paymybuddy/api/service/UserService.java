@@ -1,6 +1,7 @@
 package com.paymybuddy.api.service;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,85 +14,88 @@ import com.paymybuddy.api.repository.UserRepository;
 
 @Service
 public class UserService {
-	
+
 	private Logger logger = Logger.getLogger(this.getClass());
 
 	@Autowired
 	private User user;
+	
 	@Autowired
 	private UserRepository userRepository;
 	
-	public List<String> findEmailAndBalance() {
-		return userRepository.findEmailAndBalance();
+	public void setUserRepository(UserRepository userRepository) {
+		this.userRepository = userRepository;
+	}
+
+	public Optional<User> findByEmail(String email) {
+		return userRepository.findByEmail(email);
 	}
 	
-	public List<String> findByEmail(String email) {
-		if (! userRepository.existsById(email)) 
+	public User getIdentification(String email, String password) {
+		User result = new User();
+		if (userRepository.existsById(email) && userRepository.findByEmail(email).get().getPassword().equals(password)) {
+			logger.info("INFO: Bienvenue ! Vous êtes connecté à l'application.");
+			result = userRepository.findByEmail(email).get();
+		}
+		return result;
+	}
+
+	public List<String> findEmailsAndBalances() {
+		return userRepository.findEmailsAndBalances();
+	}
+
+	public List<String> findEmailAndBalanceByEmail(String email) {
+		if (!userRepository.existsById(email))
 			logger.error("ERROR: L'email renseigné : " + email + " n'existe pas dans la BDD de l'application");
-		 return userRepository.findByEmail(email);
+		return userRepository.findEmailAndBalanceByEmail(email);
 	}
-	
+
 	public List<String> findByEmailNot(String withoutemail) {
 		return userRepository.findByEmailNot(withoutemail);
 	}
 
-	public boolean save(User user) {
-		boolean result = false;
-		if (userRepository.existsById(user.getEmail())) {
-			logger.error("ERROR: L'email de l'utilisateur : " + user.getEmail() + " existe déjà la BDD de l'application - Utilisateur non sauvegardé");
-		}
-		else {
+	public User save(User user) {
+		User result = new User();
+		if (! userRepository.existsById(user.getEmail())) {
 //			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);
 //			String result = encoder.encode(user.getPassword());
 //			user.setPassword(result);
+			result = user;
 			userRepository.save(user);
-			result = true;
-		}
-		return result;
-	}
-	
-	public boolean updatePassword(String email, String password) {
-		boolean result = false;
-		if (! userRepository.existsById(email)) {
-			logger.error("ERROR: L'email de l'utilisateur : " + email + " n'existe pas dans la BDD de l'application - Utilisateur non update");
-		}
-		else {
-//			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);
-//			String result = encoder.encode(password);
-			user = userRepository.getById(email);
-			user.setPassword(password); // Supprimer quand Bcrypt opérationnel
-//			user.setPassword(result);
-			userRepository.save(user);
-			result = true;
-		}
-		return result;
-	}
-	
-	public boolean updateBalance(String email, double newBalance) {
-		boolean result = false;
-		if (! userRepository.existsById(email)) {
-			logger.error("ERROR: L'email de l'utilisateur : " + email + " n'existe pas dans la BDD de l'application - Utilisateur non update");
-		}
-		else {
-			user = userRepository.getById(email);
-			user.setBalance(newBalance); 
-			userRepository.save(user);
-			result = true;
 		}
 		return result;
 	}
 
-	public boolean deleteByEmail(String email) {
+	public User update(User user) {
+		User result = new User();
+		if ( userRepository.existsById(user.getEmail())) {
+//			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder(16);
+//			String result = encoder.encode(user.getPassword());
+//			user.setPassword(result);
+			result = user;
+			userRepository.save(user);
+		} 
+		
+		return result;
+	}
+
+	public boolean updateBalance(String email, double newBalance) {
 		boolean result = false;
-		if (! userRepository.existsById(email)) {
-			logger.error("ERROR: L'email de l'utilisateur : " + email + " n'existe pas dans la BDD de l'application - Utilisateur non supprimé");
-		
-		}
-		else {
-			userRepository.deleteAllByEmail(email);
+		if (userRepository.existsById(email)) {
+			user = userRepository.getById(email);
+			user.setBalance(newBalance);
+			userRepository.save(user);
 			result = true;
-		}
-		
+		} 
+		return result;
+	}
+
+	public User deleteById(String email) {
+		User result = new User();
+		if (userRepository.existsById(email)) {
+			result = userRepository.getById(email);
+			userRepository.deleteById(email);
+		} 
 		return result;
 	}
 

@@ -1,6 +1,7 @@
 package com.paymybuddy.api.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.transaction.Transactional;
 
@@ -12,12 +13,14 @@ import com.paymybuddy.api.model.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
+	
+	Optional<User> findByEmail(String email);
 
 	@Query("select email, balance from User")
-	List<String> findEmailAndBalance();
+	List<String> findEmailsAndBalances();
 	
 	@Query("select email, balance from User u where email = ?1")
-	List<String> findByEmail(String email);
+	List<String> findEmailAndBalanceByEmail(String email);
 	
 	@Query("select email, balance from User where email <> ?1")
 	List<String> findByEmailNot(String withoutemail);

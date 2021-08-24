@@ -17,7 +17,11 @@ public class AccountService {
 	@Autowired
 	private AccountRepository accountRepository;
 
-	public Iterable<Account> findAll() {
+	public void setAccountRepository(AccountRepository accountRepository) {
+		this.accountRepository = accountRepository;
+	}
+
+	public List<Account> findAll() {
 		return accountRepository.findAll();
 	}
 
@@ -34,52 +38,28 @@ public class AccountService {
 	}
 
 	public Account save(Account account) {
-
-		if (account.getId() == null) {
-
-			logger.error(
-					"ERROR: Vous devez renseignez le numéro du compte 'id' pour sauvegarder ce nouveau compte dans l'application");
-		
-		} else if (accountRepository.findById(account.getId()).isPresent()) {
-
-			logger.error("ERROR: Le numéro du compte 'id' : " + account.getId() + " renseigné existe déjà dans la BDD de l'application");
+		if (accountRepository.findById(account.getId()).isPresent()) {
 			account.setId(null);
+			logger.info("INFO: Le numéro du compte 'id' : " + account.getId() + " existe déjà !");
 		}
-
 		return accountRepository.save(account);
 	}
 
 	public Account update(Account account) {
-
-		if (account.getId() == null) {
-
-			logger.error(
-					"ERROR: Vous devez renseignez le numéro du compte 'id' pour mettre à jour ce compte existant dans l'application");
-			
-		} else if (accountRepository.findById(account.getId()).isEmpty()) {
-
-			logger.error(
-					"ERROR: Vous devez renseignez un numéro du compte 'id' existant dans la BDD pour mettre à jour ce compte dans l'application");
+		if (accountRepository.findById(account.getId()).isEmpty()) {
 			account.setId(null);
+			logger.error("ERROR: Le numéro du compte 'id': " + account.getId()
+					+ " n'existe pas dans la BDD de l'application");
 		}
-
 		return accountRepository.save(account);
 	}
 
-	public Account deleteAllById(int id) {
-
+	public Account deleteById(Integer id) {
 		Account account = new Account();
-		
-		if (accountRepository.findById(id) == null) {
-			logger.error("ERROR: Le numéro du compte 'id': "+ id + " n'existe pas dans la BDD de l'application");
-			account.setId(null);
+		if (accountRepository.findById(id).isPresent()) {
+			account = accountRepository.findById(id).get();
+			accountRepository.deleteById(id);
 		}
-		else {
-			logger.info("INFO: Le numéro du compte 'id': "+ id + " a été supprimé dans la BDD de l'application");
-			account = accountRepository.findById(id);
-			accountRepository.deleteAllById(id);
-		}
-
 		return account;
 	}
 

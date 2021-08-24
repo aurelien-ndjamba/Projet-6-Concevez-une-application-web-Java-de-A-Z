@@ -1,8 +1,9 @@
 package com.paymybuddy.api.controller;
 
-import java.text.ParseException;
+import java.util.List;
+//import java.text.ParseException;
 import java.util.Optional;
-import java.util.UUID;
+//import java.util.UUID;
 
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
+//import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -23,7 +24,6 @@ import com.paymybuddy.api.service.TransactionService;
 public class TransactionController {
 
 	private Logger logger = Logger.getLogger(this.getClass());
-
 	@Autowired
 	private TransactionService transactionService;
 
@@ -34,11 +34,12 @@ public class TransactionController {
 	 * 
 	 * Liste des transactions de l'application
 	 * 
-	 * @return List<Transaction>
+	 * @return Iterable<Transaction>
 	 * 
 	 */
+	
 	@GetMapping("/transactions")
-	public Iterable<Transaction> findAll() {
+	public List<Transaction> findAll() {
 		logger.info("INFO: liste des transactions de l'application");
 		return transactionService.findAll();
 	}
@@ -53,7 +54,7 @@ public class TransactionController {
 	 */
 
 	@RequestMapping(value = "/transactions", method = RequestMethod.GET, params = { "id" })
-	public Optional<Transaction> findById(UUID id) {
+	public Optional<Transaction> findById(String id) {
 		logger.info("INFO: Liste des informations d'une transaction spécifique ayant en paramètre l'id : " + id);
 		return transactionService.findById(id);
 	}
@@ -63,12 +64,12 @@ public class TransactionController {
 	 * 
 	 * Liste des transactions des transactions associées à un email en paramètre
 	 * 
-	 * @return Optional<Transaction>
+	 * @return Iterable<Transaction>
 	 * 
 	 */
 
 	@RequestMapping(value = "/transactions", method = RequestMethod.GET, params = { "email" })
-	public Iterable<String> findByUser(String email) {
+	public List<Transaction> findByUser(String email) {
 		logger.info("INFO: Liste les transactions associées à l'email : " + email);
 		return transactionService.findByUser(email);
 	}
@@ -84,7 +85,7 @@ public class TransactionController {
 	 */
 
 	@RequestMapping(value = "/transactions", method = RequestMethod.GET, params = { "type" })
-	public Iterable<Transaction> findByType(String type) {
+	public List<Transaction> findByType(String type) {
 		logger.info("INFO: Liste des transactions de l'application du type : " + type);
 		return transactionService.findByType(type);
 	}
@@ -96,27 +97,27 @@ public class TransactionController {
 	 * 
 	 * Creation d'une nouvelle transaction dans l'application
 	 * 
-	 * @return List<Transaction>
+	 * @return boolean
 	 * 
 	 */
 
-	@PostMapping("/transactions/createtransaction")
+	@PostMapping("/transactions/save")
 	@ResponseStatus(HttpStatus.CREATED)
-	public boolean save(@RequestBody Transaction transaction) {
+	public Transaction save(@RequestBody Transaction transaction) {
 		logger.info("INFO: Creation dans l'application d'une nouvelle transaction : " + transaction);
 		return transactionService.save(transaction);
 	}
 
 	/* *************** PUT METHODE *********************** */
 
-	/**
-	 * PUT http://localhost:8080/transactions
-	 * 
-	 * Mise à jour des informations d'une transaction dans la base de donnée
-	 * 
-	 * @return boolean
-	 * 
-	 */
+//	/**
+//	 * PUT http://localhost:8080/transactions
+//	 * 
+//	 * Mise à jour des informations d'une transaction dans la base de donnée
+//	 * 
+//	 * @return boolean
+//	 * 
+//	 */
 //	@PutMapping("/transaction/updatetransaction")
 //	public Transaction update(@RequestBody Transaction transaction) {
 //		logger.info("INFO: Mise à jour des informations de la transaction existante : " + transaction
@@ -126,17 +127,17 @@ public class TransactionController {
 
 	/* *************** DELETE METHODE *********************** */
 
-	/**
-	 * DELETE http://localhost:8080/transactions/deletetransaction?id=?
-	 * 
-	 * Supprimer une transaction ayant l'id en parametre
-	 * 
-	 * @return boolean
-	 * 
-	 */
-	@RequestMapping(value = "/transactions/deletetransaction", method = RequestMethod.DELETE, params = { "id" })
-	public boolean deleteAllById(@RequestParam("id") UUID id) throws ParseException {
-		logger.info("INFO: Supprimer une transaction ayant l'id :" + id);
-		return transactionService.deleteById(id);
-	}
+//	/**
+//	 * DELETE http://localhost:8080/transactions/deletetransaction?id=?
+//	 * 
+//	 * Supprimer une transaction ayant l'id en parametre
+//	 * 
+//	 * @return boolean
+//	 * 
+//	 */
+//	@RequestMapping(value = "/transactions/deletetransaction", method = RequestMethod.DELETE, params = { "id" })
+//	public boolean deleteAllById(@RequestParam("id") UUID id) throws ParseException {
+//		logger.info("INFO: Supprimer une transaction ayant l'id :" + id);
+//		return transactionService.deleteById(id);
+//	}
 }

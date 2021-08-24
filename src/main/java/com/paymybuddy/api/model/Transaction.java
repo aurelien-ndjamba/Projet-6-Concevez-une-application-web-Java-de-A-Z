@@ -8,6 +8,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+//import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
@@ -25,14 +26,17 @@ public class Transaction {
 	@Type(type="pg-uuid")
 	private UUID id;
 	
+//	@ManyToOne
 	@JoinColumn(name = "user_transaction_fk")
 	@Column(name = "email")
 	private String user;
 	
+//	@ManyToOne
 	@JoinColumn(name = "user_transaction_fk1")
 	@Column(name = "user_email")
 	private String friend;
 	
+//	@ManyToOne
 	@JoinColumn(name = "account_transaction_fk")
 	@Column(name = "account_id")
 	private Integer accountUser;
