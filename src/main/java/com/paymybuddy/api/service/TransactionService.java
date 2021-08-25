@@ -19,7 +19,6 @@ public class TransactionService {
 
 	private Logger logger = Logger.getLogger(this.getClass());
 	
-	boolean result;
 	double balanceUser;
 	double balanceFriend;
 	double newBalanceUser;
@@ -85,23 +84,23 @@ public class TransactionService {
 						+ " ne doit pas être fourni pour effectuer une transaction de paiement !");
 				break;
 			} else if (Double.parseDouble(userRepository.findEmailAndBalanceByEmail(transaction.getUser()).get(0)
-					.substring(transaction.getUser().length() + 1)) <= transaction.getAmount()) {
-				logger.error("ERROR: Vous ne pouvez pas effectuer un paiement : '" + transaction.getAmount()
+					.substring(transaction.getUser().length() + 1)) <= transaction.getAmount() * (1+Constante.feeTransaction)) {
+				logger.error("ERROR: Vous ne pouvez pas effectuer un paiement : '" + transaction.getAmount()  * (1+Constante.feeTransaction)
 						+ "' supérieur à votre solde disponible : '"
 						+ userRepository.findEmailAndBalanceByEmail(transaction.getUser()).get(0)
-								.substring(transaction.getUser().length() + 1)
+								.substring(transaction.getUser().length() + 1) 
 						+ "'. Veuillez augmenter votre solde disponible depuis votre compte bancaire avant ou réduire la somme à payer !");
 				break;
 			} else if (Double
 					.parseDouble(userRepository.findEmailAndBalanceByEmail(transaction.getFriend()).get(0)
 							.substring(transaction.getFriend().length() + 1))
-					+ transaction.getAmount() >= Constante.feeTransaction) {
+					+ transaction.getAmount() * (1+Constante.feeTransaction) > Constante.balanceMax) {
 				logger.error(
 						"ERROR: Le solde disponible de votre votre ami ne doit pas être supérieur à " + Constante.balanceMax + " après le paiement. Réduire la somme à payer !");
 				break;
 			} else {
 				balanceUser = Double.parseDouble(userRepository.findEmailAndBalanceByEmail(transaction.getUser()).get(0)
-						.substring(transaction.getFriend().length() + 1));
+						.substring(transaction.getUser().length() + 1));
 				balanceFriend = Double.parseDouble(userRepository.findEmailAndBalanceByEmail(transaction.getFriend()).get(0)
 						.substring(transaction.getFriend().length() + 1));
 				newBalanceUser = balanceUser - transaction.getAmount() * (1 + Constante.feeTransaction);
@@ -199,13 +198,17 @@ public class TransactionService {
 		return result;
 	}
 
-	public boolean deleteById(UUID id) {
-		boolean result = false;
+	public Transaction deleteById(UUID id) {
+		Transaction result = new Transaction();
 		if (transactionRepository.findById(id).isPresent()) {
+			result = transactionRepository.getById(id);
 			transactionRepository.deleteById(id);
-			result = true;
 		}
 		return result;
+	}
+
+	public void setTransactionRepository(TransactionRepository transactionRepository) {
+		this.transactionRepository = transactionRepository;
 	}
 
 }

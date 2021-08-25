@@ -102,7 +102,7 @@ VALUES
 ('nicolas.sarkozy@gmail.com','$2y$10$ukfmYcDTgWY8YF1OsCZmSegPGb5PY5IcVmSXQC9pcDyauiVjZu9Im',124755.75),
 ('francois.hollande@gmail.com','$2y$10$MvvAUdBSfIhJr3W.WvQPHOaIdO7r4aq5eCDXjrdaVhUUYRARyARYq',188235.18),
 ('emmanuel.macron@gmail.com','$2y$10$UcojoXIGQJfwPaZzOhczGu5azcDLAIigGEZka74iHBxfNa7U1KviG',389779.22),
-('jacques.chirac@gmail.com','$2y$10$z97mYO2UTFyUg3WA30QU/e4UNaM1wVjZO0WzPTnxQ2cBb91wSri06',579779.22),
+('jacques.chirac@gmail.com','$2y$10$z97mYO2UTFyUg3WA30QU/e4UNaM1wVjZO0WzPTnxQ2cBb91wSri06',99999989.99),
 ('francois.mitterand@gmail.com','$2y$10$bDzIFaDQX/o0ZY01UsLZ5ugghbyYHgD7PAMXvULgHZ/PHrM1atWry',129779.22),
 ('georges.pompidou@gmail.com','$2y$10$zDyZ8VhPs.VYU0Y34xJfP.KdHiQV/0/ZYV8oxZXIXp/n5x6ZsvwZO',89779.22);
 

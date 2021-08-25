@@ -1,5 +1,6 @@
 package com.paymybuddy.api.service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -78,14 +79,14 @@ public class UserService {
 		
 		return result;
 	}
-
-	public boolean updateBalance(String email, double newBalance) {
-		boolean result = false;
+	
+	public HashMap<String, Double> updateBalance(String email, double newBalance) {
+		HashMap<String, Double> result = new HashMap<String, Double>();
 		if (userRepository.existsById(email)) {
 			user = userRepository.getById(email);
 			user.setBalance(newBalance);
+			result.put(email, newBalance);
 			userRepository.save(user);
-			result = true;
 		} 
 		return result;
 	}
