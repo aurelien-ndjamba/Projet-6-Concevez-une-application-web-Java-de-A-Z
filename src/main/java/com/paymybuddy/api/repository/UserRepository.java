@@ -1,30 +1,17 @@
 package com.paymybuddy.api.repository;
 
-import java.util.List;
-import java.util.Optional;
-
 import javax.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.paymybuddy.api.model.User;
+import com.paymybuddy.api.model.AppUser;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, String> {
+public interface UserRepository extends JpaRepository<AppUser, String> {
 	
-	Optional<User> findByEmail(String email);
-
-	@Query("select email, balance from User")
-	List<String> findEmailsAndBalances();
+	AppUser findByEmail(String email);
 	
-	@Query("select email, balance from User u where email = ?1")
-	List<String> findEmailAndBalanceByEmail(String email);
-	
-	@Query("select email, balance from User where email <> ?1")
-	List<String> findByEmailNot(String withoutemail);
-
 	@Transactional
 	void deleteAllByEmail(String email);
 

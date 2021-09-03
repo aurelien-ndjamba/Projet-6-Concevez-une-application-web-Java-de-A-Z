@@ -34,10 +34,10 @@ public class AccountController {
 	 * 
 	 * Liste des comptes de l'application
 	 * 
-	 * @return Iterable<Account>
+	 * @return List<Account>
 	 * 
 	 */
-	@GetMapping("/accounts")
+	@GetMapping("/accounts/all")
 	public List<Account> findAll() {
 		logger.info("INFO: Liste tous les comptes de l'application");
 		return accountService.findAll();
@@ -52,7 +52,7 @@ public class AccountController {
 	 * @return Account
 	 * 
 	 */
-	@RequestMapping(value = "/accounts", method = RequestMethod.GET, params = { "id" })
+	@RequestMapping(value = "/accounts/account", method = RequestMethod.GET, params = { "id" })
 	public Account findById(int id) {
 		logger.info("INFO: Liste les informations du compte ayant l'id : " + id);
 		return accountService.findById(id);
@@ -72,29 +72,14 @@ public class AccountController {
 		return accountService.findByEmail(email);
 	}
 
-	/**
-	 * GET http://localhost:8080/account?bank=BANQUE KOLB
-	 * 
-	 * liste les informations des comptes dont le nom de la banque est donné en paramètre
-	 * 
-	 * @return List<Account>
-	 * 
-	 */
-	@RequestMapping(value = "/accounts", method = RequestMethod.GET, params = { "bank" })
-	public List<Account> findByBank(String bank) {
-		logger.info("INFO: Liste des comptes ayant pour parametre bank : " + bank);
-		
-		return accountService.findByBank(bank);
-	}
-
 	/* *************** POST METHODE *********************** */
 
 	/**
-	 * POST http://localhost:8080/account
+	 * POST http://localhost:8080/account/save
 	 * 
 	 * Creation d'un compte dans la base de donnée
 	 * 
-	 * @return boolean
+	 * @return Account
 	 * 
 	 */
 	@PostMapping("/accounts/save")
@@ -111,7 +96,7 @@ public class AccountController {
 	 * 
 	 * Mettre à jour le nom de la banque d'un compte bancaire dans la base de donnée. L'email et le numéro de compte ne sont pas modifiable.
 	 * 
-	 * @return boolean
+	 * @return Account
 	 * 
 	 */
 	@PutMapping("/accounts/update")
@@ -123,11 +108,11 @@ public class AccountController {
 	/* *************** DELETE METHODE *********************** */
 
 	/**
-	 * DELETE http://localhost:8080/accounts?id=77
+	 * DELETE http://localhost:8080/accounts/delte?id=77
 	 * 
 	 * Supprime un compte dans la base de donnée à partir de l'id (numéro du compte)
 	 * 
-	 * @return boolean
+	 * @return Account
 	 * 
 	 */
 	@RequestMapping(value = "/accounts/delete", method = RequestMethod.DELETE, params = { "id" })

@@ -9,15 +9,20 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 //import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+
 import lombok.Data;
 
 @Data
 @Entity
+@Table(name="transaction", schema = "public")
 public class Transaction {
 	@Id
 	@GenericGenerator(name = "uuid", strategy = "uuid2")
@@ -26,19 +31,16 @@ public class Transaction {
 	@Type(type="pg-uuid")
 	private UUID id;
 	
-//	@ManyToOne
-	@JoinColumn(name = "user_transaction_fk")
-	@Column(name = "email")
+	@JoinColumn(name = "appuser_transaction_fk")
+	@Column(name = "emailuser")
 	private String user;
 	
-//	@ManyToOne
-	@JoinColumn(name = "user_transaction_fk1")
-	@Column(name = "user_email")
+	@JoinColumn(name = "userapp_transaction_fk")
+	@Column(name = "emailfriend")
 	private String friend;
 	
-//	@ManyToOne
 	@JoinColumn(name = "account_transaction_fk")
-	@Column(name = "account_id")
+	@Column(name = "accountnumber")
 	private Integer accountUser;
 	
 	@Column(name = "type")
@@ -46,6 +48,18 @@ public class Transaction {
 	
 	@Column(name = "amount")
 	private Double amount;
+	
+	@JsonInclude()
+	@Transient
+	private Double newBalance;
+	
+	@JsonInclude()
+	@Transient
+	private Double lastBalance;
+	
+	@JsonInclude()
+	@Transient
+	private Double fee;
 	
 	@Column(name = "date")
 	@CreationTimestamp

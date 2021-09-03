@@ -20,6 +20,6 @@ public class FriendId implements Serializable {
 	public FriendId(String emailUser, String emailFriend) {
 	        this.emailUser = emailUser;
 	        this.emailFriend = emailFriend;
-
 	}
+	
 }

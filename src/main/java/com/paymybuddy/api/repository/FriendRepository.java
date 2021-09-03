@@ -1,6 +1,6 @@
 package com.paymybuddy.api.repository;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -14,11 +14,8 @@ import com.paymybuddy.api.model.FriendId;
 @Repository
 public interface FriendRepository extends JpaRepository<Friend, FriendId> {
 
-	@Query("select emailUser, emailFriend from Friend")
-	ArrayList<String> findAllFriends();
-	
-	@Query("select emailUser, emailFriend from Friend f where emailUser = ?1 or emailFriend = ?1")
-	ArrayList<String> findByEmail(String email);
+	List<Friend> findByEmailUserOrEmailFriend(String email,String email2);
+	Friend findByEmailUserAndEmailFriend(String email,String email2);
 	
 	@Transactional
 	@Modifying

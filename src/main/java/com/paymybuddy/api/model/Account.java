@@ -20,12 +20,11 @@ import lombok.Data;
 @Component
 public class Account {
 	@Id
-	@Column(name = "id", nullable = false, updatable = false)
+	@Column(name = "accountnumber", nullable = false, updatable = false)
     private Integer id;
 	
-//	@OneToOne
 	@JoinColumn(name = "account_userapp_fk")
-	@Column(name = "user_email")
+	@Column(name = "email")
 	private String email;
 	
 	@Column(name = "bank")

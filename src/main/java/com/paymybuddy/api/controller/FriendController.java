@@ -1,8 +1,7 @@
 package com.paymybuddy.api.controller;
 
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.List;
 
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,14 +32,28 @@ public class FriendController {
 	 * 
 	 * Liste de tous les couples amis dans l'application
 	 * 
-	 * @return ArrayList<String>
+	 * @return List<Friend>
 	 * 
 	 */
 	@GetMapping("/friends")
-	public ArrayList<String> findAllFriends() {
+	public List<Friend> findAll() {
 		logger.info("INFO: Liste tous les couples amis de l'application");
-		return friendService.findAllFriends();
+		return friendService.findAll();
 	}
+	
+//	/**
+//	 * GET http://localhost:8080/friend?email=nicolas.sarkozy@gmail.com
+//	 * 
+//	 * Retourne les couples amis associés à l'adresse email donné en paramètre
+//	 * 
+//	 * @return ArrayList<String>
+//	 * 
+//	 */
+//	@RequestMapping(value = "/friends", method = RequestMethod.GET, params = { "email" })
+//	public List<Friend> findByIdoy(String emailUser, String emailFriend) {
+//		logger.info("INFO: Liste les couples amis associés à l'adresse email : " + email);
+//		return friendService.findById(emailUser,emailFriend);
+//	}
 	
 	/**
 	 * GET http://localhost:8080/friend?email=nicolas.sarkozy@gmail.com
@@ -50,24 +63,10 @@ public class FriendController {
 	 * @return ArrayList<String>
 	 * 
 	 */
-	@RequestMapping(value = "/friends/withme", method = RequestMethod.GET, params = { "email" })
-	public ArrayList<String> findByEmail(String email) {
+	@RequestMapping(value = "/friends", method = RequestMethod.GET, params = { "email" })
+	public List<Friend> findByEmail(String email) {
 		logger.info("INFO: Liste les couples amis associés à l'adresse email : " + email);
 		return friendService.findByEmail(email);
-	}
-	
-	/**
-	 * GET http://localhost:8080/friend?email=nicolas.sarkozy@gmail.com
-	 * 
-	 * Retourne uniquement les amis associés à l'adresse email donné en paramètre
-	 * 
-	 * @return HashSet<String>
-	 * 
-	 */
-	@RequestMapping(value = "/friends/withme/list", method = RequestMethod.GET, params = { "email" })
-	public HashSet<String> findOnlyMyFriends(String email) {
-		logger.info("INFO: Liste uniquement les amis associés à l'adresse email : " + email);
-		return friendService.findOnlyMyFriends(email);
 	}
 	
 	/* *************** POST METHODE *********************** */
@@ -77,7 +76,7 @@ public class FriendController {
 	 * 
 	 * Creation d'un couple ami dans la base de donnée
 	 * 
-	 * @return boolean
+	 * @return Friend
 	 * 
 	 */
 	@PostMapping("/friends/save")
@@ -94,11 +93,11 @@ public class FriendController {
 	 * 
 	 * Supprimer le couple ami dont l'emailUser et l'emailFriend sont donnés en paramètre
 	 * 
-	 * @return boolean
+	 * @return String
 	 * 
 	 */
 	@RequestMapping(value = "/friends/delete", method = RequestMethod.DELETE, params = { "emailUser", "emailFriend" })
-	public ArrayList<String> delete(String emailUser, String emailFriend) throws ParseException {
+	public Friend delete(String emailUser, String emailFriend) throws ParseException {
 		logger.info("INFO: Supprimer les couples amis suivant : " + emailUser + " & " + emailFriend);
 		return friendService.delete(emailUser,emailFriend);
 	}
