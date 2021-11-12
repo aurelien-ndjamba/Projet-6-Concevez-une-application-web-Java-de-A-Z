@@ -1,6 +1,7 @@
 package com.paymybuddy.api.controller;
 
 import java.text.ParseException;
+import java.util.HashSet;
 import java.util.List;
 
 import org.jboss.logging.Logger;
@@ -41,19 +42,19 @@ public class FriendController {
 		return friendService.findAll();
 	}
 	
-//	/**
-//	 * GET http://localhost:8080/friend?email=nicolas.sarkozy@gmail.com
-//	 * 
-//	 * Retourne les couples amis associés à l'adresse email donné en paramètre
-//	 * 
-//	 * @return ArrayList<String>
-//	 * 
-//	 */
-//	@RequestMapping(value = "/friends", method = RequestMethod.GET, params = { "email" })
-//	public List<Friend> findByIdoy(String emailUser, String emailFriend) {
-//		logger.info("INFO: Liste les couples amis associés à l'adresse email : " + email);
-//		return friendService.findById(emailUser,emailFriend);
-//	}
+	/**
+	 * GET http://localhost:8080/friend?email=nicolas.sarkozy@gmail.com
+	 * 
+	 * Retourne les couples amis associés à l'adresse email donné en paramètre
+	 * 
+	 * @return ArrayList<String>
+	 * 
+	 */
+	@RequestMapping(value = "/friends/withme/list", method = RequestMethod.GET, params = { "email" })
+	public HashSet<String> findFriendsOnly(String email) {
+		logger.info("INFO: Liste les couples amis associés à l'adresse email : " + email);
+		return friendService.findFriendsOnly(email);
+	}
 	
 	/**
 	 * GET http://localhost:8080/friend?email=nicolas.sarkozy@gmail.com

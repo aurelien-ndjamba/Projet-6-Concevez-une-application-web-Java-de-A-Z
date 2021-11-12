@@ -22,6 +22,10 @@ public class FriendService {
 	public void setFriendRepository(FriendRepository friendRepository) {
 		this.friendRepository = friendRepository;
 	}
+	
+	public void setUserRepository(UserRepository userRepository) {
+		this.userRepository = userRepository;
+	}
 
 	public List<Friend> findAll() {
 		return friendRepository.findAll();

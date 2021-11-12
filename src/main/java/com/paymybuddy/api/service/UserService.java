@@ -32,7 +32,7 @@ public class UserService {
 	public List<AppUser> findAll() {
 		return userRepository.findAll();
 	}
-	
+
 	@Transactional
 	public AppUser findByEmail(String email) {
 		if (!userRepository.existsById(email))
@@ -68,11 +68,12 @@ public class UserService {
 		appUser.setRoles(roles);
 		return userRepository.save(appUser);
 	}
-	
+
 	@Transactional
 	public AppUser updateAll(AppUser au) {
 		if (au.getEmail() == null)
-			throw new RuntimeException("Vous devez renseigner l'email de l'utilisateur pour la mise à jour dans la BDD");
+			throw new RuntimeException(
+					"Vous devez renseigner l'email de l'utilisateur pour la mise à jour dans la BDD");
 		else if (au.getPassword() == null)
 			throw new RuntimeException("Vous devez renseigner le nouveau mot de passe à mettre à jour dans la BDD");
 		else if (au.getBalance() == null)
@@ -89,7 +90,8 @@ public class UserService {
 	@Transactional
 	public AppUser updatePassword(String email, String password) {
 		if (email == null)
-			throw new RuntimeException("Vous devez renseigner l'email de l'utilisateur pour la mise à jour dans la BDD");
+			throw new RuntimeException(
+					"Vous devez renseigner l'email de l'utilisateur pour la mise à jour dans la BDD");
 		else if (password == null)
 			throw new RuntimeException("Vous devez renseigner le nouveau mot de passe à mettre à jour dans la BDD");
 		else if (!userRepository.existsById(email))
@@ -103,12 +105,13 @@ public class UserService {
 	@Transactional
 	public AppUser updateBalance(String email, Double balance) {
 		if (email == null)
-			throw new RuntimeException("Vous devez renseigner l'email de l'utilisateur pour la mise à jour dans la BDD");
+			throw new RuntimeException(
+					"Vous devez renseigner l'email de l'utilisateur pour la mise à jour dans la BDD");
 		else if (balance == null)
 			throw new RuntimeException("Vous devez renseigner le nouveau solde à mettre à jour dans la BDD");
 		else if (!userRepository.existsById(email))
 			throw new RuntimeException("Email de l'utilisateur non existant dans la BDD");
-		
+
 		appUser = userRepository.getById(email);
 		appUser.setBalance(balance);
 		return userRepository.save(appUser);

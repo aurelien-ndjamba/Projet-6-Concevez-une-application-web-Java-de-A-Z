@@ -12,7 +12,7 @@ public interface UserRepository extends JpaRepository<AppUser, String> {
 	
 	AppUser findByEmail(String email);
 	
-	@Transactional
-	void deleteAllByEmail(String email);
+//	@Transactional
+//	void deleteAllByEmail(String email);
 
 }
