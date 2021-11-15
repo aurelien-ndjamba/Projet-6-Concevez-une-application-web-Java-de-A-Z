@@ -36,12 +36,20 @@ public class TransactionService {
 		this.userRepository = userRepository;
 	}
 
+	public void setUserService(UserService userService) {
+		this.userService = userService;
+	}
+
 	public void setTransactionRepository(TransactionRepository transactionRepository) {
 		this.transactionRepository = transactionRepository;
 	}
 
 	public void setFriendService(FriendService friendService) {
 		this.friendService = friendService;
+	}
+
+	public void setAccountRepository(AccountRepository accountRepository) {
+		this.accountRepository = accountRepository;
 	}
 
 	public List<Transaction> findAll() {
@@ -97,9 +105,9 @@ public class TransactionService {
 			throw new RuntimeException(
 					"Vous devez effectuer un paiement d'un montant inférieur à cet utilisateur pour l'instant !");
 
-		transaction.setLastBalance(userRepository.getById(transaction.getUser()).getBalance());
-		balanceUser = userRepository.findByEmail(transaction.getUser()).getBalance();
-		balanceFriend = userRepository.findByEmail(transaction.getFriend()).getBalance();
+		transaction.setLastBalance(userRepository.getById(transaction.getUser()).getBalance());//1000
+		balanceUser = userRepository.findByEmail(transaction.getUser()).getBalance();//2000
+		balanceFriend = userRepository.findByEmail(transaction.getFriend()).getBalance();//1000
 		newBalanceUser = balanceUser - transaction.getAmount() * (1 + Constante.feeTransaction);
 		newBalanceFriend = balanceFriend + transaction.getAmount();
 		userService.updateBalance(transaction.getUser(), newBalanceUser);
@@ -135,7 +143,7 @@ public class TransactionService {
 					+ userRepository.getById(transaction.getUser()).getBalance() + " ne doit pas être supérieur à "
 					+ Constante.balanceMax + " après la transaction de dépôt (frais compris). Veuillez réduire la somme à déposer !");
 
-		balanceUser = userRepository.findByEmail(transaction.getUser()).getBalance();
+		balanceUser = userRepository.findByEmail(transaction.getUser()).getBalance();//1000
 		newBalanceUser = balanceUser + transaction.getAmount() * (1 - Constante.feeTransaction);
 		transaction.setLastBalance(balanceUser);
 		transaction.setNewBalance(newBalanceUser);

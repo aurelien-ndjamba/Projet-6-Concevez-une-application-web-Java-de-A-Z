@@ -25,6 +25,10 @@ public class TransactionController {
 	@Autowired
 	private TransactionService transactionService;
 
+	public void setTransactionService(TransactionService transactionService) {
+		this.transactionService = transactionService;
+	}
+
 	/* *************** GET METHODE *********************** */
 
 	/**
