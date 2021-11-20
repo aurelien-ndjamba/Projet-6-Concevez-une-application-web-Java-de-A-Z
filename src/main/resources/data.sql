@@ -20,7 +20,6 @@ CREATE TABLE public.role (
 CREATE TABLE public.appUser (
                 email VARCHAR(30) NOT NULL,
                 password VARCHAR(1000) NOT NULL,
-		active BOOLEAN,
                 balance NUMERIC(10,2) DEFAULT 0.0 NOT NULL,
                 CONSTRAINT userappli_id PRIMARY KEY (email)
 );
@@ -131,14 +130,14 @@ VALUES
 -- ------------------------------------------------------------------
 INSERT INTO 
 public.appuser 
-(email,password,active,balance) 
+(email,password,balance) 
 VALUES 
-('nicolas.sarkozy@gmail.com','$2a$16$YGBK46FObJOhBfyepXkvFe0d5JE5W4R9KTWpNzz96BfFp.wy1IDge',true,124755.75),
-('francois.hollande@gmail.com','$2a$16$fGlbsbqlFg2cMgCAX7jNyuv7rzQ38yqr8udVwIkAyZ3zmwUVI8nQi',true,188235.18),
-('emmanuel.macron@gmail.com','$2y$10$ZehPSWqwLokGfZVJ//64M.WqzBPs/QzTUVUcbv4VVhG1k41P61xxa',true,389779.22),
-('jacques.chirac@gmail.com','$2a$16$hlGLzSstEe6hVLgQ8uEmcO.E58NOt8rFxccXSZOjG.eT5nBpnQ1xG',true,99990000.00),
-('francois.mitterand@gmail.com','$2a$16$UhIp1wWH0vGhDssDCGA0EuY0MGsmLEp6ZD8HBf6gUxglTddLpz1Fa',true,129779.22),
-('georges.pompidou@gmail.com','$2a$16$g0Z/tgfmfE3ddlZMfCvXXOPZ0FOp7/VDnafPiFJYyyk8JqCS.UYh2',true,89779.22);
+('nicolas.sarkozy@gmail.com','$2a$16$YGBK46FObJOhBfyepXkvFe0d5JE5W4R9KTWpNzz96BfFp.wy1IDge',124755.75),
+('francois.hollande@gmail.com','$2a$16$fGlbsbqlFg2cMgCAX7jNyuv7rzQ38yqr8udVwIkAyZ3zmwUVI8nQi',188235.18),
+('emmanuel.macron@gmail.com','$2y$10$ZehPSWqwLokGfZVJ//64M.WqzBPs/QzTUVUcbv4VVhG1k41P61xxa',389779.22),
+('jacques.chirac@gmail.com','$2a$16$hlGLzSstEe6hVLgQ8uEmcO.E58NOt8rFxccXSZOjG.eT5nBpnQ1xG',99990000.00),
+('francois.mitterand@gmail.com','$2a$16$UhIp1wWH0vGhDssDCGA0EuY0MGsmLEp6ZD8HBf6gUxglTddLpz1Fa',129779.22),
+('georges.pompidou@gmail.com','$2a$16$g0Z/tgfmfE3ddlZMfCvXXOPZ0FOp7/VDnafPiFJYyyk8JqCS.UYh2',89779.22);
 
 -- ------------------------------------------------------------------
 --	USERROLE
