@@ -15,7 +15,7 @@
 	<name>api_paymybuddy</name>
 	<description>pay my friend easily</description>
 	<properties>
-		<java.version>15</java.version>
+		<java.version>14</java.version>
 	</properties>
 	<dependencies>
 		<dependency>
