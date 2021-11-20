@@ -37,7 +37,7 @@ public class AccountController {
 	 * @return List<Account>
 	 * 
 	 */
-	@GetMapping("/accounts/all")
+	@GetMapping("/admin/accounts")
 	public List<Account> findAll() {
 		logger.info("INFO: Liste tous les comptes de l'application");
 		return accountService.findAll();
@@ -52,7 +52,7 @@ public class AccountController {
 	 * @return Account
 	 * 
 	 */
-	@RequestMapping(value = "/accounts/account", method = RequestMethod.GET, params = { "id" })
+	@RequestMapping(value = "/admin/accounts", method = RequestMethod.GET, params = { "id" })
 	public Account findById(int id) {
 		logger.info("INFO: Liste les informations du compte ayant l'id : " + id);
 		return accountService.findById(id);
@@ -66,7 +66,7 @@ public class AccountController {
 	 * @return List<Account>
 	 * 
 	 */
-	@RequestMapping(value = "/accounts", method = RequestMethod.GET, params = { "email" })
+	@RequestMapping(value = "/admin/accounts", method = RequestMethod.GET, params = { "email" })
 	public List<Account> findByEmail(String email) {
 		logger.info("INFO: Liste des comptes ayant pour adresse email : " + email);
 		return accountService.findByEmail(email);
@@ -82,7 +82,7 @@ public class AccountController {
 	 * @return Account
 	 * 
 	 */
-	@PostMapping("/accounts/save")
+	@PostMapping("/user/save/accounts")
 	@ResponseStatus(HttpStatus.CREATED)
 	public Account save(@RequestBody Account account) {
 		logger.info("INFO: Creation d'un nouveau compte bancaire : "+ account );
@@ -99,7 +99,7 @@ public class AccountController {
 	 * @return Account
 	 * 
 	 */
-	@PutMapping("/accounts/update")
+	@PutMapping("/user/update/accounts")
 	public Account update(@RequestBody Account account) {
 		logger.info("INFO: Update les informations du compte bancaire existant : " + account + ". L'id n'est pas modifiable");
 		return accountService.update(account);
@@ -115,7 +115,7 @@ public class AccountController {
 	 * @return Account
 	 * 
 	 */
-	@RequestMapping(value = "/accounts/delete", method = RequestMethod.DELETE, params = { "id" })
+	@RequestMapping(value = "/user/delete/accounts", method = RequestMethod.DELETE, params = { "id" })
 	public Account deleteById(@RequestParam("id") int id) throws ParseException {
 		logger.info("INFO: Supprimer le compte bancaire dont l'id est : " + id);
 		return accountService.deleteById(id);
