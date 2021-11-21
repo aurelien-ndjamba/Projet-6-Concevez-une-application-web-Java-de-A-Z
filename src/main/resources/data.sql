@@ -3,17 +3,15 @@ BEGIN TRANSACTION;   -- Ouverture de la transaction
 -- ------------------------------------------------------------------
 --	SUPPRESION TABLES AVANT CREATION ET INSERTION
 -- ------------------------------------------------------------------
--- DROP TABLE IF EXISTS public.user; public.friend; public.account; public.transaction CASCADE;
+-- DROP TABLE IF EXISTS public.role; public.userRole; public.user; public.friend; public.account; public.transaction CASCADE;
 
 -- ------------------------------------------------------------------
 --	CREATION BDD ET TABLES
 -- ------------------------------------------------------------------
-CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
 
 CREATE TABLE public.role (
-                roleName VARCHAR(5) NOT NULL,
-                CONSTRAINT role_pk PRIMARY KEY (roleName)
+                role VARCHAR(5) NOT NULL,
+                CONSTRAINT role_pk PRIMARY KEY (role)
 );
 
 
@@ -27,8 +25,8 @@ CREATE TABLE public.appUser (
 
 CREATE TABLE public.userRole (
                 email VARCHAR(30) NOT NULL,
-                roleName VARCHAR(5) NOT NULL,
-                CONSTRAINT userrole_pk PRIMARY KEY (email, roleName)
+                rolename VARCHAR(5) NOT NULL,
+                CONSTRAINT userrole_pk PRIMARY KEY (email, rolename)
 );
 
 
@@ -48,7 +46,7 @@ CREATE TABLE public.account (
 
 
 CREATE TABLE public.transaction (
-                id uuid NOT NULL,
+                id VARCHAR(50) NOT NULL,
                 emailUser VARCHAR(30) NOT NULL,
                 emailFriend VARCHAR(30),
                 accountNumber INTEGER,
@@ -61,8 +59,8 @@ CREATE TABLE public.transaction (
 
 
 ALTER TABLE public.userRole ADD CONSTRAINT role_userrole_fk
-FOREIGN KEY (roleName)
-REFERENCES public.role (roleName)
+FOREIGN KEY (rolename)
+REFERENCES public.role (role)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION
 NOT DEFERRABLE;
@@ -115,13 +113,12 @@ REFERENCES public.account (accountNumber)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION
 NOT DEFERRABLE;
-
 -- ------------------------------------------------------------------
 --	ROLE
 -- ------------------------------------------------------------------
 INSERT INTO 
 public.role 
-(roleName) 
+(role) 
 VALUES 
 ('USER'),
 ('ADMIN');
@@ -143,7 +140,7 @@ VALUES
 --	USERROLE
 -- ------------------------------------------------------------------
 INSERT INTO 
-public.userrole
+public.userRole
 (email,roleName) 
 VALUES 
 ('emmanuel.macron@gmail.com','ADMIN'),
@@ -159,7 +156,7 @@ VALUES
 -- ------------------------------------------------------------------
 INSERT INTO 
 public.account
-(accountnumber,email,bank) 
+(accountNumber,email,bank) 
 VALUES 
 (4691733,'nicolas.sarkozy@gmail.com','BNP PARIBAS'),
 (5689045,'georges.pompidou@gmail.com','BANQUE KOLB'),
