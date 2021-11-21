@@ -9,6 +9,8 @@ BEGIN TRANSACTION;   -- Ouverture de la transaction
 --	CREATION BDD ET TABLES
 -- ------------------------------------------------------------------
 
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 CREATE TABLE public.role (
                 role VARCHAR(5) NOT NULL,
                 CONSTRAINT role_pk PRIMARY KEY (role)
@@ -46,7 +48,7 @@ CREATE TABLE public.account (
 
 
 CREATE TABLE public.transaction (
-                id VARCHAR(50) NOT NULL,
+                id uuid NOT NULL,
                 emailUser VARCHAR(30) NOT NULL,
                 emailFriend VARCHAR(30),
                 accountNumber INTEGER,

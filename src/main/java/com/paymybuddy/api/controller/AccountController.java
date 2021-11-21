@@ -99,7 +99,7 @@ public class AccountController {
 	 * @return Account
 	 * 
 	 */
-	@PutMapping("/update/accounts")
+	@PutMapping("/accounts/update")
 	public Account update(@RequestBody Account account) {
 		logger.info("INFO: Update les informations du compte bancaire existant : " + account + ". L'id n'est pas modifiable");
 		return accountService.update(account);
