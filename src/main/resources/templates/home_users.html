@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhml" xmlns:th="http://www.thymeleaf.org">
+    
+    <head>
+        <meta charset="UTF-8">
+        <title>WebApp PayMyBuddy</title>
+    </head>
+    <body>
+        <h1 class="h1">PAYMYBUDDY : Pay my friend easily !</h1>
+        <h2>Liste des employées</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>Email</th>
+                    <th>Balance</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:if="${listUser.empty}">
+                    <td colspan="3">Aucun user en base de données</td>
+                </tr>
+                <tr th:each="user: ${listUser}">
+                    <td><span th:text="${listUser.email}"> Email </span></td>
+                    <td><span th:text="${listUser.balance}"> Balance </span></td>
+                </tr>
+            </tbody>
+        </table>
+    </body>
+</html>
