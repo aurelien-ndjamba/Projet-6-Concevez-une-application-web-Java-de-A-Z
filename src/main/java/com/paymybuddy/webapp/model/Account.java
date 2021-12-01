@@ -1,13 +1,12 @@
 package com.paymybuddy.webapp.model;
 
-
 import lombok.Data;
 
 @Data
-public class AppUser {
+public class Account {
 	
+    private Integer id;
 	private String email;
-	private String password;
-	private Double balance;
+	private String bank;
 	
-	}
+}

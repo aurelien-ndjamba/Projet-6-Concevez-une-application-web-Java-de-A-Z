@@ -62,7 +62,7 @@
 					</thead>
 					<tbody>
 						<tr data-th-if="${friends.empty}">
-							<td colspan="2">Vous n'avez aucun ami enregistré en base de données</td>
+							<td colspan="2">Aucun ami enregistré en base de données</td>
 						</tr>
 						<tr>
 							<form method="post" th:action="@{/savecontact(emailUser=${emailUser})}" th:object="${friend}">

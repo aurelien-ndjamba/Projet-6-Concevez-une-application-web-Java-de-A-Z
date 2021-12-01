@@ -51,19 +51,23 @@
 	<section>
 
 		<div class="container special">
+
 			<h2 class="h2">Profile</h2>
+
 			<div class="table-responsive">
+
 				<table class="table table-striped table-sm">
 					<thead>
 						<tr>
 							<th>Email</th>
+							<th>Balance</th>
 							<th>Action</th>
 						</tr>
 					</thead>
 					<tbody>
 
 						<tr data-th-if="${appUser.email==null}">
-							<td colspan="2">Vous n'êtes pas enregistré dans l'application'</td>
+							<td colspan="3">Vous n'êtes pas enregistré dans l'application'</td>
 						</tr>
 
 						<tr>
@@ -71,7 +75,9 @@
 								<span data-th-text="${appUser.email}"> </span>
 							</td>
 							<td>
-								<!--a th:href="@{/deletecontact(emailUser=${emailUser},emailFriend=${f})}"-->
+								<span data-th-text="${appUser.balance}"> </span>
+							</td>
+							<td>
 								<a>
 									<button class="btn btn-danger">Unsubscribe</button>
 								</a>
@@ -79,11 +85,9 @@
 						</tr>
 
 						<tr>
-							<form method="post" th:action="@{/updateprofile(emailUser=${emailUser})}"
+							<form method="post" th:action="@{/updatePassword(emailUser=${emailUser})}"
 								th:object="${appUser}">
-								<!--form method="post" th:action="@{/updatepassword(email=${appUser.email})}"
-								th:object="${password}"-->
-								<td>
+								<td colspan="2">
 									<div class="form-group">
 										<input th:field="*{password}" type="password" class="form-control"
 											aria-describedby="mailHelp" placeholder="Nouveau mot de passe" />
@@ -101,64 +105,68 @@
 						</tr>
 
 					</tbody>
-				</table>
-				</div-->
 
+					<thead>
+						<tr>
+							<th>Account</th>
+							<th>Bank</th>
+							<th>Action</th>
+						</tr>
+					</thead>
+					
+					<tbody>
 
-				<div class="table-responsive">
-					<table class="table table-striped table-sm">
-						<thead>
-							<tr>
-								<th>Account</th>
-								<th>Action</th>
-							</tr>
-						</thead>
-						<tbody>
+						<tr data-th-if="${accounts==null}">
+							<td colspan="3">Aucun compte enregistré dans l'application'</td>
+						</tr>
 
-							<tr data-th-if="${appUser.email==null}">
-								<td colspan="2">Vous n'êtes pas enregistré dans l'application'</td>
-							</tr>
+						<tr data-th-each="acc:${accounts}">
+							<td>
+								<span data-th-text="${acc.id}"> </span>
+							</td>
+							<td>
+								<span data-th-text="${acc.bank}"> </span>
+							</td>
+							<td>
+								<a th:href="@{/deleteAccount(emailUser=${emailUser})}">
+									<button class="btn btn-danger">Delete Account</button>
+								</a>
+							</td>
+						</tr>
 
-							<tr>
+						<tr>
+							<form method="post" th:action="@{/saveAccount(emailUser=${emailUser})}"
+								th:object="${account}">
 								<td>
-									<span data-th-text="${appUser.email}"> </span>
+									<div class="form-group">
+										<input th:field="*{id}" type="text" class="form-control"
+											aria-describedby="mailHelp" placeholder="Nouveau compte" />
+										<small id="passwordHelp" class="form-text text-muted">
+											Merci de saisir le nouveau compte.
+										</small>
+									</div>
 								</td>
 								<td>
-									<!--a th:href="@{/deletecontact(emailUser=${emailUser},emailFriend=${f})}"-->
+									<div class="form-group">
+										<input th:field="*{bank}" type="text" class="form-control"
+											aria-describedby="mailHelp" placeholder="Nom de la banque" />
+										<small id="passwordHelp" class="form-text text-muted">
+											Merci de saisir le nom de la banque associé à ce compte.
+										</small>
+									</div>
+								</td>
+								<td>
 									<a>
-										<button class="btn btn-danger">Delete Account</button>
+										<button type="submit" class="btn btn-info">Save Account</button>
 									</a>
 								</td>
-							</tr>
+							</form>
+						</tr-->
 
-							<tr>
-								<form method="post" th:action="@{/updateprofile(emailUser=${emailUser})}"
-									th:object="${appUser}">
-									<!--form method="post" th:action="@{/updatepassword(email=${appUser.email})}"
-								th:object="${password}"-->
-									<td>
-										<div class="form-group">
-											<input th:field="*{password}" type="password" class="form-control"
-												aria-describedby="mailHelp" placeholder="Nouveau compte" />
-											<small id="passwordHelp" class="form-text text-muted">
-												Merci de saisir le nouveau compte.
-											</small>
-										</div>
-									</td>
-									<td>
-										<a>
-											<button type="submit" class="btn btn-info">Save Account</button>
-										</a>
-									</td>
-								</form>
-							</tr>
-
-						</tbody>
-					</table>
-					</div-->
-
-
-				</div>
+					</tbody>
+				</table>
+			</div>
+		</div>
 
 	</section>
 

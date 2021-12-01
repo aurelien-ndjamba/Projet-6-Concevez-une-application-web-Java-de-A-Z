@@ -22,11 +22,11 @@ public class FriendService {
     }
     
     public Friend saveFriend(Friend friend) {
-        return friendProxy.saveFriend(friend);
+        return friendProxy.saveContact(friend);
     }
     
     public Friend deletecontact(String emailUser, String emailFriend) {
-        return friendProxy.deletecontact(emailUser,emailFriend);
+        return friendProxy.deleteContact(emailUser,emailFriend);
     }
 
 }

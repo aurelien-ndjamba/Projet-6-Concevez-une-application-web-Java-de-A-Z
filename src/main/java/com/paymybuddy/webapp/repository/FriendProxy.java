@@ -40,7 +40,7 @@ public class FriendProxy {
 		return response.getBody();
 	}
 	
-	public Friend saveFriend(Friend friend) {
+	public Friend saveContact(Friend friend) {
 		String baseApiUrl = props.getApiUrl();
 		String saveFriendUrl = baseApiUrl + "/friends/save";
 
@@ -55,7 +55,7 @@ public class FriendProxy {
 		return response.getBody();
 	}
 	
-	public Friend deletecontact(String emailUser, String emailFriend) {
+	public Friend deleteContact(String emailUser, String emailFriend) {
 		String baseApiUrl = props.getApiUrl();
 		String deleteFriendUrl = baseApiUrl + "/friends/delete?emailUser=" + emailUser + "&emailFriend=" + emailFriend;
 
