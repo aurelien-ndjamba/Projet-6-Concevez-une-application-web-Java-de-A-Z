@@ -26,5 +26,9 @@ public class AppUserService {
 	public AppUser updatePassword(String email, String password) {
 		return appUserProxy.updatePassword(email, password);
 	}
+	
+	public AppUser deleteAppUser(String email) {
+		return appUserProxy.deleteAppUser(email);
+	}
     
 }

@@ -2,7 +2,6 @@ package com.paymybuddy.webapp.repository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -41,15 +40,24 @@ public class AppUserProxy {
 	
 	public AppUser updatePassword(String email, String password) {
 		String baseApiUrl = props.getApiUrl();
-		String updatePasswordUrl = baseApiUrl + "/users/updatepassword";
-		AppUser appUser = new AppUser();
-		appUser.setEmail(email);
-		appUser.setPassword(password);
+		String updatePasswordUrl = baseApiUrl + "/users/updatepassword?email=" + email + "&password=" + password;
 		RestTemplate restTemplate = new RestTemplate();
-//		HttpEntity<AppUser> request = new HttpEntity<AppUser>(appUser);
 		ResponseEntity<AppUser> response = restTemplate.exchange(
 				updatePasswordUrl, 
 				HttpMethod.PUT, 
+				null, 
+				AppUser.class);
+		
+		return response.getBody();
+	}
+	
+	public AppUser deleteAppUser(String email) {
+		String baseApiUrl = props.getApiUrl();
+		String updatePasswordUrl = baseApiUrl + "/users/delete?email=" + email;
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<AppUser> response = restTemplate.exchange(
+				updatePasswordUrl, 
+				HttpMethod.DELETE, 
 				null, 
 				AppUser.class);
 		

@@ -9,13 +9,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.paymybuddy.webapp.model.Account;
 import com.paymybuddy.webapp.model.AppUser;
-import com.paymybuddy.webapp.model.Friend;
 import com.paymybuddy.webapp.service.AccountService;
 import com.paymybuddy.webapp.service.AppUserService;
 
@@ -29,24 +27,22 @@ public class AppUserController {
 	
 	// --- Home --- //
 	
-	@GetMapping("/")
-	public String home(Model model) {
-		AppUser e = new AppUser();
-		model.addAttribute("appUser", e);
-		return "home";
-	}
+//	@GetMapping("/home")
+//	public String home() {
+//		return "redirect:/";
+//	}
 	
-	@GetMapping("/home")
-	public String index(Model model) {
-		return "redirect:/";
+	@GetMapping("/")
+	public String index() {
+		return "login";
 	}
 
 	// --- Transfert --- //
 	
-	@GetMapping("/transfer/{id}")
-	public String transfert() {
-		return "transfer";
-	}
+//	@GetMapping("/transfer/{id}")
+//	public String transfert() {
+//		return "transfer";
+//	}
 	
 	// --- Profile --- //
 
@@ -55,7 +51,7 @@ public class AppUserController {
 		
 		AppUser appUser = new AppUser();
 		appUser.setEmail(emailUser);
-		appUser.setBalance(0.0);
+		appUser.setBalance(appUserService.getUser(emailUser).getBalance());
 		model.addAttribute("appUser", appUser);
 		
 		Account account = new Account();
@@ -69,13 +65,17 @@ public class AppUserController {
 		return "profile";
 	}
 	
-	@RequestMapping(value = "/updateprofile", method = RequestMethod.PUT, params = {"emailUser"})
+	@RequestMapping(value = "/updatepassword", method = RequestMethod.POST, params = {"emailUser"})
 	public String updatePassword(String emailUser, @ModelAttribute("appUser") AppUser appUser) {
-//		AppUser a = new AppUser();
-//		a.setEmail(emailUser);
-//		a.setPassword(appUser.getPassword());
 		appUserService.updatePassword(emailUser, appUser.getPassword());
-		return "redirect:/getprofile/" + appUser.getEmail();
+		return "redirect:/getprofile/" + emailUser;
+	}
+	
+	@RequestMapping(value = "/deleteappuser", method = RequestMethod.GET, params = {"emailUser"})
+	public String deleteAppUser(String emailUser) {
+		appUserService.deleteAppUser(emailUser);
+		
+		return "redirect:/";
 	}
 
 	// --- Contact --- //
@@ -83,9 +83,9 @@ public class AppUserController {
 	
 	// --- Logoff --- //
 	
-	@GetMapping("/logoff/{id}")
-	public String logoff() {
-		return "logoff";
-	}
+//	@GetMapping("/logoff/{id}")
+//	public String logoff() {
+//		return "logoff";
+//	}
 
 }

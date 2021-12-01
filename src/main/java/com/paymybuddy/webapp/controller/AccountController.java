@@ -18,17 +18,16 @@ public class AccountController {
 	@Autowired
 	private AccountService accountService;
 	
-	@RequestMapping(value = "/saveAccount", method = RequestMethod.POST, params = {"emailUser"})
+	@RequestMapping(value = "/saveaccount", method = RequestMethod.POST, params = {"emailUser"})
 	public String saveAccount(String emailUser, @ModelAttribute("account") Account account) {
 		account.setEmail(emailUser);
 		accountService.saveAccount(account);
 		return "redirect:/getprofile/" + emailUser;
 	}
 	
-	@RequestMapping(value = "/deleteAccount", method = RequestMethod.DELETE, params = {"emailUser"})
-	public String deleteAccount(String emailUser, @ModelAttribute("account") Account account) {
-//		account.setEmail(emailUser);
-		accountService.deleteAccount(account.getId());
+	@RequestMapping(value = "/deleteaccount", method = RequestMethod.GET, params = {"emailUser","id"})
+	public String deleteAccount(String emailUser, Integer id) {
+		accountService.deleteAccount(id);
 		return "redirect:/getprofile/" + emailUser;
 	}
 	

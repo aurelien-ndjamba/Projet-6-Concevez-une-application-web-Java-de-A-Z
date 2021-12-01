@@ -78,14 +78,14 @@
 								<span data-th-text="${appUser.balance}"> </span>
 							</td>
 							<td>
-								<a>
+								<a th:href="@{/deleteappuser(emailUser=${emailUser})}">
 									<button class="btn btn-danger">Unsubscribe</button>
 								</a>
 							</td>
 						</tr>
 
 						<tr>
-							<form method="post" th:action="@{/updatePassword(emailUser=${emailUser})}"
+							<form method="post" th:action="@{/updatepassword(emailUser=${emailUser})}"
 								th:object="${appUser}">
 								<td colspan="2">
 									<div class="form-group">
@@ -116,8 +116,8 @@
 					
 					<tbody>
 
-						<tr data-th-if="${accounts==null}">
-							<td colspan="3">Aucun compte enregistré dans l'application'</td>
+						<tr data-th-if="${accounts.empty}">
+							<td colspan="3">Aucun compte enregistré dans l'application</td>
 						</tr>
 
 						<tr data-th-each="acc:${accounts}">
@@ -128,14 +128,14 @@
 								<span data-th-text="${acc.bank}"> </span>
 							</td>
 							<td>
-								<a th:href="@{/deleteAccount(emailUser=${emailUser})}">
+								<a th:href="@{/deleteaccount(emailUser=${emailUser},id=${acc.id})}">
 									<button class="btn btn-danger">Delete Account</button>
 								</a>
 							</td>
 						</tr>
 
 						<tr>
-							<form method="post" th:action="@{/saveAccount(emailUser=${emailUser})}"
+							<form method="post" th:action="@{/saveaccount(emailUser=${emailUser})}"
 								th:object="${account}">
 								<td>
 									<div class="form-group">

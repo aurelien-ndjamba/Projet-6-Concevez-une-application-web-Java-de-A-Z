@@ -52,7 +52,7 @@ public class AccountProxy {
 	
 	public Account deleteAccount(Integer id) {
 		String baseApiUrl = props.getApiUrl();
-		String getAccountsByEmailUrl = baseApiUrl + "/accounts/delete";
+		String getAccountsByEmailUrl = baseApiUrl + "/accounts/delete?id="+id;
 
 		RestTemplate restTemplate = new RestTemplate();
 		ResponseEntity<Account> response = restTemplate.exchange(
