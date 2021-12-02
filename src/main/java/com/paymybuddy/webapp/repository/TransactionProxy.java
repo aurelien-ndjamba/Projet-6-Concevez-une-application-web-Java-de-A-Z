@@ -1,5 +1,7 @@
 package com.paymybuddy.webapp.repository;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -9,24 +11,21 @@ import org.springframework.web.client.RestTemplate;
 
 import com.paymybuddy.webapp.CustomProperties;
 import com.paymybuddy.webapp.model.Transaction;
-import com.paymybuddy.webapp.model.AppUser;
 
 @Component
-public class TransactionRepository {
+public class TransactionProxy {
 	
 	@Autowired
 	private CustomProperties props;
 	
-	public Iterable<Transaction> getTransactions() {
+	public List<Transaction> getTransactions(String emailUser) {
 		String baseApiUrl = props.getApiUrl();
-		String getUserUrl = baseApiUrl + "/transaction";
+		String getUserUrl = baseApiUrl + "/transactions?email=" + emailUser;
 
 		RestTemplate restTemplate = new RestTemplate();
-		ResponseEntity<Iterable<Transaction>> response = restTemplate.exchange(getUserUrl, HttpMethod.GET, null,
-				new ParameterizedTypeReference<Iterable<Transaction>>() {
+		ResponseEntity<List<Transaction>> response = restTemplate.exchange(getUserUrl, HttpMethod.GET, null,
+				new ParameterizedTypeReference<List<Transaction>>() {
 				});
-
-//        log.debug("Get Employees call " + response.getStatusCode().toString());
 
 		return response.getBody();
 	}

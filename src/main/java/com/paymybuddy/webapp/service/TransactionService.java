@@ -1,11 +1,12 @@
 package com.paymybuddy.webapp.service;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.paymybuddy.webapp.model.AppUser;
-import com.paymybuddy.webapp.repository.TransactionRepository;
-import com.paymybuddy.webapp.repository.AppUserProxy;
+import com.paymybuddy.webapp.model.Transaction;
+import com.paymybuddy.webapp.repository.TransactionProxy;
 
 import lombok.Data;
 
@@ -14,9 +15,10 @@ import lombok.Data;
 public class TransactionService {
 
 	 @Autowired
-	    private TransactionRepository transactionRepository;
+	    private TransactionProxy transactionProxy;
 	 
-//	    public Iterable<Transactions> getTransactions() {
-//	        return transactionRepository.getTransactions();
-//	    }
+	    public List<Transaction> getTransactions(String emailUser) {
+	        return transactionProxy.getTransactions(emailUser);
+	    }
+	 
 }

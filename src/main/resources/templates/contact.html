@@ -65,7 +65,8 @@
 							<td colspan="2">Aucun ami enregistré en base de données</td>
 						</tr>
 						<tr>
-							<form method="post" th:action="@{/savecontact(emailUser=${emailUser})}" th:object="${friend}">
+							<form method="post" th:action="@{/savecontact(emailUser=${emailUser})}"
+								th:object="${friend}">
 								<td>
 									<div class="form-group">
 										<!--label for="mailInput">Email</label-->
@@ -89,9 +90,10 @@
 								<span data-th-text="${f}"> </span>
 							</td>
 							<td>
-								<a th:href="@{/deletecontact(emailUser=${emailUser},emailFriend=${f})}">
-									<button class="btn btn-danger">Delete</button>
-								</a>
+								<!--div class="alert alert-info" role="alert"-->
+									<a th:href="@{/deletecontact(emailUser=${emailUser},emailFriend=${f})}">
+										<button class="btn btn-danger">Delete</button>
+									</a>
 							</td>
 						</tr>
 					</tbody>
