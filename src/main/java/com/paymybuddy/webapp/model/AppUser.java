@@ -1,6 +1,9 @@
 package com.paymybuddy.webapp.model;
 
 
+
+//import com.paymybuddy.webapp.model.Role;
+
 import lombok.Data;
 
 @Data

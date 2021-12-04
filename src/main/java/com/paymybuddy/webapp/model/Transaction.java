@@ -9,10 +9,13 @@ import lombok.Data;
 public class Transaction {
 
 	private UUID id;
-	private String email;
-	private String user_email;
-	private Integer account_id;
+	private String user;
+	private String friend;
+	private Integer accountUser;
 	private String type;
+	private Double lastBalance;
+	private Double newBalance;
+	private Double fee;
 	private Double amount;
 	private Timestamp date;
 	private String description;

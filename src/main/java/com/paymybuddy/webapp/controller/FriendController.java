@@ -5,9 +5,7 @@ import java.util.HashSet;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -24,17 +22,17 @@ public class FriendController {
 	private FriendService friendService;
 
 	// --- GetFriendsOnly --- //
-	// http://localhost:9001/getcontact/nicolas.sarkozy@gmail.com OK
-//	@GetMapping("/getcontact/{emailUser}")
+	// http://localhost:9001/getcontact?emailUser=nicolas.sarkozy@gmail.com OK
 	@RequestMapping(value = "/getcontact", method = RequestMethod.GET, params = {"emailUser"})
-//	public String getFriendsOnly(@PathVariable("emailUser") String emailUser, Model model) {
-	public String getFriendsOnly(String emailUser, Model model) {
-		HashSet<String> e = friendService.getFriendsOnly(emailUser);
+	public String allContactsAvalaible(String emailUser, Model model) {
 		model.addAttribute("emailUser", emailUser);
-		model.addAttribute("friends", e);
 		Friend f = new Friend();
-		f.setEmailUser(emailUser);
+//		f.setEmailUser(emailUser);
 		model.addAttribute("friend", f);
+		HashSet<String> myContactsOnly = friendService.getFriendsOnly(emailUser);
+		model.addAttribute("myContactsOnly", myContactsOnly);
+		HashSet<String> allOtherContactsExisting = friendService.getAllOtherContactsExisting(emailUser);
+		model.addAttribute("allOtherContactsExisting", allOtherContactsExisting);
 		return "contact";
 	}
 

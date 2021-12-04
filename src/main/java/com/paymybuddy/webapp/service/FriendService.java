@@ -17,6 +17,10 @@ public class FriendService {
 	@Autowired
 	private FriendProxy friendProxy;
 	
+    public HashSet<String> getAllOtherContactsExisting(String email) {
+        return friendProxy.getAllOtherContactsExisting(email);
+    }
+	
     public HashSet<String> getFriendsOnly(String email) {
         return friendProxy.getFriendsOnly(email);
     }

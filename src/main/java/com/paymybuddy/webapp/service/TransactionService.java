@@ -14,11 +14,24 @@ import lombok.Data;
 @Service
 public class TransactionService {
 
-	 @Autowired
-	    private TransactionProxy transactionProxy;
-	 
-	    public List<Transaction> getTransactions(String emailUser) {
-	        return transactionProxy.getTransactions(emailUser);
-	    }
-	 
+	@Autowired
+	private TransactionProxy transactionProxy;
+
+	public List<Transaction> getTransactions(String emailUser) {
+		return transactionProxy.getTransactions(emailUser);
+	}
+
+	public Transaction createPayment(Transaction transaction) {
+		return transactionProxy.createPayment(transaction);
+	}
+
+	public Transaction createDeposit(Transaction transaction) {
+		return transactionProxy.createDeposit(transaction);
+	}
+
+	public Transaction createWithdrawal(Transaction transaction) {
+		return transactionProxy.createWithdrawal(transaction);
+
+	}
+
 }
