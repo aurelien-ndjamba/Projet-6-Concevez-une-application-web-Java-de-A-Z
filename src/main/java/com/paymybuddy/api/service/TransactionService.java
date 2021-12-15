@@ -1,14 +1,18 @@
 package com.paymybuddy.api.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.paymybuddy.api.model.Constante;
 import com.paymybuddy.api.model.Transaction;
+import com.paymybuddy.api.model.TransactionStructured;
 import com.paymybuddy.api.repository.AccountRepository;
 import com.paymybuddy.api.repository.TransactionRepository;
 import com.paymybuddy.api.repository.UserRepository;
@@ -70,10 +74,66 @@ public class TransactionService {
 	}
 
 	public List<Transaction> findByUser(String email) {
-		if (userRepository.findByEmail(email) == null)
+		if (! userRepository.existsById(email))
 			throw new RuntimeException("Email non existant dans la BDD");
 		String friend = email;
 		return transactionRepository.findByUserOrFriend(email, friend);
+	}
+	
+	public List<TransactionStructured> findByEmailStructured(String email) {
+		List<Transaction> transactions = transactionRepository.findByUserOrFriend(email,email);
+	List<TransactionStructured> lts = new ArrayList<TransactionStructured>();
+		for (Transaction t: transactions) {
+			if (t.getFriend()==null) {
+				TransactionStructured ts = new TransactionStructured();
+				ts.setId(t.getId());
+				ts.setFriend(t.getUser());
+				ts.setPseudo("with my account");
+				ts.setAccountUser(t.getAccountUser());
+				ts.setType(t.getType());
+				ts.setAmount(t.getAmount());
+				ts.setDate(t.getDate());
+				ts.setDescription(t.getDescription());
+				lts.add(ts);
+				System.out.println(lts);
+			}
+			else if ( t.getFriend().equals(email)) {
+				TransactionStructured ts = new TransactionStructured();
+				ts.setId(t.getId());
+				ts.setFriend(t.getUser());
+				ts.setPseudo(friendService.findPseudoByEmail(t.getUser()));
+				ts.setAccountUser(t.getAccountUser());
+				ts.setType(t.getType());
+				ts.setAmount(t.getAmount());
+				ts.setDate(t.getDate());
+				ts.setDescription(t.getDescription());
+				lts.add(ts);
+				System.out.println(lts);
+			}
+			else {
+				TransactionStructured ts = new TransactionStructured();
+				ts.setId(t.getId());
+				ts.setFriend(t.getFriend());
+				ts.setPseudo(friendService.findPseudoByEmail(t.getFriend()));
+				ts.setAccountUser(t.getAccountUser());
+				ts.setType(t.getType());
+				ts.setAmount(t.getAmount());
+				ts.setDate(t.getDate());
+				ts.setDescription(t.getDescription());
+				lts.add(ts);
+				System.out.println(lts);
+			}
+		}
+		return lts;
+	
+	}
+
+	public List<Transaction> findByUser(String email, int page, int size) {
+		if (! userRepository.existsById(email))
+			throw new RuntimeException("Email non existant dans la BDD");
+		String friend = email;
+		Pageable pagelist = PageRequest.of(page, size);
+		return transactionRepository.findByUserOrFriend(email,friend,pagelist);
 	}
 
 	@Transactional
@@ -90,7 +150,7 @@ public class TransactionService {
 					"Vous devez renseigner l'email de votre ami pour effectuer une transaction de paiement !");
 		else if (!userRepository.existsById(transaction.getFriend()))
 			throw new RuntimeException("L'email de votre ami n'existe pas en BDD. Veuillez le modifier !");
-		else if (!friendService.findFriendsOnly(transaction.getUser()).contains(transaction.getFriend()))
+		else if (!friendService.findEmailsFriendsOnly(transaction.getUser()).contains(transaction.getFriend()))
 			throw new RuntimeException("Vous n'êtes pas ami avec l'utilisateur ayant l'email : '"
 					+ transaction.getFriend() + "'. Veuillez choisir un de vos amis pour effectuer un paiement !");
 		else if (userRepository.findByEmail(transaction.getUser()).getBalance() <= transaction.getAmount()

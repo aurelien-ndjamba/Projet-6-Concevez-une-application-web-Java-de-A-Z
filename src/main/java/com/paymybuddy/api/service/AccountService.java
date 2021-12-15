@@ -39,8 +39,8 @@ public class AccountService {
 	}
 
 	@Transactional
-	public List<Account> findByEmail(String email) {
-		if (userRepository.findByEmail(email) == null) {
+	public Account findByEmail(String email) {
+		if (! userRepository.existsById(email)) {
 			throw new RuntimeException("Email non existant dans la BDD");
 		}
 		return accountRepository.findByEmail(email);
@@ -48,34 +48,25 @@ public class AccountService {
 
 	@Transactional
 	public Account save(Account account) {
-		if (account.getId() == null) {
-			throw new RuntimeException("Vous devez renseigner un numéro de compte!");
-		} else if (accountRepository.findById(account.getId()).isPresent()) {
-			throw new RuntimeException("Compte bancaire déjà existant dans la BDD");
-		} else if (account.getEmail() == null) {
-			throw new RuntimeException("Vous devez renseigner l'email associé à ce compte bancaire!");
-		} else if (userRepository.findByEmail(account.getEmail()) == null) {
-			throw new RuntimeException("Email non existant dans la BDD");
-		} else if (account.getBank() == null) {
-			throw new RuntimeException("Vous devez renseigner le nom de la banque associée à votre compte bancaire!");
-		}
+//		if (account.getId() == null) {
+//			throw new RuntimeException("Vous devez renseigner un numéro de compte!");
+//		} else if (accountRepository.existsById(account.getId())) {
+//			throw new RuntimeException("Numéro bancaire déjà existant dans la BDD");
+//		} else if (account.getEmail() == null) {
+//			throw new RuntimeException("Vous devez renseigner l'email associé à ce compte bancaire!");
+//		} else if (! userRepository.existsById(account.getEmail())) {
+//			throw new RuntimeException("Email non existant dans la BDD");
+//		} else if (account.getBank() == null) {
+//			throw new RuntimeException("Vous devez renseigner le nom de la banque associée à votre compte bancaire!");
+//		}
 		return accountRepository.save(account);
 	}
 
 	@Transactional
 	public Account update(Account account) {
-		if (account.getId() == null) {
-			throw new RuntimeException("Vous devez renseigner un numéro de compte!");
-		} else if (accountRepository.findById(account.getId()).isEmpty()) {
-			throw new RuntimeException("Compte bancaire non existant dans la BDD");
-		} else if (account.getEmail() == null) {
-			throw new RuntimeException("Vous devez renseigner l'email associé à ce compte bancaire!");
-		} else if (userRepository.findByEmail(account.getEmail()) == null) {
-			throw new RuntimeException("Email non existant dans la BDD");
-		} else if (account.getBank() == null) {
-			throw new RuntimeException("Vous devez renseigner le nom de la banque associée à votre compte bancaire!");
-		}
-		return accountRepository.save(account);
+		Account newAcc = findByEmail(account.getEmail());
+		newAcc.setId(account.getId());
+		return accountRepository.save(newAcc);
 	}
 
 	@Transactional

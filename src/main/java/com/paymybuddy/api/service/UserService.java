@@ -2,6 +2,7 @@ package com.paymybuddy.api.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,9 +25,26 @@ public class UserService {
 	private AppUser appUser;
 	@Autowired
 	private UserRepository userRepository;
+	@Autowired
+	private AccountService accountService;
 
 	public void setUserRepository(UserRepository userRepository) {
 		this.userRepository = userRepository;
+	}
+
+	public boolean login(String email, String password) {
+//		String JSESSIONID = "notIdentified";
+		boolean result = false;
+		if (!userRepository.existsById(email)) {
+			throw new RuntimeException("Email de l'utilisateur non existant dans la BDD");
+		} else if (bCryptPasswordEncoder.matches(password,
+				userRepository.findById(email).get().getPassword())) {
+			result = true;
+			updateActive(email, result);
+//			UUID JSESSIONIDInUUID = UUID.randomUUID();
+//			JSESSIONID = JSESSIONIDInUUID.toString();
+		}
+		return result;
 	}
 
 	public List<AppUser> findAll() {
@@ -53,8 +71,6 @@ public class UserService {
 	public AppUser save(AppUser appUser) {
 		if (userRepository.existsById(appUser.getEmail())) {
 			throw new RuntimeException("Email de l'utilisateur déjà existant dans la BDD");
-		} else if (appUser.getPassword() == null) {
-			throw new RuntimeException("Vous devez renseigner un mot de passe.");
 		}
 		// Cryptage du mot de passe avec algorithme de hashage Bcrypt
 		String passwordEncoder = bCryptPasswordEncoder.encode(appUser.getPassword());
@@ -66,6 +82,9 @@ public class UserService {
 		List<Role> roles = new ArrayList<>();
 		roles.add(role);
 		appUser.setRoles(roles);
+		appUser.setActive(true); // fixer active à TRUE à l'inscription
+//		accountService.save(appUser.getAccount()); //Sauvegarde du compte User.account avant la sauvegarde du User
+		System.out.println(appUser);
 		return userRepository.save(appUser);
 	}
 
@@ -97,7 +116,7 @@ public class UserService {
 		else if (!userRepository.existsById(email))
 			throw new RuntimeException("Email de l'utilisateur non existant dans la BDD");
 		appUser = userRepository.getById(email);
-		String passwordEncoder = bCryptPasswordEncoder.encode(appUser.getPassword());
+		String passwordEncoder = bCryptPasswordEncoder.encode(password);
 		appUser.setPassword(passwordEncoder);
 		return userRepository.save(appUser);
 	}
@@ -114,6 +133,32 @@ public class UserService {
 
 		appUser = userRepository.getById(email);
 		appUser.setBalance(balance);
+		return userRepository.save(appUser);
+	}
+	
+	@Transactional
+	public AppUser updateActive(String email, boolean status) {
+		if (email == null)
+			throw new RuntimeException(
+					"Vous devez renseigner l'email de l'utilisateur pour la mise à jour dans la BDD");
+		else if (!userRepository.existsById(email))
+			throw new RuntimeException("Email de l'utilisateur non existant dans la BDD");
+
+		appUser = userRepository.getById(email);
+		appUser.setActive(status);
+		return userRepository.save(appUser);
+	}
+	
+	@Transactional
+	public AppUser updatePseudo(String email, String pseudo) {
+		if (email == null)
+			throw new RuntimeException(
+					"Vous devez renseigner l'email de l'utilisateur pour la mise à jour dans la BDD");
+		else if (!userRepository.existsById(email))
+			throw new RuntimeException("Email de l'utilisateur non existant dans la BDD");
+
+		appUser = userRepository.getById(email);
+		appUser.setPseudo(pseudo);
 		return userRepository.save(appUser);
 	}
 

@@ -86,7 +86,7 @@ public class FriendServiceTest {
 		friendService.setUserRepository(userRepositoryMock);
 
 		// THEN
-		assertThatThrownBy(() -> friendService.findFriendsOnly("friend1@gmail.com"))
+		assertThatThrownBy(() -> friendService.findEmailsFriendsOnly("friend1@gmail.com"))
 				.isInstanceOf(RuntimeException.class).hasMessage("Email non existant dans la BDD");
 	}
 
@@ -110,7 +110,7 @@ public class FriendServiceTest {
 		friendService.setFriendRepository(friendRepositoryMock);
 
 		// THEN
-		assertThat(friendService.findFriendsOnly("friend1@gmail.com").contains("email4@gmail.com")).isEqualTo(true);
+		assertThat(friendService.findEmailsFriendsOnly("friend1@gmail.com").contains("email4@gmail.com")).isEqualTo(true);
 	}
 
 	@Test
@@ -189,7 +189,7 @@ public class FriendServiceTest {
 		friendService.setUserRepository(userRepositoryMock);
 
 		// THEN
-		assertThatThrownBy(() -> friendService.delete("friend1@gmail.com","friend2@gmail.com")).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> friendService.deleteByEmailUserAndEmailFriend("friend1@gmail.com","friend2@gmail.com")).isInstanceOf(RuntimeException.class)
 				.hasMessage("Email(s) 'ami' et/ou 'friend' non existant(s) dans la BDD");
 	}
 	
@@ -200,7 +200,7 @@ public class FriendServiceTest {
 		friendService.setUserRepository(userRepositoryMock);
 
 		// THEN
-		assertThatThrownBy(() -> friendService.delete("friend1@gmail.com","friend2@gmail.com")).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> friendService.deleteByEmailUserAndEmailFriend("friend1@gmail.com","friend2@gmail.com")).isInstanceOf(RuntimeException.class)
 				.hasMessage("Email(s) 'ami' et/ou 'friend' non existant(s) dans la BDD");
 	}
 	
@@ -218,7 +218,7 @@ public class FriendServiceTest {
 		friendService.setFriendRepository(friendRepositoryMock);
 
 		// THEN
-		assertThatThrownBy(() -> friendService.delete("friend1@gmail.com","friend2@gmail.com")).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> friendService.deleteByEmailUserAndEmailFriend("friend1@gmail.com","friend2@gmail.com")).isInstanceOf(RuntimeException.class)
 				.hasMessage("Couple ami non existant dans la BDD");
 	}
 	
@@ -236,7 +236,7 @@ public class FriendServiceTest {
 		friendService.setFriendRepository(friendRepositoryMock);
 
 		// THEN
-		assertThat(friendService.delete("friend1@gmail.com","friend2@gmail.com").getEmailUser()).isEqualTo("friend1@gmail.com");
+		assertThat(friendService.deleteByEmailUserAndEmailFriend("friend1@gmail.com","friend2@gmail.com").getEmailUser()).isEqualTo("friend1@gmail.com");
 	}
 
 }

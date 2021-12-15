@@ -5,6 +5,7 @@ import java.util.List;
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -40,6 +41,7 @@ public class RoleController {
 	 * @return List<Role>
 	 * 
 	 */
+	@Secured(value={"ROLE_ADMIN"})
 	@GetMapping("/roles/all")
 	public List<Role> findAll() {
 		logger.info("INFO: Liste des roles de l'application");
@@ -54,6 +56,7 @@ public class RoleController {
 	 * @return Role
 	 * 
 	 */
+	@Secured(value={"ROLE_ADMIN"})
 	@GetMapping("/roles")
 	public Role findById(String id) {
 		logger.info("INFO: Obtenir un role par roleName");
@@ -68,6 +71,7 @@ public class RoleController {
 	 * @return Role
 	 * 
 	 */
+	@Secured(value={"ROLE_ADMIN"})
 	@PostMapping("/roles/save")
 	@ResponseStatus(HttpStatus.CREATED)
 	public Role save(@RequestBody Role role) {
@@ -85,6 +89,7 @@ public class RoleController {
 	 * @return Role
 	 * 
 	 */
+	@Secured(value={"ROLE_ADMIN"})
 	@RequestMapping(value = "/roles/delete", method = RequestMethod.DELETE, params = { "id" })
 	public Role deleteById(String id) {
 		logger.info("INFO: Supprimer un role dans l'application");

@@ -5,6 +5,7 @@ import java.util.List;
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -38,6 +39,7 @@ public class UserRoleController {
 	 * @return List<UserRole>
 	 * 
 	 */
+	@Secured(value={"ADMIN"})
 	@GetMapping("/userroles/all")
 	public List<UserRole> findAll() {
 		logger.info("INFO: Liste des roles de l'application");
@@ -52,6 +54,7 @@ public class UserRoleController {
 	 * @return UserRole
 	 * 
 	 */
+	@Secured(value={"ROLE_ADMIN"})
 	@RequestMapping(value = "/userroles", method = RequestMethod.GET, params = { "email"})
 	public List<UserRole> findByEmail(String email) {
 		logger.info("INFO: Obtenir un role par roleName");
@@ -68,6 +71,7 @@ public class UserRoleController {
 	 * @return UserRole
 	 * 
 	 */
+	@Secured(value={"ROLE_ADMIN"})
 	@PostMapping("/userroles/save")
 	@ResponseStatus(HttpStatus.CREATED)
 	public UserRole save(@RequestBody UserRole userRole) {
@@ -85,6 +89,7 @@ public class UserRoleController {
 	 * @return UserRole
 	 * 
 	 */
+	@Secured(value={"ROLE_ADMIN"})
 	@RequestMapping(value = "/userroles/delete", method = RequestMethod.DELETE, params = { "email", "role" })
 	public UserRole delete(String email, String role) {
 		logger.info("INFO: Ajouter un nouvel role dans l'application");

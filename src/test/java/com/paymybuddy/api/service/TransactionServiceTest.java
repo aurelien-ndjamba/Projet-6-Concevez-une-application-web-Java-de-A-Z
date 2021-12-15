@@ -249,7 +249,7 @@ public class TransactionServiceTest {
 		// WHEN
 		when(userRepositoryMock.existsById(transaction.getUser())).thenReturn(true);
 		when(userRepositoryMock.existsById(transaction.getFriend())).thenReturn(true);
-		when(friendServiceMock.findFriendsOnly(transaction.getUser())).thenReturn(h);
+		when(friendServiceMock.findEmailsFriendsOnly(transaction.getUser())).thenReturn(h);
 		transactionService.setUserRepository(userRepositoryMock);
 		transactionService.setFriendService(friendServiceMock);
 
@@ -277,7 +277,7 @@ public class TransactionServiceTest {
 		// WHEN
 		when(userRepositoryMock.existsById(transaction.getUser())).thenReturn(true);
 		when(userRepositoryMock.existsById(transaction.getFriend())).thenReturn(true);
-		when(friendServiceMock.findFriendsOnly(transaction.getUser())).thenReturn(h);
+		when(friendServiceMock.findEmailsFriendsOnly(transaction.getUser())).thenReturn(h);
 		when(userRepositoryMock.findByEmail(transaction.getUser())).thenReturn(a);
 		transactionService.setUserRepository(userRepositoryMock);
 		transactionService.setFriendService(friendServiceMock);
@@ -311,7 +311,7 @@ public class TransactionServiceTest {
 		// WHEN
 		when(userRepositoryMock.existsById(transaction.getUser())).thenReturn(true);
 		when(userRepositoryMock.existsById(transaction.getFriend())).thenReturn(true);
-		when(friendServiceMock.findFriendsOnly(transaction.getUser())).thenReturn(h);
+		when(friendServiceMock.findEmailsFriendsOnly(transaction.getUser())).thenReturn(h);
 		when(userRepositoryMock.findByEmail(transaction.getUser())).thenReturn(a);
 		when(userRepositoryMock.findByEmail(transaction.getFriend())).thenReturn(b);
 		transactionService.setUserRepository(userRepositoryMock);
@@ -343,7 +343,7 @@ public class TransactionServiceTest {
 		// WHEN
 		when(userRepositoryMock.existsById(transaction.getUser())).thenReturn(true);
 		when(userRepositoryMock.existsById(transaction.getFriend())).thenReturn(true);
-		when(friendServiceMock.findFriendsOnly(transaction.getUser())).thenReturn(h);
+		when(friendServiceMock.findEmailsFriendsOnly(transaction.getUser())).thenReturn(h);
 		when(userRepositoryMock.findByEmail(transaction.getUser())).thenReturn(a);
 		when(userRepositoryMock.findByEmail(transaction.getFriend())).thenReturn(b);
 		when(userRepositoryMock.getById(transaction.getUser())).thenReturn(b);

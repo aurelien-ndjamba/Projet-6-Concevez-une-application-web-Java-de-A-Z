@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.JoinColumn;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -12,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.springframework.stereotype.Component;
@@ -33,6 +33,38 @@ import lombok.NoArgsConstructor;
 @Table(name = "appuser", schema = "public")
 @Component
 public class AppUser {
+
+	@Id
+	@Column(name = "email", nullable = false, updatable = false)
+	private String email;
+
+	@Column(name = "pseudo")
+	private String pseudo;
+
+//	@JsonIgnore
+	@Column(name = "password")
+	private String password;
+
+	@Column(name = "balance")
+	private Double balance;
+
+	@Column(name = "phone")
+	private int phone;
+
+	@Column(name = "active")
+	private boolean active;
+
+//	@OneToMany(fetch = FetchType.EAGER) //la suppression marche sur userrole
+//	@JoinTable(name = "userrole", joinColumns = @JoinColumn(name = "email"), inverseJoinColumns = @JoinColumn(name = "rolename"))
+	@ManyToMany(fetch = FetchType.EAGER) // la suppression marche sur userrole
+	@JoinTable(name = "userrole", joinColumns = @JoinColumn(name = "email"), inverseJoinColumns = @JoinColumn(name = "rolename"))
+	private List<Role> roles;
+
+	@OneToOne(fetch = FetchType.EAGER)
+	@JoinTable(name = "account", joinColumns = @JoinColumn(name = "email"), inverseJoinColumns = @JoinColumn(name = "accountnumber"))
+//	@JoinColumn(name = "email")
+	private Account account;
+
 	public String getEmail() {
 		return email;
 	}
@@ -40,7 +72,7 @@ public class AppUser {
 	public void setEmail(String email) {
 		this.email = email;
 	}
-	
+
 	@JsonIgnore
 	public String getPassword() {
 		return password;
@@ -67,26 +99,36 @@ public class AppUser {
 		this.roles = roles;
 	}
 
-	@Id
-	@Column(name = "email", nullable = false, updatable = false)
-	private String email;
+	public String getPseudo() {
+		return pseudo;
+	}
 
-	@JsonIgnore
-	@Column(name = "password")
-	private String password;
+	public void setPseudo(String pseudo) {
+		this.pseudo = pseudo;
+	}
 
-	@Column(name = "balance")
-	private Double balance;
+	public int getPhone() {
+		return phone;
+	}
 
-	@ManyToMany(fetch = FetchType.EAGER) //la suppression marche sur userrole
-	@JoinTable(name = "userrole", joinColumns = @JoinColumn(name = "email"), inverseJoinColumns = @JoinColumn(name = "rolename"))
-	private List<Role> roles = new ArrayList<>();
+	public void setPhone(int phone) {
+		this.phone = phone;
+	}
 
-//	@OneToMany(mappedBy="email", fetch = FetchType.LAZY) ou
-	@OneToMany(
-			   cascade = CascadeType.ALL, 
-			   orphanRemoval = true)
-				@JoinColumn(name = "email")
-	private List<Account> accounts = new ArrayList<>();
+	public boolean isActive() {
+		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
+	}
+
+	public Account getAccount() {
+		return account;
+	}
+
+	public void setAccount(Account account) {
+		this.account = account;
+	}
 
 }

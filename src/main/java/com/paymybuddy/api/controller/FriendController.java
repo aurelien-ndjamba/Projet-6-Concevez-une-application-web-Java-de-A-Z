@@ -1,12 +1,14 @@
 package com.paymybuddy.api.controller;
 
 import java.text.ParseException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,6 +38,7 @@ public class FriendController {
 	 * @return List<Friend>
 	 * 
 	 */
+	@Secured(value={"ROLE_ADMIN"})
 	@GetMapping("/friends")
 	public List<Friend> findAll() {
 		logger.info("INFO: Liste tous les couples amis de l'application");
@@ -45,17 +48,44 @@ public class FriendController {
 	/**
 	 * GET http://localhost:8080/friend?email=nicolas.sarkozy@gmail.com
 	 * 
-	 * Retourne les couples amis associés à l'adresse email donné en paramètre
+	 * Retourne les emails amis associés à l'adresse email donné en paramètre
 	 * 
 	 * @return ArrayList<String>
 	 * 
 	 */
-	@RequestMapping(value = "/friends/withme/list", method = RequestMethod.GET, params = { "email" })
-	public HashSet<String> findFriendsOnly(String email) {
-		logger.info("INFO: Liste les couples amis associés à l'adresse email : " + email);
-		return friendService.findFriendsOnly(email);
+	@Secured(value={"ROLE_ADMIN"})
+	@RequestMapping(value = "/emailsfriendsonly", method = RequestMethod.GET, params = { "email" })
+	public HashSet<String> findEmailsFriendsOnly(String email) {
+		logger.info("INFO: Liste les emails amis associés à l'adresse email : " + email);
+		return friendService.findEmailsFriendsOnly(email);
 	}
 	
+//	@Secured(value={"ROLE_ADMIN"})
+	@RequestMapping(value = "/pseudosfriends", method = RequestMethod.GET, params = { "email" })
+	public HashSet<String> findPseudosFriendsOnly(String email) {
+		logger.info("INFO: Affiche la liste des pseudos des amis de celui dont l'email est en parametre : " + email);
+		return friendService.findPseudosFriendsOnly(email);
+	}
+	
+//	@RequestMapping(value = "/pseudosfriends2", method = RequestMethod.GET, params = { "email" })
+//	public HashMap<String,String> findPseudosFriendsOnly2(String email) {
+//		logger.info("INFO: Affiche la liste des pseudos des amis de celui dont l'email est en parametre : " + email);
+//		return friendService.findPseudosFriendsOnly2(email);
+//	}
+	
+	@Secured(value={"ROLE_ADMIN"})
+	@RequestMapping(value = "/pseudo", method = RequestMethod.GET, params = { "email" })
+	public String findPseudo(String email) {
+		logger.info("INFO: Affiche le pseudo de l'ami dont l'email est en parametre : " + email);
+		return friendService.findPseudoByEmail(email);
+	}
+	
+	@Secured(value={"ROLE_ADMIN"})
+	@RequestMapping(value = "/emailsfriends/others", method = RequestMethod.GET, params = { "email" })
+	public HashSet<String> findOtherEmailsFriends(String email) {
+		logger.info("INFO: Liste les couples amis associés à l'adresse email : " + email);
+		return friendService.findOtherEmailsFriends(email);
+	}
 	/**
 	 * GET http://localhost:8080/friend?email=nicolas.sarkozy@gmail.com
 	 * 
@@ -64,6 +94,7 @@ public class FriendController {
 	 * @return ArrayList<String>
 	 * 
 	 */
+	@Secured(value={"ROLE_ADMIN"})
 	@RequestMapping(value = "/friends", method = RequestMethod.GET, params = { "email" })
 	public List<Friend> findByEmail(String email) {
 		logger.info("INFO: Liste les couples amis associés à l'adresse email : " + email);
@@ -80,6 +111,7 @@ public class FriendController {
 	 * @return Friend
 	 * 
 	 */
+	@Secured(value={"ROLE_ADMIN"})
 	@PostMapping("/friends/save")
 	@ResponseStatus(HttpStatus.CREATED)
 	public Friend save(@RequestBody Friend friend) {
@@ -97,10 +129,25 @@ public class FriendController {
 	 * @return String
 	 * 
 	 */
+	@Secured(value={"ROLE_ADMIN"})
 	@RequestMapping(value = "/friends/delete", method = RequestMethod.DELETE, params = { "emailUser", "emailFriend" })
-	public Friend delete(String emailUser, String emailFriend) throws ParseException {
+	public Friend deleteByEmailUserAndEmailFriend(String emailUser, String emailFriend) throws ParseException {
 		logger.info("INFO: Supprimer les couples amis suivant : " + emailUser + " & " + emailFriend);
-		return friendService.delete(emailUser,emailFriend);
+		return friendService.deleteByEmailUserAndEmailFriend(emailUser,emailFriend);
 	}
+	
+	@Secured(value={"ROLE_ADMIN"})
+	@RequestMapping(value = "/friends/delete", method = RequestMethod.DELETE, params = { "emailUser", "pseudoFriend" })
+	public Friend deleteByEmailUserAndPseudoFriend(String emailUser, String pseudoFriend) throws ParseException {
+		logger.info("INFO: Supprimer les couples amis suivant - EmailUser : " + emailUser + " & PseudoFriend :" + pseudoFriend);
+		return friendService.deleteByEmailUserAndPseudoFriend(emailUser,pseudoFriend);
+	}
+
+	//OK
+	@RequestMapping(value = "/test", method = RequestMethod.GET, params = { "pseudo"})
+	public String test(String pseudo) throws ParseException { 
+		return friendService.findEmailByPseudo(pseudo);
+	}
+	
 	
 }

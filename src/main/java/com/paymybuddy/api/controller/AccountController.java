@@ -6,6 +6,7 @@ import java.util.List;
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -37,6 +38,7 @@ public class AccountController {
 	 * @return List<Account>
 	 * 
 	 */
+	@Secured(value={"ROLE_ADMIN"})
 	@GetMapping("/accounts/all")
 	public List<Account> findAll() {
 		logger.info("INFO: Liste tous les comptes de l'application");
@@ -52,7 +54,8 @@ public class AccountController {
 	 * @return Account
 	 * 
 	 */
-	@RequestMapping(value = "/accounts/account", method = RequestMethod.GET, params = { "id" })
+	@Secured(value={"ROLE_ADMIN"})
+	@RequestMapping(value = "/accounts", method = RequestMethod.GET, params = { "id" })
 	public Account findById(int id) {
 		logger.info("INFO: Liste les informations du compte ayant l'id : " + id);
 		return accountService.findById(id);
@@ -66,8 +69,9 @@ public class AccountController {
 	 * @return List<Account>
 	 * 
 	 */
+	@Secured(value={"ROLE_ADMIN"})
 	@RequestMapping(value = "/accounts", method = RequestMethod.GET, params = { "email" })
-	public List<Account> findByEmail(String email) {
+	public Account findByEmail(String email) {
 		logger.info("INFO: Liste des comptes ayant pour adresse email : " + email);
 		return accountService.findByEmail(email);
 	}
@@ -82,6 +86,7 @@ public class AccountController {
 	 * @return Account
 	 * 
 	 */
+	@Secured(value={"ROLE_ADMIN"})
 	@PostMapping("/accounts/save")
 	@ResponseStatus(HttpStatus.CREATED)
 	public Account save(@RequestBody Account account) {
@@ -99,6 +104,7 @@ public class AccountController {
 	 * @return Account
 	 * 
 	 */
+	@Secured(value={"ROLE_ADMIN"})
 	@PutMapping("/accounts/update")
 	public Account update(@RequestBody Account account) {
 		logger.info("INFO: Update les informations du compte bancaire existant : " + account + ". L'id n'est pas modifiable");
@@ -115,6 +121,7 @@ public class AccountController {
 	 * @return Account
 	 * 
 	 */
+	@Secured(value={"ROLE_ADMIN"})
 	@RequestMapping(value = "/accounts/delete", method = RequestMethod.DELETE, params = { "id" })
 	public Account deleteById(@RequestParam("id") int id) throws ParseException {
 		logger.info("INFO: Supprimer le compte bancaire dont l'id est : " + id);

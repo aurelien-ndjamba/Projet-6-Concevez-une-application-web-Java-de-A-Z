@@ -51,7 +51,7 @@ public class UserRoleService {
 			throw new RuntimeException("Vous devez renseigner l'email.");
 		else if (userRole.getRoleName() == null)
 			throw new RuntimeException("Vous devez renseigner le role.");
-		else if (userRepository.findByEmail(userRole.getEmail()) == null)
+		else if (! userRepository.existsById(userRole.getEmail()))
 			throw new RuntimeException("L'email renseigné n'existe pas dans la BDD");
 		else if (userRoleRepository.existsById(new UserRoleId(userRole.getEmail(),userRole.getRoleName())))
 			throw new RuntimeException("Relation UserRole déjà existante dans la BDD");
@@ -62,7 +62,7 @@ public class UserRoleService {
 
 	@Transactional
 	public UserRole delete(String email, String role) {
-		if (userRepository.findByEmail(email) == null)
+		if (! userRepository.existsById(email))
 			throw new RuntimeException("L'email renseigné n'existe pas dans la BDD");
 		else if (!roleRepository.existsById(role))
 			throw new RuntimeException("Le role renseigné n'existe pas dans la BDD");

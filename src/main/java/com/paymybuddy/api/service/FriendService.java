@@ -1,5 +1,6 @@
 package com.paymybuddy.api.service;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class FriendService {
 	public void setFriendRepository(FriendRepository friendRepository) {
 		this.friendRepository = friendRepository;
 	}
-	
+
 	public void setUserRepository(UserRepository userRepository) {
 		this.userRepository = userRepository;
 	}
@@ -40,23 +41,58 @@ public class FriendService {
 	}
 
 	@Transactional
-	public HashSet<String> findFriendsOnly(String email) {
+	public HashSet<String> findEmailsFriendsOnly(String email) {
 		if (!userRepository.existsById(email))
 			throw new RuntimeException("Email non existant dans la BDD");
 		HashSet<String> friendsOnly = new HashSet<>();
 		for (Friend f : findByEmail(email)) {
-			if (f.getEmailUser().equals(email)) 
+			if (f.getEmailUser().equals(email))
 				friendsOnly.add(f.getEmailFriend());
-			else if (f.getEmailFriend().equals(email)) 
-				friendsOnly.add(f.getEmailUser());	
+			else if (f.getEmailFriend().equals(email))
+				friendsOnly.add(f.getEmailUser());
 		}
 		return friendsOnly;
+	}
+	
+	@Transactional
+	public HashSet<String> findPseudosFriendsOnly(String email) {
+		HashSet<String> PseudoFriendsOnly = new HashSet<>();
+		HashSet<String> emailsFriendsOnly = findEmailsFriendsOnly(email);
+		for (String emailFriend : emailsFriendsOnly) {
+			PseudoFriendsOnly.add(findPseudoByEmail(emailFriend));
+		}
+		return PseudoFriendsOnly;
+	}
+
+	@Transactional
+	public String findPseudoByEmail(String email) {
+		String pseudo = userRepository.findById(email).get().getPseudo();
+		return pseudo;
+	}
+	
+	@Transactional
+	public String findEmailByPseudo(String pseudo) {
+		String email = userRepository.findByPseudo(pseudo).getEmail();
+		return email;
+	}
+
+	@Transactional
+	public HashSet<String> findOtherEmailsFriends(String email) {
+		if (!userRepository.existsById(email))
+			throw new RuntimeException("Email non existant dans la BDD");
+		HashSet<String> OtherFriends = new HashSet<>();
+		for (Friend f : findAll()) {
+			OtherFriends.add(f.getEmailUser());
+			OtherFriends.add(f.getEmailFriend());
+		}
+		OtherFriends.remove(email);
+		OtherFriends.removeAll(findEmailsFriendsOnly(email));
+		return OtherFriends;
 	}
 
 	@Transactional
 	public Friend save(Friend friend) {
-		if (userRepository.findByEmail(friend.getEmailUser()) == null
-				|| userRepository.findByEmail(friend.getEmailFriend()) == null)
+		if (!userRepository.existsById(friend.getEmailUser()) || !userRepository.existsById(friend.getEmailFriend()))
 			throw new RuntimeException("Email(s) 'ami' et/ou 'friend' non existant(s) dans la BDD");
 
 		for (Friend f : friendRepository.findByEmailUserOrEmailFriend(friend.getEmailUser(), friend.getEmailFriend())) {
@@ -70,11 +106,18 @@ public class FriendService {
 	}
 
 	@Transactional
-	public Friend delete(String emailUser, String emailFriend) {
-		if (userRepository.findByEmail(emailUser) == null || userRepository.findByEmail(emailFriend) == null)
+	public Friend deleteByEmailUserAndEmailFriend(String emailUser, String emailFriend) {
+		if (!userRepository.existsById(emailUser) || !userRepository.existsById(emailFriend))
 			throw new RuntimeException("Email(s) 'ami' et/ou 'friend' non existant(s) dans la BDD");
-		else if (friendRepository.findByEmailUserAndEmailFriend(emailUser, emailFriend) == null && friendRepository.findByEmailUserAndEmailFriend(emailFriend, emailUser) == null)
+		else if (friendRepository.findByEmailUserAndEmailFriend(emailUser, emailFriend) == null
+				&& friendRepository.findByEmailUserAndEmailFriend(emailFriend, emailUser) == null)
 			throw new RuntimeException("Couple ami non existant dans la BDD");
+		friendRepository.delete(emailUser, emailFriend);
+		return new Friend(emailUser, emailFriend);
+	}
+
+	public Friend deleteByEmailUserAndPseudoFriend(String emailUser, String pseudoFriend) {
+		String emailFriend = userRepository.findByPseudo(pseudoFriend).getEmail(); //??????????????????
 		friendRepository.delete(emailUser, emailFriend);
 		return new Friend(emailUser, emailFriend);
 	}

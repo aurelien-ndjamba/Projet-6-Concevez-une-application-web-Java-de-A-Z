@@ -11,6 +11,7 @@ BEGIN TRANSACTION;   -- Ouverture de la transaction
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
+
 CREATE TABLE public.role (
                 role VARCHAR(5) NOT NULL,
                 CONSTRAINT role_pk PRIMARY KEY (role)
@@ -19,9 +20,33 @@ CREATE TABLE public.role (
 
 CREATE TABLE public.appUser (
                 email VARCHAR(30) NOT NULL,
+                pseudo VARCHAR(15) NOT NULL,
                 password VARCHAR(1000) NOT NULL,
                 balance NUMERIC(10,2) DEFAULT 0.0 NOT NULL,
+                phone INTEGER,
+                active BOOLEAN DEFAULT true NOT NULL,
                 CONSTRAINT userappli_id PRIMARY KEY (email)
+);
+
+
+CREATE TABLE public.account (
+                accountNumber INTEGER NOT NULL,
+                email VARCHAR(30) NOT NULL,
+                bank VARCHAR(30) NOT NULL,
+                CONSTRAINT account_pk PRIMARY KEY (accountNumber)
+);
+
+
+CREATE TABLE public.transaction (
+                id VARCHAR(50) NOT NULL,
+                emailUser VARCHAR(30) NOT NULL,
+                emailFriend VARCHAR(30),
+                accountNumber INTEGER,
+                type VARCHAR(12) NOT NULL,
+                amount NUMERIC(10,2) DEFAULT 0.0 NOT NULL,
+                date TIMESTAMP NOT NULL,
+                description VARCHAR(100),
+                CONSTRAINT transaction_id PRIMARY KEY (id)
 );
 
 
@@ -39,27 +64,6 @@ CREATE TABLE public.friend (
 );
 
 
-CREATE TABLE public.account (
-                accountNumber INTEGER NOT NULL,
-                email VARCHAR(30) NOT NULL,
-                bank VARCHAR(30) NOT NULL,
-                CONSTRAINT account_pk PRIMARY KEY (accountNumber)
-);
-
-
-CREATE TABLE public.transaction (
-                id uuid NOT NULL,
-                emailUser VARCHAR(30) NOT NULL,
-                emailFriend VARCHAR(30),
-                accountNumber INTEGER,
-                type VARCHAR(12) NOT NULL,
-                amount NUMERIC(10,2) DEFAULT 0.0 NOT NULL,
-                date TIMESTAMP NOT NULL,
-                description VARCHAR(100),
-                CONSTRAINT transaction_id PRIMARY KEY (id)
-);
-
-
 ALTER TABLE public.userRole ADD CONSTRAINT role_userrole_fk
 FOREIGN KEY (rolename)
 REFERENCES public.role (role)
@@ -67,22 +71,8 @@ ON DELETE NO ACTION
 ON UPDATE NO ACTION
 NOT DEFERRABLE;
 
-ALTER TABLE public.account ADD CONSTRAINT account_userapp_fk
-FOREIGN KEY (email)
-REFERENCES public.appUser (email)
-ON DELETE NO ACTION
-ON UPDATE NO ACTION
-NOT DEFERRABLE;
-
 ALTER TABLE public.friend ADD CONSTRAINT userapp_friend_fk
 FOREIGN KEY (email1)
-REFERENCES public.appUser (email)
-ON DELETE NO ACTION
-ON UPDATE NO ACTION
-NOT DEFERRABLE;
-
-ALTER TABLE public.transaction ADD CONSTRAINT userapp_transaction_fk
-FOREIGN KEY (emailFriend)
 REFERENCES public.appUser (email)
 ON DELETE NO ACTION
 ON UPDATE NO ACTION
@@ -109,6 +99,20 @@ ON DELETE NO ACTION
 ON UPDATE NO ACTION
 NOT DEFERRABLE;
 
+ALTER TABLE public.transaction ADD CONSTRAINT userapp_transaction_fk
+FOREIGN KEY (emailFriend)
+REFERENCES public.appUser (email)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION
+NOT DEFERRABLE;
+
+ALTER TABLE public.account ADD CONSTRAINT account_userapp_fk
+FOREIGN KEY (email)
+REFERENCES public.appUser (email)
+ON DELETE NO ACTION
+ON UPDATE NO ACTION
+NOT DEFERRABLE;
+
 ALTER TABLE public.transaction ADD CONSTRAINT account_transaction_fk
 FOREIGN KEY (accountNumber)
 REFERENCES public.account (accountNumber)
@@ -129,14 +133,14 @@ VALUES
 -- ------------------------------------------------------------------
 INSERT INTO 
 public.appuser 
-(email,password,balance) 
+(email,pseudo,password,balance,phone,active) 
 VALUES 
-('nicolas.sarkozy@gmail.com','$2a$16$YGBK46FObJOhBfyepXkvFe0d5JE5W4R9KTWpNzz96BfFp.wy1IDge',124755.75),
-('francois.hollande@gmail.com','$2a$16$fGlbsbqlFg2cMgCAX7jNyuv7rzQ38yqr8udVwIkAyZ3zmwUVI8nQi',188235.18),
-('emmanuel.macron@gmail.com','$2y$10$ZehPSWqwLokGfZVJ//64M.WqzBPs/QzTUVUcbv4VVhG1k41P61xxa',389779.22),
-('jacques.chirac@gmail.com','$2a$16$hlGLzSstEe6hVLgQ8uEmcO.E58NOt8rFxccXSZOjG.eT5nBpnQ1xG',99990000.00),
-('francois.mitterand@gmail.com','$2a$16$UhIp1wWH0vGhDssDCGA0EuY0MGsmLEp6ZD8HBf6gUxglTddLpz1Fa',129779.22),
-('georges.pompidou@gmail.com','$2a$16$g0Z/tgfmfE3ddlZMfCvXXOPZ0FOp7/VDnafPiFJYyyk8JqCS.UYh2',89779.22);
+('nicolas.sarkozy@gmail.com','lemalo','$2a$16$YGBK46FObJOhBfyepXkvFe0d5JE5W4R9KTWpNzz96BfFp.wy1IDge',124755.75,0687870778,false),
+('francois.hollande@gmail.com','lecyclist','$2a$16$fGlbsbqlFg2cMgCAX7jNyuv7rzQ38yqr8udVwIkAyZ3zmwUVI8nQi',50200.99,0613047188,false),
+('emmanuel.macron@gmail.com','lafinanz','$2y$10$ZehPSWqwLokGfZVJ//64M.WqzBPs/QzTUVUcbv4VVhG1k41P61xxa',389779.22,0623204554,false),
+('jacques.chirac@gmail.com','oublitou','$2a$16$hlGLzSstEe6hVLgQ8uEmcO.E58NOt8rFxccXSZOjG.eT5nBpnQ1xG',99990000.00,0612598053,false),
+('francois.mitterand@gmail.com','lesage','$2a$16$UhIp1wWH0vGhDssDCGA0EuY0MGsmLEp6ZD8HBf6gUxglTddLpz1Fa',129779.22,0677933406,false),
+('georges.pompidou@gmail.com','lapomp','$2a$16$g0Z/tgfmfE3ddlZMfCvXXOPZ0FOp7/VDnafPiFJYyyk8JqCS.UYh2',89779.22,0679901675,false);
 
 -- ------------------------------------------------------------------
 --	USERROLE
@@ -164,7 +168,6 @@ VALUES
 (5689045,'georges.pompidou@gmail.com','BANQUE KOLB'),
 (9946789,'francois.hollande@gmail.com','CREDIT AGRICOLE'),
 (5945210,'emmanuel.macron@gmail.com','BANQUE KOLB'),
-(3578921,'emmanuel.macron@gmail.com','BANQUE POPULAIRE'),
 (1095542,'jacques.chirac@gmail.com','BNP PARIBAS'),
 (7853129,'francois.mitterand@gmail.com','CREDIT LYONNAIS');
 
@@ -191,7 +194,7 @@ VALUES
 ('b2f6194d-925b-4cbc-8084-da9da0f02d78','emmanuel.macron@gmail.com',NULL,5945210,'deposit',300.50,'2021-08-13 21:18:13.256','Restaurant'),
 ('e6a083d4-9457-4d67-aad2-45c56f18ff9a','francois.mitterand@gmail.com',NULL,7853129,'withdrawal',600.90,'2021-08-14 08:27:19.457','Tennis'),
 ('2ba3f3c0-6b07-4b3c-bee7-f96643483864','nicolas.sarkozy@gmail.com','francois.hollande@gmail.com',NULL,'payment',10.5,'2021-08-15 11:04:47.324','Diner'),
-('64b2c78b-bc37-4393-8133-56b40a652444','emmanuel.macron@gmail.com',NULL,3578921,'deposit',2789.99,'2021-08-16 12:43:33.125','Vacance'),
+('64b2c78b-bc37-4393-8133-56b40a652444','georges.pompidou@gmail.com',NULL,5689045,'deposit',2789.99,'2021-08-16 12:43:33.125','Vacance'),
 ('3835380b-3d67-4d5e-94fe-ffad3e43faea','jacques.chirac@gmail.com',NULL,1095542,'withdrawal',870.33,'2021-08-17 16:12:10.666','Golf'),
 ('df62015a-0c5e-4915-ad90-975a8d12758e','jacques.chirac@gmail.com','francois.mitterand@gmail.com',NULL,'payment',350.55,'2021-08-18 15:34:26.547','Cadeaux');
 

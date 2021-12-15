@@ -1,9 +1,15 @@
 package com.paymybuddy.api.security;
 
+
+import javax.sql.DataSource;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -23,84 +29,77 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
  *  WebSecurityConfigurerAdapter
  */
 @Configuration
-@EnableWebSecurity
+//@EnableWebSecurity
+//@EnableGlobalMethodSecurity(securedEnabled = true)
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Autowired
 	private BCryptPasswordEncoder bCryptPasswordEncoder;
 	@Autowired
 	private UserDetailsService userDetailsService;
-	// @Autowired // -> JDBCAUTHENTICATION Source de donnée injectée comme bean
-	// private DataSource dbPayMyBuddy;
 
-	@Override
-	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		// INMEMORYAUTHENTICATION
+//	@Autowired  // -> JDBCAUTHENTICATION Source de donnée injectée comme bean
+//	public void globalConfig(AuthenticationManagerBuilder auth) throws Exception { //, DataSource dataSource
+		// --------------------- INMEMORY AUTHENTICATION 1--------------------- OK
 //		auth.inMemoryAuthentication().withUser("user").password(bCryptPasswordEncoder.encode("password")).roles("USER");
-//		auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
-//		auth.inMemoryAuthentication().withUser("user").password(bCryptPasswordEncoder.encode("password")).roles("USER");
-//		auth.inMemoryAuthentication().withUser("user").password("{BCrypt}password").roles("USER");
-		// JDBCAUTHENTICATION
-//		auth.jdbcAuthentication().dataSource(dbPayMyBuddy).usersByUsernameQuery(
-//				"select email as principal, password as credentials, active as active from appuser where email=?")
-//				.authoritiesByUsernameQuery("SELECT email as principal, rolename as role FROM userRole WHERE email=?")
-//				.passwordEncoder(bCryptPasswordEncoder);
+//
+		// --------------------- JDBC AUTHENTICATION 1---------------------
+//		auth.jdbcAuthentication()
+//		.dataSource(dataSource)
+//		.usersByUsernameQuery(
+//				"select email as principal, password as credentials, active as active from appuser where email=?") 
+//		        // active as active = true
+//		.authoritiesByUsernameQuery("select email as principal, rolename as role from userrole WHERE email=?")
+//		.rolePrefix("ROLE_")
+////		.passwordEncoder(bCryptPasswordEncoder)
+//		;
+		// --------------------- USERDETAILSSERVICE AUTHENTICATION 1 ---------------------
+//	auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
+//	}
 
+	protected void configure(AuthenticationManagerBuilder auth) throws Exception { //, DataSource dataSource
+		// --------------------- INMEMORY AUTHENTICATION 2--------------------- OK
+//		auth.inMemoryAuthentication().withUser("user").password(bCryptPasswordEncoder.encode("password")).roles("USER");
+//		auth.inMemoryAuthentication().withUser("admin").password(bCryptPasswordEncoder.encode("password")).roles("ADMIN","USER");
+		// --------------------- JDBC AUTHENTICATION ---------------------
+//		auth.jdbcAuthentication().dataSource(dataSource).usersByUsernameQuery(
+//				"select email as principal, password as credentials, active as active from appuser where email=?") 
+		// active as active = true
+//				.authoritiesByUsernameQuery("select email as principal, rolename as role from userrole WHERE email=?")
+//				.rolePrefix("ROLE_")
+//		.passwordEncoder(bCryptPasswordEncoder)
+		;
+		
+		// --------------------- USERDETAILSSERVICE AUTHENTICATION ---------------------
 		auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
 	}
 
 	/*
 	 * Pour gérer nos filtres, nous avons besoin de declarer la méthode configure
 	 * qui prend en entrée un requete http - HttpSecurity -> correspond au requete
-	 * http entrante 
+	 * http entrante
 	 * 
-	 * @Override -> Pour que notre méthode prenne le pas sur celle de
-	 * spring security
+	 * @Override -> Pour que notre méthode prenne le pas sur celle de spring
+	 * security
 	 */
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-////		super.configure(http);
+//		http
+//		.csrf().disable()
+//		.authorizeRequests().antMatchers("/css/**", "/js/**", "/images/**").permitAll()
+//		.anyRequest().authenticated().and().formLogin()
+////				.loginPage("/login")
+//				.defaultSuccessUrl("/index.html").failureUrl("/login").permitAll().and().logout()
+//				.invalidateHttpSession(true).logoutUrl("/logout").permitAll();
+
 		http.csrf().disable();
-		http.formLogin();
-//		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-////		http.httpBasic();
-
-//		http.authorizeRequests().antMatchers("/users/save","/users/delete**").permitAll();
-//		http.addFilter(new JWTAuthenticationFilter(authenticationManager()));
-//		http.authorizeRequests().antMatchers(HttpMethod.GET,"/accounts/all").hasRole("ADMIN");
-//		http.authorizeRequests().antMatchers(HttpMethod.GET,"/accounts/account").hasRole("ADMIN");
-//		http.authorizeRequests().anyRequest().authenticated(); // toute les ressources necessite une authentificaiton
-
-		// http.authorizeRequests().antMatchers("/accounts/delete**").hasRole("ADMIN");
-////		http.authorizeRequests().antMatchers("/accounts/delete**").permitAll(); toute les requetes machantes sont autorisé
-//		http.exceptionHandling().accessDeniedPage("/notAuthorized");
-
-//		// Pour gérer nos filtres, nous avons besoin de declarer la méthode configure
-//		// qui prend en entrée un requete http - HttpSecurity -> correspond au requete
-//		// http entrante
-		//
-//		@Override // Pour que notre méthode prenne le pas sur celle de spring security
-//		public void configure(HttpSecurity http) throws Exception {
-//			
-//			http.authorizeRequests().antMatchers("/admin/**").hasAuthority("ADMIN").and().formLogin(); //GOOD
-//			http.authorizeRequests().antMatchers("/user/**").hasAuthority("USER").and().formLogin();//GOOD
-
-//			http.formLogin(); // loginFocrm() -> Methode Spring security pour créer une page de connexion par
-		// défaut, vous évitant ainsi de la créer vous-même
-//			http.authorizeRequests().anyRequest().permitAll(); //OK sans login
-//			http.authorizeRequests().anyRequest().denyAll(); //OK error 403
-//			http.authorizeRequests().antMatchers("/**").authenticated(); //OK error 403
-//			http.authorizeRequests().antMatchers("/**").authenticated().and().formLogin(); //OK
-//			http.authorizeRequests().anyRequest().authenticated(); //OK error 403
-//			http.authorizeRequests().anyRequest().authenticated().and().formLogin(); //OK
-//			http.authorizeRequests().anyRequest().hasRole("ADMIN"); //OK error 403
-//			http.authorizeRequests().anyRequest().hasRole("ADMIN").and().formLogin(); //OK error 403 for USER
-//			http.authorizeRequests().anyRequest().hasRole("USER").and().formLogin(); //error 403 for USER ???
-//			http.authorizeRequests().anyRequest().hasAuthority("USER").and().formLogin(); //OK for USER
-//			http.authorizeRequests().anyRequest().hasAuthority("USER").and().formLogin(); //OK for macron who USER & ADMIN
-//			http.authorizeRequests().anyRequest().hasAuthority("ADMIN").and().formLogin(); //OK error 403 for USER
-//			http.authorizeRequests().anyRequest().hasAuthority("ADMIN").and().formLogin(); //OK for ADMIN
-//			http.csrf().disable();
+		http.authorizeRequests().antMatchers("/**").permitAll(); // Always OK mais NOK if method controller @Secured
+		
+//		http
+//		.csrf().disable()
+//		.authorizeRequests().antMatchers("/login").permitAll().and()
+//		.authorizeRequests().anyRequest().authenticated().and().formLogin().permitAll(); // OK after authentification
+	
 	}
 
 }

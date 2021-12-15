@@ -30,15 +30,15 @@ public class Transaction {
 	@Type(type="pg-uuid")
 	private UUID id;
 	
-	@JoinColumn(name = "appuser_transaction_fk")
+//	@JoinColumn(name = "appuser_transaction_fk")
 	@Column(name = "emailuser")
 	private String user;
 	
-	@JoinColumn(name = "userapp_transaction_fk")
+//	@JoinColumn(name = "userapp_transaction_fk")
 	@Column(name = "emailfriend")
 	private String friend;
 	
-	@JoinColumn(name = "account_transaction_fk")
+//	@JoinColumn(name = "account_transaction_fk")
 	@Column(name = "accountnumber")
 	private Integer accountUser;
 	
