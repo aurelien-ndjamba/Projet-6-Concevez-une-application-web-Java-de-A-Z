@@ -2,7 +2,6 @@ package com.paymybuddy.api.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,15 +24,12 @@ public class UserService {
 	private AppUser appUser;
 	@Autowired
 	private UserRepository userRepository;
-	@Autowired
-	private AccountService accountService;
 
 	public void setUserRepository(UserRepository userRepository) {
 		this.userRepository = userRepository;
 	}
 
 	public boolean login(String email, String password) {
-//		String JSESSIONID = "notIdentified";
 		boolean result = false;
 		if (!userRepository.existsById(email)) {
 			throw new RuntimeException("Email de l'utilisateur non existant dans la BDD");
@@ -41,8 +37,6 @@ public class UserService {
 				userRepository.findById(email).get().getPassword())) {
 			result = true;
 			updateActive(email, result);
-//			UUID JSESSIONIDInUUID = UUID.randomUUID();
-//			JSESSIONID = JSESSIONIDInUUID.toString();
 		}
 		return result;
 	}
@@ -108,13 +102,13 @@ public class UserService {
 
 	@Transactional
 	public AppUser updatePassword(String email, String password) {
-		if (email == null)
-			throw new RuntimeException(
-					"Vous devez renseigner l'email de l'utilisateur pour la mise à jour dans la BDD");
-		else if (password == null)
-			throw new RuntimeException("Vous devez renseigner le nouveau mot de passe à mettre à jour dans la BDD");
-		else if (!userRepository.existsById(email))
-			throw new RuntimeException("Email de l'utilisateur non existant dans la BDD");
+//		if (email == null)
+//			throw new RuntimeException(
+//					"Vous devez renseigner l'email de l'utilisateur pour la mise à jour dans la BDD");
+//		else if (password == null)
+//			throw new RuntimeException("Vous devez renseigner le nouveau mot de passe à mettre à jour dans la BDD");
+//		else if (!userRepository.existsById(email))
+//			throw new RuntimeException("Email de l'utilisateur non existant dans la BDD");
 		appUser = userRepository.getById(email);
 		String passwordEncoder = bCryptPasswordEncoder.encode(password);
 		appUser.setPassword(passwordEncoder);

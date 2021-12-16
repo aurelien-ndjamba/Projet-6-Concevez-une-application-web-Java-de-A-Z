@@ -1,16 +1,15 @@
 package com.paymybuddy.api.model;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.JoinColumn;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -53,16 +52,13 @@ public class AppUser {
 
 	@Column(name = "active")
 	private boolean active;
-
-//	@OneToMany(fetch = FetchType.EAGER) //la suppression marche sur userrole
-//	@JoinTable(name = "userrole", joinColumns = @JoinColumn(name = "email"), inverseJoinColumns = @JoinColumn(name = "rolename"))
+	//(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@ManyToMany(fetch = FetchType.EAGER) // la suppression marche sur userrole
 	@JoinTable(name = "userrole", joinColumns = @JoinColumn(name = "email"), inverseJoinColumns = @JoinColumn(name = "rolename"))
 	private List<Role> roles;
 
-	@OneToOne(fetch = FetchType.EAGER)
+	@OneToOne(fetch = FetchType.EAGER) //OK
 	@JoinTable(name = "account", joinColumns = @JoinColumn(name = "email"), inverseJoinColumns = @JoinColumn(name = "accountnumber"))
-//	@JoinColumn(name = "email")
 	private Account account;
 
 	public String getEmail() {
