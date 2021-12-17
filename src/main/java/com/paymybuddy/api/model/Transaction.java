@@ -7,7 +7,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -30,15 +29,12 @@ public class Transaction {
 	@Type(type="pg-uuid")
 	private UUID id;
 	
-//	@JoinColumn(name = "appuser_transaction_fk")
 	@Column(name = "emailuser")
 	private String user;
 	
-//	@JoinColumn(name = "userapp_transaction_fk")
 	@Column(name = "emailfriend")
 	private String friend;
 	
-//	@JoinColumn(name = "account_transaction_fk")
 	@Column(name = "accountnumber")
 	private Integer accountUser;
 	
@@ -47,6 +43,13 @@ public class Transaction {
 	
 	@Column(name = "amount")
 	private Double amount;
+	
+	@Column(name = "date")
+	@CreationTimestamp
+	private Timestamp date;
+	
+	@Column(name = "description")
+	private String description;
 	
 	@JsonInclude()
 	@Transient
@@ -60,10 +63,4 @@ public class Transaction {
 	@Transient
 	private Double fee;
 	
-	@Column(name = "date")
-	@CreationTimestamp
-	private Timestamp date;
-	
-	@Column(name = "description")
-	private String description;
 }

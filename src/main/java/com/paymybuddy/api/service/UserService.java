@@ -31,10 +31,9 @@ public class UserService {
 
 	public boolean login(String email, String password) {
 		boolean result = false;
-		if (!userRepository.existsById(email)) {
-			throw new RuntimeException("Email de l'utilisateur non existant dans la BDD");
-		} else if (bCryptPasswordEncoder.matches(password,
-				userRepository.findById(email).get().getPassword())) {
+		// if (!userRepository.existsById(email)) {throw new RuntimeException("Email de
+		// l'utilisateur non existant dans la BDD");}
+		if (bCryptPasswordEncoder.matches(password, userRepository.findById(email).get().getPassword())) {
 			result = true;
 			updateActive(email, result);
 		}
@@ -69,14 +68,12 @@ public class UserService {
 		// Cryptage du mot de passe avec algorithme de hashage Bcrypt
 		String passwordEncoder = bCryptPasswordEncoder.encode(appUser.getPassword());
 		appUser.setPassword(passwordEncoder);
-		// Balance à 0.00 à l'enregistrement d'un nouvel utilisateur
-		appUser.setBalance(0.00);
 		// Tout nouvel utilisateur a le statut "USER" par défaut.
 		role = new Role("USER");
 		List<Role> roles = new ArrayList<>();
 		roles.add(role);
 		appUser.setRoles(roles);
-		appUser.setActive(true); // fixer active à TRUE à l'inscription
+//		appUser.setActive(true); // fixer active à TRUE à l'inscription
 //		accountService.save(appUser.getAccount()); //Sauvegarde du compte User.account avant la sauvegarde du User
 		System.out.println(appUser);
 		return userRepository.save(appUser);
@@ -102,13 +99,6 @@ public class UserService {
 
 	@Transactional
 	public AppUser updatePassword(String email, String password) {
-//		if (email == null)
-//			throw new RuntimeException(
-//					"Vous devez renseigner l'email de l'utilisateur pour la mise à jour dans la BDD");
-//		else if (password == null)
-//			throw new RuntimeException("Vous devez renseigner le nouveau mot de passe à mettre à jour dans la BDD");
-//		else if (!userRepository.existsById(email))
-//			throw new RuntimeException("Email de l'utilisateur non existant dans la BDD");
 		appUser = userRepository.getById(email);
 		String passwordEncoder = bCryptPasswordEncoder.encode(password);
 		appUser.setPassword(passwordEncoder);
@@ -129,7 +119,7 @@ public class UserService {
 		appUser.setBalance(balance);
 		return userRepository.save(appUser);
 	}
-	
+
 	@Transactional
 	public AppUser updateActive(String email, boolean status) {
 		if (email == null)
@@ -142,17 +132,16 @@ public class UserService {
 		appUser.setActive(status);
 		return userRepository.save(appUser);
 	}
-	
+
 	@Transactional
-	public AppUser updatePseudo(String email, String pseudo) {
+	public AppUser updatePhone(String email, int phone) {
 		if (email == null)
 			throw new RuntimeException(
 					"Vous devez renseigner l'email de l'utilisateur pour la mise à jour dans la BDD");
 		else if (!userRepository.existsById(email))
 			throw new RuntimeException("Email de l'utilisateur non existant dans la BDD");
-
 		appUser = userRepository.getById(email);
-		appUser.setPseudo(pseudo);
+		appUser.setPhone(phone);
 		return userRepository.save(appUser);
 	}
 

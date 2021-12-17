@@ -40,11 +40,6 @@ public class AppUserController {
 		return userService.login(email, password);
 	}
 	
-	@GetMapping("/test")
-	public AppUser test(String email, boolean status) {
-		return userService.updateActive(email, status);
-	}
-	
 	/** 
 	 * GET	http://localhost:8080/users
 	 * 
@@ -137,6 +132,13 @@ public class AppUserController {
 	public AppUser updateBalance(String email, Double balance) {
 		logger.info("Update le solde d'un utilisateur dans la BDD");
 		return userService.updateBalance(email, balance);
+	}
+	
+	@Secured(value={"ROLE_ADMIN"})
+	@PutMapping("/users/updatephone")
+	public AppUser updatePhone(String email, int phone) {
+		logger.info("Update le numéro de téléphone d'un utilisateur dans la BDD");
+		return userService.updatePhone(email, phone);
 	}
 	
 	/* *************** DELETE METHODE *********************** */
