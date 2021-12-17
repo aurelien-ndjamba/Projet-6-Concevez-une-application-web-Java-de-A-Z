@@ -1,57 +1,41 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhml" xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhml"
+	xmlns:th="http://www.thymeleaf.org">
 
 <head>
-	<meta charset="UTF-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8">
 
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-		integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+	integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+	crossorigin="anonymous">
 
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
-		integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+	integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+	crossorigin="anonymous">
 
-	<title>Profile</title>
+<title>Profile</title>
 
-	<!--style>
-		body {
-			padding-top: 50px;
-		}
-
-		.special {
-			padding-top: 50px;
-		}
-	</style-->
 </head>
 
 <body>
-
-
-	<nav class="nav justify-content-center">
-		<ul class="nav justify-content-center">
-			<li class="nav-item">
-				<a class="nav-link" href="./home">Home</a>
+	<div class="card-header">
+		<ul class="nav nav-tabs card-header-tabs">
+			<li class="nav-item"><a class="btn btn-primary" href="/home">PayMyBuddy</a>
 			</li>
-			<li class="nav-item">
-				<a class="nav-link" href="./transfer">Transfer</a>
-			</li>
-			<li class="nav-item">
-				<a class="nav-link" href="./profile">Profile</a>
-			</li>
-			<li class="nav-item">
-				<a class="nav-link" href=".">Contact</a>
-			</li>
-			<li class="nav-item">
-				<a class="nav-link" href="./login">Log off</a>
-			</li>
+			<li class="nav-item"><a class="nav-link active"
+				aria-current="true" href="/home">Home</a></li>
+			<li class="nav-item"><a class="nav-link" href="/transfer">Transfer</a></li>
+			<li class="nav-item"><a class="nav-link active"
+				aria-current="true" href="/profile">Profile</a></li>
+			<li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
+			<li class="nav-item"><a class="nav-link active" href="/login">Logoff</a></li>
 		</ul>
-	</nav>
+	</div>
 
 	<section>
-
 		<div class="container special">
-
 			<h2 class="h2">PROFILE</h2>
 
 			<div class="table-responsive">
@@ -66,84 +50,126 @@
 					</thead>
 					<tbody>
 
-						<tr data-th-if="${appUser.email==null}">
-							<td colspan="3">You are not registered in the application</td>
-						</tr>
-
 						<tr>
-							<td>
-								<span data-th-text="${appUser.email}"> </span>
-							</td>
-							<td>
-								<span data-th-text="${appUser.balance}"> </span>
-							</td>
-							<td>
-								<a th:href="@{/deleteappuser(emailUser=${emailUser})}">
+							<td><span data-th-text="${u.email}"> </span></td>
+							<td><span data-th-text="${u.balance}"> </span></td>
+
+							<!-- a
+								th:href="@{/deleteappuser(emailUser=${appUserForm.email})}"-->
+
+							<td><a href="#">
 									<button class="btn btn-danger">UNSUBSCRIBE</button>
-								</a>
-							</td>
+							</a></td>
+
 						</tr>
+					</tbody>
+
+
+					<thead>
+						<tr>
+							<th>ACCOUNT</th>
+							<th>BANK</th>
+							<!-- th>ACTION</th-->
+						</tr>
+					</thead>
+
+					<tbody>
 
 						<tr>
-							<form method="post" th:action="@{/updatepassword(emailUser=${emailUser})}"
-								th:object="${appUser}">
+							<td><span data-th-text="${a.id}"> </span></td>
+							<td><span data-th-text="${a.bank}"> </span></td>
+						</tr>
+					</tbody>
+
+
+					<thead>
+						<tr>
+							<th>PSEUDO</th>
+							<th>PHONE</th>
+							<!-- th>ACTION</th-->
+						</tr>
+					</thead>
+
+					<tbody>
+
+						<tr>
+							<td><span data-th-text="${u.pseudo}"></span></td>
+							<td><span data-th-text="${u.phone}"></span></td>
+
+						</tr>
+
+
+						<tr>
+							<form th:action="@{/updatephone}" th:object="${u}" method="post">
 								<td colspan="2">
 									<div class="form-group">
-										<input th:field="*{password}" type="password" class="form-control"
-											aria-describedby="mailHelp" placeholder="New password" required/>
-										<small id="passwordHelp" class="form-text text-muted">
-											Please enter a new password for the update.
-										</small>
+										<input th:field="*{phone}" type="number" step="1"
+											class="form-control" placeholder="New phone" required /> <small
+											class="form-text text-muted"> Please enter a new
+											phone for the update. </small>
 									</div>
 								</td>
-								<td>
-									<a>
-										<button type="submit" class="btn btn-info">UPDATE PASSWORD</button>
-									</a>
-								</td>
+								<td><a>
+										<button type="submit" class="btn btn-info">UPDATE
+											PHONE</button>
+								</a></td>
 							</form>
 						</tr>
 
+
+						<tr>
+							<form th:action="@{/updatepassword}" th:object="${u}"
+								method="post">
+								<td colspan="2">
+									<div class="form-group">
+										<input th:field="*{password}" type="password"
+											class="form-control" aria-describedby="mailHelp"
+											placeholder="New password" required /> <small
+											id="passwordHelp" class="form-text text-muted">
+											Please enter a new password for the update. </small>
+									</div>
+								</td>
+								<td><a>
+										<button type="submit" class="btn btn-info">UPDATE
+											PASSWORD</button>
+								</a></td>
+							</form>
+						</tr>
+
+
 					</tbody>
 
-					<thead>
+
+
+
+
+					<!-- thead>
 						<tr>
 							<th>ACCOUNT</th>
 							<th>BANK</th>
 							<th>ACTION</th>
 						</tr>
 					</thead>
-					
+
 					<tbody>
 
-						<tr data-th-if="${accounts.empty}">
-							<td colspan="3">No account added to the database.</td>
-						</tr>
-
-						<tr data-th-each="acc:${accounts}">
-							<td>
-								<span data-th-text="${acc.id}"> </span>
-							</td>
-							<td>
-								<span data-th-text="${acc.bank}"> </span>
-							</td>
-							<td>
-								<a th:href="@{/deleteaccount(emailUser=${emailUser},id=${acc.id})}">
-									<button class="btn btn-danger">DELETE ACCOUNT</button>
-								</a>
-							</td>
-						</tr>
-
 						<tr>
-							<form method="post" th:action="@{/saveaccount(emailUser=${emailUser})}"
-								th:object="${account}">
+							<td><span data-th-text="${a.id}"> </span></td>
+							<td><span data-th-text="${a.bank}"> </span></td>
+						</tr-->
+
+
+
+
+					<!-- tr>
+							<form method="post" th:action="@{/updateaccount}" th:object="${a}">
 								<td>
 									<div class="form-group">
 										<input th:field="*{id}" type="text" class="form-control"
-											aria-describedby="mailHelp" placeholder="New account" required/>
-										<small id="passwordHelp" class="form-text text-muted">
-											Please enter the new account.
-										</small>
+											aria-describedby="mailHelp" placeholder="New account"
+											required/> <small id="passwordHelp"
+											class="form-text text-muted"> Please enter the new
+											account. </small>
 									</div>
 								</td>
 								<td>
@@ -151,34 +177,21 @@
 										<input th:field="*{bank}" type="text" class="form-control"
 											aria-describedby="mailHelp" placeholder="New bank" required/>
 										<small id="passwordHelp" class="form-text text-muted">
-											Please enter the bank associated with this account.
-										</small>
+											Please enter the bank associated with this account. </small>
 									</div>
 								</td>
-								<td>
-									<a>
-										<button type="submit" class="btn btn-info">SAVE ACCOUNT</button>
-									</a>
-								</td>
+								<td><a>
+										<button type="submit" class="btn btn-info">UPDATE
+											ACCOUNT</button>
+								</a></td>
 							</form>
 						</tr-->
 
-					</tbody>
+					<!-- /tbody-->
 				</table>
 			</div>
 		</div>
-
 	</section>
-
-	<footer> </footer>
-
-
-
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
-		integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
-		crossorigin="anonymous"></script>
-
 </body>
 
 </html>

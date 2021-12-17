@@ -1,52 +1,40 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhml" xmlns:th="http://www.thymeleaf.org">
+<html xmlns="http://www.w3.org/1999/xhml"
+	xmlns:th="http://www.thymeleaf.org">
 
 <head>
-	<meta charset="UTF-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="utf-8">
 
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-		integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+	integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+	crossorigin="anonymous">
 
-	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
-		integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
+	integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+	crossorigin="anonymous">
 
-	<title>Contact</title>
+<title>Contact</title>
 
-	<!--style>
-		body {
-			padding-top: 50px;
-		}
-
-		.special {
-			padding-top: 50px;
-		}
-	</style-->
 </head>
 
 <body>
 
-
-	<nav class="nav justify-content-center">
-		<ul class="nav justify-content-center">
-			<li class="nav-item">
-				<a class="nav-link" href="./home">Home</a>
+	<div class="card-header">
+		<ul class="nav nav-tabs card-header-tabs">
+			<li class="nav-item"><a class="btn btn-primary" href="/home">PayMyBuddy</a>
 			</li>
-			<li class="nav-item">
-				<a class="nav-link" href="./transfer">Transfer</a>
-			</li>
-			<li class="nav-item">
-				<a class="nav-link" href="./profile">Profile</a>
-			</li>
-			<li class="nav-item">
-				<a class="nav-link" href=".">Contact</a>
-			</li>
-			<li class="nav-item">
-				<a class="nav-link" href="./login">Log off</a>
-			</li>
+			<li class="nav-item"><a class="nav-link active"
+				aria-current="true" href="/home">Home</a></li>
+			<li class="nav-item"><a class="nav-link"
+				href="/transfer">Transfer</a></li>
+			<li class="nav-item"><a class="nav-link active"
+				aria-current="true" href="/profile">Profile</a></li>
+			<li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
+			<li class="nav-item"><a class="nav-link active" href="/logoff">Log off</a></li>
 		</ul>
-	</nav>
+	</div>
 
 	<section>
 
@@ -65,62 +53,36 @@
 							<td colspan="2">No contact added to the database.</td>
 						</tr>
 						<tr>
-							<form method="post" th:action="@{/savecontact(emailUser=${emailUser})}"
+							<form method="post" th:action="@{/contact/add}"
 								th:object="${friend}">
 								<td>
-								<div class="form-group">
-									<select id="emailFriend" th:field="*{emailFriend}" class="form-control">
-										<option th:each="c:${allOtherContactsExisting}" th:value="${c}" th:text="${c}">
-										</option>
-									</select>
-									<small id="mailHelp" class="form-text text-muted">
-										Select email address of your new friend.
-									</small>
-									</div>
-								</td>
-								<!--td>
 									<div class="form-group">
-										<input th:field="*{emailFriend}" type="text" class="form-control"
-											aria-describedby="mailHelp" placeholder="Enter email address" />
-
-										<small id="mailHelp" class="form-text text-muted">
-											Please write the email address of your new friend.
-										</small>
+										<select id="emailFriend" th:field="*{emailFriend}"
+											class="form-control">
+											<option th:each="c:${allOtherContactsExisting}"
+												th:value="${c}" th:text="${c}"></option>
+										</select> <small id="mailHelp" class="form-text text-muted">
+											Select email address of your new friend. </small>
 									</div>
-								</td-->
-								<td>
-									<a>
-										<button type="submit" class="btn btn-info">ADD</button>
-									</a>
 								</td>
+							<td><a>
+									<button type="submit" class="btn btn-info">ADD</button>
+							</a></td>
 							</form>
 						</tr>
 						<tr data-th-each="f: ${myContactsOnly}">
-							<td>
-								<span data-th-text="${f}"> </span>
-							</td>
-							<td>
-								<a th:href="@{/deletecontact(emailUser=${emailUser},emailFriend=${f})}">
+							<td><span data-th-text="${f}"> </span></td>
+							<td><a th:href="@{/deletecontact(friend=${f})}">
 									<button class="btn btn-danger">DELETE</button>
-								</a>
-							</td>
+							</a></td>
 						</tr>
 					</tbody>
 				</table>
-				</div-->
-
 			</div>
 
+		</div>
+
 	</section>
-
-	<footer> </footer>
-
-
-
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
-		integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
-		crossorigin="anonymous"></script>
 
 </body>
 

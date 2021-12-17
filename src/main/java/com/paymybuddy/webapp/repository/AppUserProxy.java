@@ -2,6 +2,7 @@ package com.paymybuddy.webapp.repository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -19,49 +20,74 @@ public class AppUserProxy {
 	public Iterable<AppUser> getUsers() {
 		String baseApiUrl = props.getApiUrl();
 		String getUsersUrl = baseApiUrl + "/users/all";
-
 		RestTemplate restTemplate = new RestTemplate();
 		ResponseEntity<Iterable<AppUser>> response = restTemplate.exchange(getUsersUrl, HttpMethod.GET, null,
 				new ParameterizedTypeReference<Iterable<AppUser>>() {
 				});
-
 		return response.getBody();
 	}
 
-	public AppUser getUser(String email) {
+	public boolean login(AppUser appUser) {
 		String baseApiUrl = props.getApiUrl();
-		String getAppUserUrl = baseApiUrl + "/users/user?email=" + email;
-
+		String apiUrl = baseApiUrl + "/login?email=" + appUser.getEmail() + "&password=" + appUser.getPassword();
 		RestTemplate restTemplate = new RestTemplate();
-		ResponseEntity<AppUser> response = restTemplate.exchange(getAppUserUrl, HttpMethod.GET, null, AppUser.class);
-
+		ResponseEntity<Boolean> response = restTemplate.exchange(apiUrl, HttpMethod.GET,
+				null, boolean.class);
 		return response.getBody();
 	}
-	
+
+	public AppUser save(AppUser appUser) {
+		String baseApiUrl = props.getApiUrl();
+		String apiUrl = baseApiUrl + "/users/createuser";
+		RestTemplate restTemplate = new RestTemplate();
+		HttpEntity<AppUser> request = new HttpEntity<AppUser>(appUser);
+		ResponseEntity<AppUser> response = restTemplate.exchange(apiUrl, HttpMethod.POST, request,
+				AppUser.class);
+		return response.getBody();
+	}
+
+	public AppUser findByEmail(String email) {
+		String baseApiUrl = props.getApiUrl();
+		String apiUrl = baseApiUrl + "/users/user?email=" + email;
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<AppUser> response = restTemplate.exchange(apiUrl, HttpMethod.GET, null, AppUser.class);
+		return response.getBody();
+	}
+
 	public AppUser updatePassword(String email, String password) {
 		String baseApiUrl = props.getApiUrl();
-		String updatePasswordUrl = baseApiUrl + "/users/updatepassword?email=" + email + "&password=" + password;
+		String apiUrl = baseApiUrl + "/users/updatepassword?email=" + email + "&password=" + password;
 		RestTemplate restTemplate = new RestTemplate();
-		ResponseEntity<AppUser> response = restTemplate.exchange(
-				updatePasswordUrl, 
-				HttpMethod.PUT, 
-				null, 
+		ResponseEntity<AppUser> response = restTemplate.exchange(apiUrl, HttpMethod.PUT, null,
 				AppUser.class);
-		
-		return response.getBody();
-	}
-	
-	public AppUser deleteAppUser(String email) {
-		String baseApiUrl = props.getApiUrl();
-		String updatePasswordUrl = baseApiUrl + "/users/delete?email=" + email;
-		RestTemplate restTemplate = new RestTemplate();
-		ResponseEntity<AppUser> response = restTemplate.exchange(
-				updatePasswordUrl, 
-				HttpMethod.DELETE, 
-				null, 
-				AppUser.class);
-		
 		return response.getBody();
 	}
 
+	public AppUser updateAll(AppUser appUser) {
+		String baseApiUrl = props.getApiUrl();
+		String apiUrl = baseApiUrl + "/users/updateall";
+		RestTemplate restTemplate = new RestTemplate();
+		HttpEntity<AppUser> request = new HttpEntity<AppUser>(appUser);
+		ResponseEntity<AppUser> response = restTemplate.exchange(apiUrl, HttpMethod.PUT, request,
+				AppUser.class);
+		return response.getBody();
+	}
+
+	public AppUser deleteAppUser(String email) {
+		String baseApiUrl = props.getApiUrl();
+		String apiUrl = baseApiUrl + "/users/delete?email=" + email;
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<AppUser> response = restTemplate.exchange(apiUrl, HttpMethod.GET, null,
+				AppUser.class);
+		return response.getBody();
+	}
+
+	public AppUser updatePhone(String email, int phone) {
+		String baseApiUrl = props.getApiUrl();
+		String apiUrl = baseApiUrl + "/users/updatephone?email=" + email + "&phone=" + phone;
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<AppUser> response = restTemplate.exchange(apiUrl, HttpMethod.PUT, null,
+				AppUser.class);
+		return response.getBody();
+	}
 }

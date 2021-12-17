@@ -18,12 +18,24 @@ public class AccountService {
 		return accountProxy.getAccountsByEmail(email);
 	}
 
-	public Account saveAccount(Account account) {
-		return accountProxy.saveAccount(account);
+	public Account updateAccount(Account account) {
+		return accountProxy.updateAccount(account);
 	}
-	
-	public Account deleteAccount(Integer id) {
-		return accountProxy.deleteAccount(id);
+
+	public Account update(Account account) {
+		return accountProxy.update(account);
+	}
+
+	public Account findById(Integer id) {
+		return accountProxy.findById(id);
+	}
+
+	public Account save(Account acc) {
+		return accountProxy.save(acc);
+	}
+
+	public Account findByEmail(String email) {
+		return accountProxy.findByEmail(email);
 	}
 	
 }

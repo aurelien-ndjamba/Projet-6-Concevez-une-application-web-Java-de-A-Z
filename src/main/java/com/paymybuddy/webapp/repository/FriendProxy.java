@@ -19,55 +19,48 @@ public class FriendProxy {
 	@Autowired
 	private CustomProperties props;
 
-	/**
-	 * Get all Users
-	 * 
-	 * @return An iterable of all users
-	 * 
-	 */
-
-	public HashSet<String> getAllOtherContactsExisting(String email) {
+	public HashSet<String> findOtherEmailsFriends(String email) {
 		String baseApiUrl = props.getApiUrl();
-		String getAllContactsUrl = baseApiUrl + "/allothercontacts?email=" + email;
-
+		String getAllContactsUrl = baseApiUrl + "/emailsfriends/others?email=" + email;
 		RestTemplate restTemplate = new RestTemplate();
 		ResponseEntity<HashSet<String>> response = restTemplate.exchange(getAllContactsUrl, HttpMethod.GET, null,
-				new ParameterizedTypeReference<HashSet<String>>() {
-				});
-
+				new ParameterizedTypeReference<HashSet<String>>() {});
 		return response.getBody();
 	}
 
-	public HashSet<String> getFriendsOnly(String email) {
+	public HashSet<String> findPseudosFriendsOnly(String email) {
 		String baseApiUrl = props.getApiUrl();
-		String getFriendsOnlyUrl = baseApiUrl + "/friends/withme/list?email=" + email;
-
+		String getFriendsOnlyUrl = baseApiUrl + "/pseudosfriends?email=" + email;
 		RestTemplate restTemplate = new RestTemplate();
 		ResponseEntity<HashSet<String>> response = restTemplate.exchange(getFriendsOnlyUrl, HttpMethod.GET, null,
-				new ParameterizedTypeReference<HashSet<String>>() {
-				});
+				new ParameterizedTypeReference<HashSet<String>>(){});
+		return response.getBody();
+	}
 
+	public HashSet<String> findEmailsFriendsOnly(String email) {
+		String baseApiUrl = props.getApiUrl();
+		String getFriendsOnlyUrl = baseApiUrl + "/emailsfriendsonly?email=" + email;
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<HashSet<String>> response = restTemplate.exchange(getFriendsOnlyUrl, HttpMethod.GET, null,
+				new ParameterizedTypeReference<HashSet<String>>(){});
 		return response.getBody();
 	}
 
 	public Friend saveContact(Friend friend) {
 		String baseApiUrl = props.getApiUrl();
 		String saveFriendUrl = baseApiUrl + "/friends/save";
-
 		RestTemplate restTemplate = new RestTemplate();
 		HttpEntity<Friend> request = new HttpEntity<Friend>(friend);
 		ResponseEntity<Friend> response = restTemplate.exchange(saveFriendUrl, HttpMethod.POST, request, Friend.class);
-
-		return response.getBody();
+		return response.getBody(); 
 	}
 
-	public Friend deleteContact(String emailUser, String emailFriend) {
+	public Friend deleteContact(String emailUser, String pseudoFriend) {
 		String baseApiUrl = props.getApiUrl();
-		String deleteFriendUrl = baseApiUrl + "/friends/delete?emailUser=" + emailUser + "&emailFriend=" + emailFriend;
-
+		String deleteFriendUrl = baseApiUrl + "/friends/delete?emailUser=" + emailUser + "&pseudoFriend="
+				+ pseudoFriend;
 		RestTemplate restTemplate = new RestTemplate();
 		ResponseEntity<Friend> response = restTemplate.exchange(deleteFriendUrl, HttpMethod.DELETE, null, Friend.class);
-
 		return response.getBody();
 	}
 

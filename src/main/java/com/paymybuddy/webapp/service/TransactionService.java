@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.paymybuddy.webapp.model.Transaction;
+import com.paymybuddy.webapp.model.TransactionStructured;
 import com.paymybuddy.webapp.repository.TransactionProxy;
 
 import lombok.Data;
@@ -19,6 +20,10 @@ public class TransactionService {
 
 	public List<Transaction> getTransactions(String emailUser) {
 		return transactionProxy.getTransactions(emailUser);
+	}
+
+	public List<TransactionStructured> findByEmailStructured(String email) { 
+		return transactionProxy.findByEmailStructured(email);
 	}
 
 	public Transaction createPayment(Transaction transaction) {

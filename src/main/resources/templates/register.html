@@ -24,17 +24,16 @@
 	</div>
 
 	<div class="container special">
-		<h2 class="h2">LOGIN</h2>
+		<h2 class="h2">REGISTER</h2>
 		<section>
-			<!-- p> <br/>Cher utilisateur <span data-th-text="${emailUser}"> </span>, vous êtes déconnecté de l'application. <br/><br/></p>
-			<p th:if="${param.error}">
-			Bad Credentials
-		</p-->
-			<form th:action="@{/login}" th:object="${appUserForm}" method="post">
-				UserName: <input type="text" name="email" th:field="*{email}" class="form-control" required /> <br /><br />
+			<form th:action="@{/register}" th:object="${appUserRegister}" method="post">
+				Email: <input type="email" name="email" th:field="*{email}" class="form-control" required /> <br /><br />
+				Pseudo: <input type="text" name="pseudo" th:field="*{pseudo}" class="form-control" required /> <br /><br />
 				Password: <input type="password" name="password" th:field="*{password}" class="form-control" required /> <br /><br />
-				<!-- input type="submit" value="Login" /-->
-				<button type="submit" class="btn btn-info">LOGIN</button>
+				Phone: <input type="tel" name="phone" th:field="*{phone}" class="form-control" step="1" required /> <br /><br />
+				Account: <input type="number" name="account" th:field="*{account.id}" class="form-control" step="1" required /> <br /><br />
+				Bank: <input type="text" name="bank" th:field="*{account.bank}" class="form-control" required /> <br /><br />
+				<input type="submit" value="REGISTER" />
 			</form>
 		</section>
 	</div>
