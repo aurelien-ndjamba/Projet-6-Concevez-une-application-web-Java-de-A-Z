@@ -47,7 +47,7 @@ public class AccountProxy {
 	}
 
 	public Account update(Account account) {
-		String baseApiUrl = props.getApiUrl();
+		String baseApiUrl = props.getApiUrl();  
 		String apiUrl = baseApiUrl + "/accounts/update";
 		RestTemplate restTemplate = new RestTemplate();
 		HttpEntity<Account> request = new HttpEntity<Account>(account);
@@ -55,7 +55,7 @@ public class AccountProxy {
 		return response.getBody();
 	}
 
-	public Account save(Account acc) {
+	public Account save(Account acc) {  
 		String baseApiUrl = props.getApiUrl();
 		String apiUrl = baseApiUrl + "/accounts/save";
 		RestTemplate restTemplate = new RestTemplate();
@@ -69,6 +69,14 @@ public class AccountProxy {
 		String apiUrl = baseApiUrl + "/accounts?email="+email;
 		RestTemplate restTemplate = new RestTemplate();
 		ResponseEntity<Account> response = restTemplate.exchange(apiUrl, HttpMethod.GET, null, Account.class);
+		return response.getBody();
+	}
+
+	public Account deleteById(int id) {
+		String baseApiUrl = props.getApiUrl();
+		String apiUrl = baseApiUrl + "/accounts/delete?id="+id;
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<Account> response = restTemplate.exchange(apiUrl, HttpMethod.DELETE, null, Account.class);
 		return response.getBody();
 	}
 

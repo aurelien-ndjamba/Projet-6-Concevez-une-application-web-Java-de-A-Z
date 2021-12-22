@@ -37,33 +37,77 @@ public class AppUserController {
 	AppUser audb = new AppUser();
 	Account acc = new Account();
 
+	// ------------- LOGIN -------------
+	@GetMapping("/login")
+	public String login(Model model) throws Exception{
+		String result = "login";
+		if (audb.getUsername() != null && appUserService.findByEmail(audb.getUsername()).isActive() == true) {
+			result = "redirect:/home";
+		}
+		model.addAttribute("appUserForm", new AppUser());
+		return result;
+	}
+
+	// ------------- LOGIN -------------
+	@RequestMapping(value = "/login", method = RequestMethod.POST)
+	public String login(@ModelAttribute("appUserForm") AppUser appUser, Model model) {
+		String result = "redirect:/login";
+		if (appUserService.login(appUser) == true || audb.getUsername() != null) { 
+			// AppUser
+			audb.setUsername(appUser.getUsername());
+			audb.setPseudo(appUserService.findByEmail(appUser.getUsername()).getPseudo());
+			audb.setBalance(appUserService.findByEmail(appUser.getUsername()).getBalance());
+			audb.setPhone(appUserService.findByEmail(appUser.getUsername()).getPhone());
+			audb.setActive(appUserService.findByEmail(appUser.getUsername()).isActive()); // unsubscribe
+			audb.setRoles(appUserService.findByEmail(appUser.getUsername()).getRoles()); // security
+			// Account
+			acc.setId(accountService.findByEmail(appUser.getUsername()).getId());
+			acc.setEmail(appUser.getUsername());
+			acc.setBank(accountService.findByEmail(appUser.getUsername()).getBank());
+
+			result = "redirect:/home";
+		}
+		return result;
+	}
+
+	// ------------- LOGOFF -------------
+	@GetMapping("/logoff")
+	public String logoff() {
+		audb.setUsername(null);
+		return "redirect:/home";
+	}
+
 	// ------------- HOME -------------
 	@GetMapping("/home")
-	public String home() {
-		String result = "index";
-		if (audb.getEmail() != null) {
-			result = "profile";
+	public String home(Model model) {
+		String result = "redirect:/";
+		if (audb.getUsername() != null && appUserService.findByEmail(audb.getUsername()).isActive() == true) {
+			AppUser a = new AppUser();
+			a.setPseudo(appUserService.findByEmail(audb.getUsername()).getPseudo());
+			model.addAttribute("a", a);
+			result = "home";
 		}
 		return result;
 	}
 
 	@GetMapping("/")
-	public String index() {
+	public String index(Model model) {
 		String result = "index";
-		System.out.println(audb);
-		if (audb.getEmail() != null) {
-			result = "profile";
+		if (audb.getUsername() != null && appUserService.findByEmail(audb.getUsername()).isActive() == true) {
+			AppUser a = new AppUser();
+			a.setPseudo(appUserService.findByEmail(audb.getUsername()).getPseudo());
+			model.addAttribute("a", a);
+			result = "home"; 
 		}
 		return result;
 	}
 
 	// ------------- REGISTER -------------
-
 	@GetMapping("/register")
 	public String register(Model model) {
 		String result = "register";
-		if (audb.getEmail() != null) {
-			result = "profile";
+		if (audb.getUsername() != null && audb.isActive() == true) { 
+			result = "home";
 		}
 		AppUser au = new AppUser();
 		model.addAttribute("appUserRegister", au);
@@ -72,74 +116,63 @@ public class AppUserController {
 
 	@RequestMapping(value = "/register", method = RequestMethod.POST)
 	public String register(@ModelAttribute("appUserRegister") AppUser appUser, Model model) {
-		// AppUser
-		audb.setEmail(appUser.getEmail());
-		audb.setPseudo(appUser.getPseudo());
-		audb.setPassword(appUser.getPassword());
-		audb.setPhone(appUser.getPhone());
-		audb.setActive(true);
-		audb.setBalance(0.0);
-		// Account
-		acc.setId(appUser.getAccount().getId());
-		acc.setEmail(appUser.getEmail());
-		acc.setBank(appUser.getAccount().getBank());
-
-		appUserService.save(audb);
-		accountService.save(acc);
-		model.addAttribute("u", audb);
-		model.addAttribute("a", acc);
-
-		return "redirect:/profile";
-	}
-
-	// ------------- LOGOFF -------------
-	@GetMapping("/logoff")
-	public String logoff() {
-		audb.setEmail(null);
-		return "redirect:/home";
-	}
-
-	// ------------- LOGIN -------------
-	@GetMapping("/login")
-	public String login(Model model) {
-		String result = "login";
-		if (audb.getEmail() != null && audb.isActive()==true) {
-			result = "profile";
-		}
-		model.addAttribute("appUserForm", new AppUser());
-		return result;
-	}
-
-	@RequestMapping(value = "/login", method = RequestMethod.POST)
-	public String login(@ModelAttribute("appUserForm") AppUser appUser) {
-		String result = "login";
-		if (appUserService.findByEmail(appUser.getEmail()) != null) {
+		String result = "redirect:/profile"; // uuuuuuuuuuuuuuuuu
+//		if (appUserService.findByEmail(appUser.getUsername()).equals(null) || appUserService.findByEmail(appUser.getUsername()).isActive() == false) {  // audb.getUsername() == null && appUserService.findByEmail(appUser.getUsername()).equals(null) .isActive()==false uuuuuuuuuuuuuuuuuuu
+		if (audb.getUsername() == null) {
 			// AppUser
-			audb.setEmail(appUser.getEmail());
-			audb.setPseudo(appUserService.findByEmail(appUser.getEmail()).getPseudo());
-			audb.setBalance(appUserService.findByEmail(appUser.getEmail()).getBalance());
-			audb.setPhone(appUserService.findByEmail(appUser.getEmail()).getPhone());
-			audb.setActive(appUserService.findByEmail(appUser.getEmail()).isActive()); // unsubscribe
-			audb.setRoles(appUserService.findByEmail(appUser.getEmail()).getRoles()); // security
+			audb.setUsername(appUser.getUsername());
+			audb.setPseudo(appUser.getPseudo());
+			audb.setPassword(appUser.getPassword());
+			audb.setPhone(appUser.getPhone());
+			audb.setActive(true);
+			audb.setBalance(0.0);
 			// Account
-			acc.setId(accountService.findByEmail(appUser.getEmail()).getId());
-			acc.setEmail(appUser.getEmail());
-			acc.setBank(accountService.findByEmail(appUser.getEmail()).getBank());
+			acc.setId(appUser.getAccount().getId());
+			acc.setEmail(appUser.getUsername());
+			acc.setBank(appUser.getAccount().getBank());
 
-			result = "redirect:/profile";
+			appUserService.save(audb);
+			accountService.save(acc);
+			model.addAttribute("u", audb);
+			model.addAttribute("a", acc);
+//			result = "redirect:/profile";
+		} else if (audb.getUsername() == appUser.getUsername()
+				&& appUserService.findByEmail(appUser.getUsername()).isActive() == false) { // audb.getUsername() != null &&
+																							// appUserService.findByEmail(appUser.getUsername()).isActive()
+																							// == false) {
+			audb.setUsername(appUser.getUsername());
+			audb.setPseudo(appUser.getPseudo());
+			audb.setPassword(appUser.getPassword());
+			audb.setPhone(appUser.getPhone());
+			audb.setActive(true);
+			audb.setBalance(0.0);
+			// Account
+//			acc.setId(appUser.getAccount().getId());
+			acc.setEmail(appUser.getUsername());
+			acc.setBank(appUser.getAccount().getBank());
+
+			appUserService.updateAll(audb);
+			accountService.update(acc);
+			model.addAttribute("u", audb);
+			model.addAttribute("a", acc);
+//			result = "redirect:/profile";
 		}
-		return result;
+//		else if ( audb.getUsername() == appUser.getUsername() && appUserService.findByEmail(appUser.getUsername()).isActive() == true) {
+//			result = "redirect:/login"
+//		}
+
+		return result;// "redirect:/profile";
 	}
 
 	// ------------- PROFILE -------------
 	@RequestMapping(value = "/profile", method = RequestMethod.GET)
 	public String profile(Model model) {
 		String result = "redirect:/";
-		if (audb.getEmail() != null) {
-			audb.setBalance(appUserService.findByEmail(audb.getEmail()).getBalance());
+		if (audb.getUsername() != null && appUserService.findByEmail(audb.getUsername()).isActive() == true) { 
+			audb.setBalance(appUserService.findByEmail(audb.getUsername()).getBalance());
 			result = "profile";
 		}
-		model.addAttribute("u", audb); 
+		model.addAttribute("u", audb);
 		model.addAttribute("a", acc);
 		return result;
 	}
@@ -147,21 +180,20 @@ public class AppUserController {
 	@RequestMapping(value = "/updatepassword", method = RequestMethod.POST)
 	public String updatePassword(@ModelAttribute("a") AppUser appUser) {
 		audb.setPassword(appUser.getPassword());
-		appUserService.updatePassword(audb.getEmail(),appUser.getPassword());
+		appUserService.updatePassword(audb.getUsername(), appUser.getPassword());
 		return "redirect:/profile";
 	}
 
 	@RequestMapping(value = "/updatephone", method = RequestMethod.POST)
 	public String updatePhone(@ModelAttribute("u") AppUser appUser) {
 		audb.setPhone(appUser.getPhone());
-		appUserService.updatePhone(audb.getEmail(),appUser.getPhone());
+		appUserService.updatePhone(audb.getUsername(), appUser.getPhone());
 		return "redirect:/profile";
 	}
 
 	@RequestMapping(value = "/deleteappuser", method = RequestMethod.GET)
-	public String deleteAppUser(String emailUser) {
-		appUserService.findByEmail(emailUser).setActive(false);
-		appUserService.updateAll(appUserService.findByEmail(emailUser));
+	public String deleteAppUser() {
+		appUserService.updateActive(audb.getUsername(), false);
 		return "redirect:/home";
 	}
 
@@ -169,13 +201,13 @@ public class AppUserController {
 	@RequestMapping(value = "/contact", method = RequestMethod.GET)
 	public String allContactsAvalaible(Model model) throws RuntimeException, Exception {
 		String result = "redirect:/";
-		if (audb.getEmail() != null) {
+		if (audb.getUsername() != null) {
 			AppUser au = audb;
 			Friend f = new Friend();
 			model.addAttribute("friend", f);
-			HashSet<String> pseudosFriendsOnly = friendService.findPseudosFriendsOnly(au.getEmail());
+			HashSet<String> pseudosFriendsOnly = friendService.findPseudosFriendsOnly(au.getUsername());
 			model.addAttribute("myContactsOnly", pseudosFriendsOnly);
-			HashSet<String> allOtherContactsExisting = friendService.findOtherEmailsFriends(au.getEmail());
+			HashSet<String> allOtherContactsExisting = friendService.findOtherEmailsFriends(au.getUsername());
 			model.addAttribute("allOtherContactsExisting", allOtherContactsExisting);
 			result = "contact";
 		}
@@ -187,37 +219,36 @@ public class AppUserController {
 	public String addContact(@ModelAttribute("friend") Friend friend) {
 		AppUser au = audb;
 		Friend f = new Friend();
-		f.setEmailUser(au.getEmail());
+		f.setEmailUser(au.getUsername());
 		f.setEmailFriend(friend.getEmailFriend());
 		friendService.saveFriend(f);
 		return "redirect:/contact";
 	}
 
-	@RequestMapping("/deletecontact") 
+	@RequestMapping("/deletecontact")
 	public String deletecontact(String friend) {
 		// logger.info("INFO: Supprimer l'amitié avec : " + pseudoFriend ); // ????
 		// pourquoi import impossible
 		AppUser au = audb;
-		friendService.deletecontact(au.getEmail(), friend); 
+		friendService.deletecontact(au.getUsername(), friend);
 		return "redirect:/contact";
 	}
 
 	// ------------- TRANSFER -------------
-
 	@RequestMapping("/transfer")
 	public String getTransactions(Model model) throws RuntimeException, Exception {
 		String result = "redirect:/";
-		if (audb.getEmail() != null) {
+		if (audb.getUsername() != null) {
 			AppUser au = audb;
-			List<TransactionStructured> lts = transactionService.findByEmailStructured(au.getEmail());
-			HashSet<String> friends = friendService.findEmailsFriendsOnly(au.getEmail());
-			AppUser appUser = appUserService.findByEmail(au.getEmail());
+			List<TransactionStructured> lts = transactionService.findByEmailStructured(au.getUsername());
+			HashSet<String> friends = friendService.findEmailsFriendsOnly(au.getUsername());
+			AppUser appUser = appUserService.findByEmail(au.getUsername());
 			List<String> types = new ArrayList<String>();
 			types.add("payment");
 			types.add("deposit");
 			types.add("withdrawal");
 			Transaction transaction = new Transaction();
-			model.addAttribute("emailUser", au.getEmail());
+			model.addAttribute("emailUser", au.getUsername());
 			model.addAttribute("lts", lts);
 			model.addAttribute("friends", friends);
 			model.addAttribute("appUser", appUser);
@@ -230,8 +261,7 @@ public class AppUserController {
 
 	@RequestMapping(value = "/maketransfer", method = RequestMethod.POST)
 	public String makeTransfer(@ModelAttribute("transaction") Transaction transaction) {
-		transaction.setUser(audb.getEmail());
-//		transaction.setAccountUser(accountService.findByEmail(audb.getEmail()).getId());
+		transaction.setUser(audb.getUsername());
 		transaction.setAccountUser(acc.getId());
 
 		switch (transaction.getType()) {
@@ -251,7 +281,7 @@ public class AppUserController {
 			System.out.println("Choix incorrect");
 			break;
 		}
-		
+
 		return "redirect:/transfer";
 	}
 

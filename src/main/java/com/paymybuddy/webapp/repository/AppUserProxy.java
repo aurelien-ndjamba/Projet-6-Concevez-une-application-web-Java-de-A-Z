@@ -12,12 +12,12 @@ import com.paymybuddy.webapp.CustomProperties;
 import com.paymybuddy.webapp.model.AppUser;
 
 @Component
-public class AppUserProxy {
-
+public class AppUserProxy { 
+  
 	@Autowired
-	private CustomProperties props;
+	private CustomProperties props;    
 
-	public Iterable<AppUser> getUsers() {
+	public Iterable<AppUser> getUsers() { 
 		String baseApiUrl = props.getApiUrl();
 		String getUsersUrl = baseApiUrl + "/users/all";
 		RestTemplate restTemplate = new RestTemplate();
@@ -29,7 +29,7 @@ public class AppUserProxy {
 
 	public boolean login(AppUser appUser) {
 		String baseApiUrl = props.getApiUrl();
-		String apiUrl = baseApiUrl + "/login?email=" + appUser.getEmail() + "&password=" + appUser.getPassword();
+		String apiUrl = baseApiUrl + "/login?email=" + appUser.getUsername() + "&password=" + appUser.getPassword();
 		RestTemplate restTemplate = new RestTemplate();
 		ResponseEntity<Boolean> response = restTemplate.exchange(apiUrl, HttpMethod.GET,
 				null, boolean.class);
@@ -85,6 +85,15 @@ public class AppUserProxy {
 	public AppUser updatePhone(String email, int phone) {
 		String baseApiUrl = props.getApiUrl();
 		String apiUrl = baseApiUrl + "/users/updatephone?email=" + email + "&phone=" + phone;
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<AppUser> response = restTemplate.exchange(apiUrl, HttpMethod.PUT, null,
+				AppUser.class);
+		return response.getBody();
+	}
+ 
+	public AppUser updateActive(String email, boolean active) {
+		String baseApiUrl = props.getApiUrl();
+		String apiUrl = baseApiUrl + "/users/updateactive?email=" + email + "&active=" + active;
 		RestTemplate restTemplate = new RestTemplate();
 		ResponseEntity<AppUser> response = restTemplate.exchange(apiUrl, HttpMethod.PUT, null,
 				AppUser.class);

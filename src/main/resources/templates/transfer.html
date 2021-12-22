@@ -5,35 +5,43 @@
 <head>
 <meta charset="utf-8">
 
-<link rel="stylesheet"
-	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-	integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+<link rel="stylesheet" href="css/mystyle.css" />
+
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+	rel="stylesheet"
+	integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
 	crossorigin="anonymous">
 
-<link rel="stylesheet"
-	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
-	integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
-	crossorigin="anonymous">
 
 <title>Transfer</title>
+
 </head>
 
 <body>
+	<header>
+		<div class="header">
+			<div>
+				<a class="btn btn-success" href="/home">PayMyBuddy</a>
+			</div>
+			<div class="nav">
+				<ul class="nav nav-tabs card-header-tabs">
+					<li><a class="nav-link" href="/home">Home</a></li>
+					<li><a class="nav-link active" href="/transfer"
+						aria-current="true">Transfer</a></li>
+					<li><a class="nav-link" href="/profile">Profile</a></li>
+					<li><a class="nav-link" href="/contact">Contact</a></li>
+					<li><a class="nav-link" href="/logoff">Log off</a></li>
+				</ul>
+			</div>
+		</div>
+		<div class="header2">
+			<div>
+				<p class="mx-3">Home / Transfer</p>
+			</div>
+		</div>
+	</header>
 
-	<div class="card-header">
-		<ul class="nav nav-tabs card-header-tabs">
-			<li class="nav-item"><a class="btn btn-primary" href="/home">PayMyBuddy</a>
-			</li>
-			<li class="nav-item"><a class="nav-link active"
-				aria-current="true" href="/home">Home</a></li>
-			<li class="nav-item"><a class="nav-link" href="/transfer">Transfer</a></li>
-			<li class="nav-item"><a class="nav-link active"
-				aria-current="true" href="/profile">Profile</a></li>
-			<li class="nav-item"><a class="nav-link" href="/contact">Contact</a></li>
-			<li class="nav-item"><a class="nav-link active" href="/logoff">Log
-					off</a></li>
-		</ul>
-	</div>
 
 	<section>
 
@@ -43,26 +51,26 @@
 
 			<div class="table-responsive">
 
-				<table class="table table-striped table-sm">
+				<table class="table">
 
 					<thead>
 						<tr>
-							<th>MAKE A TRANSFER</th>
+							<th>Send Money</th>
 
-							<th><a>BALANCE AVAILABLE : <span
+							<th><a>Balance Available : <span
 									data-th-text="${appUser.balance}"></span>
 							</a></th>
 
-							<th><a href="/contact"><button class="btn btn-info">ADD
-										CONNECTION</button> </a></th>
+							<th><a href="/contact"><button class="btn btn-primary">Add
+										connection</button> </a></th>
 						</tr>
 					</thead>
 
-					<tbody>
+					<tbody class="header2">
 						<form th:action="@{/maketransfer}" th:object="${transaction}"
-							method="post">
+							method="post" class="transfer">
 
-							<div class="form-group">
+							<div>
 
 								<tr>
 									<td><select id="type" th:field="*{type}"
@@ -100,8 +108,7 @@
 											the transaction </small></td>
 
 									<td><a>
-											<button type="submit" class="btn btn-danger">VALIDATE
-												TRANSFER</button>
+											<button type="submit" class="btn btn-success">Pay</button>
 									</a></td>
 								</tr>
 
@@ -115,10 +122,11 @@
 				<table class="table table-striped table-sm">
 					<thead>
 						<tr colspan=7>
-							<th>TRANSFER HISTORY</th>
+							<th>My transactions</th>
 						</tr>
 					</thead>
-					<thead>
+
+					<thead class="logo">
 						<tr>
 							<th>Connections</th>
 							<th>Email</th>
@@ -147,6 +155,22 @@
 					</tbody>
 
 				</table>
+				<nav class="center" aria-label="Page navigation example">
+					<ul class="pagination">
+						<li class="page-item"><a class="page-link" href="#"
+							aria-label="Previous"> <span aria-hidden="true">&laquo;</span>
+						</a></li>
+						<li class="page-item active"><a class="page-link" href="#">1</a></li>
+						<li class="page-item"><a class="page-link" href="#">2</a></li>
+						<li class="page-item"><a class="page-link" href="#">3</a></li>
+						<li class="page-item"><a class="page-link" href="#">4</a></li>
+						<li class="page-item"><a class="page-link" href="#">5</a></li>
+						<li class="page-item"><a class="page-link" href="#"
+							aria-label="Next"> <span aria-hidden="true">&raquo;</span>
+						</a></li>
+					</ul>
+				</nav>
+
 			</div>
 		</div>
 

@@ -37,5 +37,9 @@ public class AccountService {
 	public Account findByEmail(String email) {
 		return accountProxy.findByEmail(email);
 	}
+
+	public Account deleteById(int id) {
+		return accountProxy.deleteById(id);
+	}
 	
 }

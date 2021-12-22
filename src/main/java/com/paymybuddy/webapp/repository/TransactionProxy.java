@@ -19,7 +19,7 @@ import com.paymybuddy.webapp.model.TransactionStructured;
 public class TransactionProxy {
 	
 	@Autowired
-	private CustomProperties props;  
+	private CustomProperties props; 
 	
 	public List<Transaction> getTransactions(String emailUser) {
 		String baseApiUrl = props.getApiUrl();

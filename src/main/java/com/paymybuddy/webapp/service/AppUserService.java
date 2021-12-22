@@ -10,10 +10,10 @@ import lombok.Data;
 
 @Data
 @Service
-public class AppUserService {
+public class AppUserService {      
 
 	@Autowired
-	private AppUserProxy appUserProxy;
+	private AppUserProxy appUserProxy;  
 
 	public boolean login(AppUser appUser) {
 		return appUserProxy.login(appUser);
@@ -43,7 +43,10 @@ public class AppUserService {
 
 	public AppUser updatePhone(String email, int phone) {
 		return appUserProxy.updatePhone(email, phone);
-		
 	}
+
+	public AppUser updateActive(String email, boolean active) {
+		return appUserProxy.updateActive(email, active);
+		}
 
 }
