@@ -5,6 +5,10 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,12 +38,17 @@ public class AppUserController {
 	@Autowired
 	private FriendService friendService;
 
+//	@Autowired
+//	private UserDetailsService customUserDetailsService;
+
+	private UserDetails ud;
+
 	AppUser audb = new AppUser();
 	Account acc = new Account();
 
 	// ------------- LOGIN -------------
 	@GetMapping("/login")
-	public String login(Model model) throws Exception{
+	public String login(Model model) throws Exception {
 		String result = "login";
 		if (audb.getUsername() != null && appUserService.findByEmail(audb.getUsername()).isActive() == true) {
 			result = "redirect:/home";
@@ -52,7 +61,7 @@ public class AppUserController {
 	@RequestMapping(value = "/login", method = RequestMethod.POST)
 	public String login(@ModelAttribute("appUserForm") AppUser appUser, Model model) {
 		String result = "redirect:/login";
-		if (appUserService.login(appUser) == true || audb.getUsername() != null) { 
+		if (appUserService.login(appUser) == true || audb.getUsername() != null) {
 			// AppUser
 			audb.setUsername(appUser.getUsername());
 			audb.setPseudo(appUserService.findByEmail(appUser.getUsername()).getPseudo());
@@ -79,15 +88,23 @@ public class AppUserController {
 
 	// ------------- HOME -------------
 	@GetMapping("/home")
-	public String home(Model model) {
-		String result = "redirect:/";
-		if (audb.getUsername() != null && appUserService.findByEmail(audb.getUsername()).isActive() == true) {
-			AppUser a = new AppUser();
-			a.setPseudo(appUserService.findByEmail(audb.getUsername()).getPseudo());
-			model.addAttribute("a", a);
-			result = "home";
-		}
-		return result;
+	public String home(Authentication authentication, Model model) {
+		// Ancien Code Sans Spring Security
+//		String result = "redirect:/";
+//		if (audb.getUsername() != null && appUserService.findByEmail(audb.getUsername()).isActive() == true) {
+//			AppUser a = new AppUser();
+//			a.setPseudo(appUserService.findByEmail(audb.getUsername()).getPseudo());
+//			model.addAttribute("a", a);
+//			result = "home";
+//		}
+//		return result; 
+
+//		User u = authentication.getPrincipal().;
+		System.out.println(authentication.getName());
+		System.out.println(appUserService.findByEmail(authentication.getName()).getPseudo());
+		model.addAttribute("a", appUserService.findByEmail(authentication.getName()));
+		String result = "home";
+		return result;// "test";
 	}
 
 	@GetMapping("/")
@@ -97,7 +114,7 @@ public class AppUserController {
 			AppUser a = new AppUser();
 			a.setPseudo(appUserService.findByEmail(audb.getUsername()).getPseudo());
 			model.addAttribute("a", a);
-			result = "home"; 
+			result = "home";
 		}
 		return result;
 	}
@@ -106,7 +123,7 @@ public class AppUserController {
 	@GetMapping("/register")
 	public String register(Model model) {
 		String result = "register";
-		if (audb.getUsername() != null && audb.isActive() == true) { 
+		if (audb.getUsername() != null && audb.isActive() == true) {
 			result = "home";
 		}
 		AppUser au = new AppUser();
@@ -137,7 +154,8 @@ public class AppUserController {
 			model.addAttribute("a", acc);
 //			result = "redirect:/profile";
 		} else if (audb.getUsername() == appUser.getUsername()
-				&& appUserService.findByEmail(appUser.getUsername()).isActive() == false) { // audb.getUsername() != null &&
+				&& appUserService.findByEmail(appUser.getUsername()).isActive() == false) { // audb.getUsername() !=
+																							// null &&
 																							// appUserService.findByEmail(appUser.getUsername()).isActive()
 																							// == false) {
 			audb.setUsername(appUser.getUsername());
@@ -168,7 +186,7 @@ public class AppUserController {
 	@RequestMapping(value = "/profile", method = RequestMethod.GET)
 	public String profile(Model model) {
 		String result = "redirect:/";
-		if (audb.getUsername() != null && appUserService.findByEmail(audb.getUsername()).isActive() == true) { 
+		if (audb.getUsername() != null && appUserService.findByEmail(audb.getUsername()).isActive() == true) {
 			audb.setBalance(appUserService.findByEmail(audb.getUsername()).getBalance());
 			result = "profile";
 		}
