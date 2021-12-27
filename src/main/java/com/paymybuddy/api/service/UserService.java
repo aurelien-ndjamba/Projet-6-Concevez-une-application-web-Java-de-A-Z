@@ -24,6 +24,8 @@ public class UserService {
 	private AppUser appUser;
 	@Autowired
 	private UserRepository userRepository;
+	@Autowired
+	private FriendService friendService;
 
 	public void setUserRepository(UserRepository userRepository) {
 		this.userRepository = userRepository;
@@ -31,9 +33,9 @@ public class UserService {
 
 	public boolean login(String email, String password) {
 		boolean result = false;
-		// if (!userRepository.existsById(email)) {throw new RuntimeException("Email de
-		// l'utilisateur non existant dans la BDD");}
-		if (bCryptPasswordEncoder.matches(password, userRepository.findById(email).get().getPassword())) {
+		if (!userRepository.existsById(email)) {
+			throw new RuntimeException("Email de l'utilisateur non existant dans la BDD");
+		} else if (bCryptPasswordEncoder.matches(password, userRepository.findById(email).get().getPassword())) {
 			result = true;
 			updateActive(email, result);
 		}
@@ -48,16 +50,34 @@ public class UserService {
 	public AppUser findByEmail(String email) {
 		if (!userRepository.existsById(email))
 			throw new RuntimeException("Email de l'utilisateur non existant dans la BDD");
-		return userRepository.findByEmail(email);
+		AppUser appUser = userRepository.findByEmail(email);
+		appUser.setUsername(appUser.getEmail());
+		return appUser;
 	}
 
 	@Transactional
 	public List<AppUser> findOtherUsersWithoutThisEmail(String email) {
 		if (!userRepository.existsById(email))
 			throw new RuntimeException("Email de l'utilisateur non existant dans la BDD");
-		List<AppUser> appUsers = userRepository.findAll();
+		List<AppUser> appUsers  = userRepository.findAll();
 		appUsers.remove(userRepository.findByEmail(email));
 		return appUsers;
+	}
+
+	@Transactional
+	public ArrayList<String> findOtherEmailUsersWithoutThisEmail(String email) {
+		ArrayList<String> otherEmailUsersWithoutThisEmail = new ArrayList<>();
+		for (AppUser au : findOtherUsersWithoutThisEmail(email)) {
+			otherEmailUsersWithoutThisEmail.add(au.getEmail());
+		}
+		return otherEmailUsersWithoutThisEmail;
+	}
+
+	@Transactional
+	public List<String> findOtherEmailsFriendsAvailableForThisEmail(String email) {
+		List<String> OtherEmailsFriendsAvailableForThisEmail = findOtherEmailUsersWithoutThisEmail(email);
+		OtherEmailsFriendsAvailableForThisEmail.removeAll(friendService.findEmailsFriendsOnly(email));
+		return OtherEmailsFriendsAvailableForThisEmail;
 	}
 
 	@Transactional
@@ -75,7 +95,6 @@ public class UserService {
 		appUser.setRoles(roles);
 //		appUser.setActive(true); // fixer active à TRUE à l'inscription
 //		accountService.save(appUser.getAccount()); //Sauvegarde du compte User.account avant la sauvegarde du User
-		System.out.println(appUser);
 		return userRepository.save(appUser);
 	}
 
@@ -121,7 +140,7 @@ public class UserService {
 	}
 
 	@Transactional
-	public AppUser updateActive(String email, boolean status) {
+	public AppUser updateActive(String email, boolean active) {
 		if (email == null)
 			throw new RuntimeException(
 					"Vous devez renseigner l'email de l'utilisateur pour la mise à jour dans la BDD");
@@ -129,7 +148,7 @@ public class UserService {
 			throw new RuntimeException("Email de l'utilisateur non existant dans la BDD");
 
 		appUser = userRepository.getById(email);
-		appUser.setActive(status);
+		appUser.setActive(active);
 		return userRepository.save(appUser);
 	}
 

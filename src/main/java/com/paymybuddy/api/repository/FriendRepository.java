@@ -2,6 +2,7 @@ package com.paymybuddy.api.repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -15,6 +16,7 @@ import com.paymybuddy.api.model.FriendId;
 public interface FriendRepository extends JpaRepository<Friend, FriendId> {
 
 	List<Friend> findByEmailUserOrEmailFriend(String email,String email2);
+	List<Friend> findByEmailUserOrEmailFriend(String email, String email2, Pageable pagelist);
 	Friend findByEmailUserAndEmailFriend(String email,String email2);
 	
 	@Transactional

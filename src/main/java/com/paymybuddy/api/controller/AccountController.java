@@ -38,7 +38,7 @@ public class AccountController {
 	 * @return List<Account>
 	 * 
 	 */
-	@Secured(value={"ROLE_ADMIN"})
+	@Secured(value={"ROLE_ADMIN","ADMIN"})
 	@GetMapping("/accounts/all")
 	public List<Account> findAll() {
 		logger.info("INFO: Liste tous les comptes de l'application");

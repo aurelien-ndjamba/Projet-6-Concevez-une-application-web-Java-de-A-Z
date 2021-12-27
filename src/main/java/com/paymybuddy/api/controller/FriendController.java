@@ -1,7 +1,6 @@
 package com.paymybuddy.api.controller;
 
 import java.text.ParseException;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -67,25 +66,25 @@ public class FriendController {
 		return friendService.findPseudosFriendsOnly(email);
 	}
 	
-//	@RequestMapping(value = "/pseudosfriends2", method = RequestMethod.GET, params = { "email" })
-//	public HashMap<String,String> findPseudosFriendsOnly2(String email) {
-//		logger.info("INFO: Affiche la liste des pseudos des amis de celui dont l'email est en parametre : " + email);
-//		return friendService.findPseudosFriendsOnly2(email);
-//	}
+	@RequestMapping("/page_pseudosfriends")
+	public HashSet<String> findPseudosFriendsOnly(String email, int page, int size) {
+		logger.info("INFO: Affiche la liste des pseudos des amis de celui dont l'email est en parametre : " + email);
+		return friendService.findPseudosFriendsOnly(email,page,size);
+	}
 	
 	@Secured(value={"ROLE_ADMIN"})
+	@RequestMapping("/friends/emailsavailable")
+	public HashSet<String> findEmailsavailable(String email) throws Exception {
+		logger.info("INFO: Liste des emails amis potentiels pour l'utilisateur : " + email);
+		return friendService.findEmailsavailable(email);
+	}
+	@Secured(value={"ROLE_ADMIN"})
 	@RequestMapping(value = "/pseudo", method = RequestMethod.GET, params = { "email" })
-	public String findPseudo(String email) {
+	public String findPseudoByEmail(String email) {
 		logger.info("INFO: Affiche le pseudo de l'ami dont l'email est en parametre : " + email);
 		return friendService.findPseudoByEmail(email);
 	}
-	
-	@Secured(value={"ROLE_ADMIN"})
-	@RequestMapping(value = "/emailsfriends/others", method = RequestMethod.GET, params = { "email" })
-	public HashSet<String> findOtherEmailsFriends(String email) {
-		logger.info("INFO: Liste les couples amis associés à l'adresse email : " + email);
-		return friendService.findOtherEmailsFriends(email);
-	}
+
 	/**
 	 * GET http://localhost:8080/friend?email=nicolas.sarkozy@gmail.com
 	 * 

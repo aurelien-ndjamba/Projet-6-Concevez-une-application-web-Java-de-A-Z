@@ -7,15 +7,20 @@ import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.paymybuddy.api.exception.FriendEmailNotSpecifiedException;
+import com.paymybuddy.api.exception.InsufficientBalanceException;
+import com.paymybuddy.api.exception.ReduceAmountException;
 import com.paymybuddy.api.model.Transaction;
 import com.paymybuddy.api.model.TransactionStructured;
 import com.paymybuddy.api.service.TransactionService;
@@ -41,30 +46,31 @@ public class TransactionController {
 	 * @return Iterable<Transaction>
 	 * 
 	 */
-	@Secured(value={"ROLE_ADMIN"})
+	@Secured(value = { "ROLE_ADMIN" })
 	@GetMapping("/transactions/all")
 	public List<Transaction> findAll() {
 		logger.info("INFO: liste des transactions de l'application");
 		return transactionService.findAll();
 	}
-	
+
 	/**
 	 * GET http://localhost:8080/transactions?id=?
 	 * 
 	 * Liste des informations d'une transaction spécifique ayant l'id en paramètre
 	 * 
 	 * @return Transaction
+	 * @throws Exception
 	 * 
 	 */
 
-	@Secured(value={"ROLE_ADMIN"})
+	@Secured(value = { "ROLE_ADMIN" })
 	@RequestMapping(value = "/transactions", method = RequestMethod.GET, params = { "id" })
-	public Transaction findById(String id) {
+	public Transaction findById(String id) throws Exception {
 		logger.info("INFO: Liste des informations d'une transaction spécifique ayant en paramètre l'id : " + id);
 		return transactionService.findById(id);
 	}
-	
-	@Secured(value={"ROLE_ADMIN"})
+
+	@Secured(value = { "ROLE_ADMIN" })
 	@RequestMapping("/transactionsStructured")
 	public List<TransactionStructured> findByEmailStructured(String email) {
 		return transactionService.findByEmailStructured(email);
@@ -76,20 +82,21 @@ public class TransactionController {
 	 * Liste des transactions associées à un email en paramètre
 	 * 
 	 * @return List<Transaction>
+	 * @throws Exception
 	 * 
 	 */
 
-	@Secured(value={"ROLE_ADMIN","ROLE_USER"})
-	@RequestMapping(value = "/transactions", method = RequestMethod.GET, params = { "email" }) //OK againt
+	@Secured(value = { "ROLE_ADMIN", "ROLE_USER" })
+	@RequestMapping(value = "/transactions", method = RequestMethod.GET, params = { "email" }) // OK againt
 //	@RequestMapping("/transactions")
-	public List<Transaction> findByUser(String email) {
+	public List<Transaction> findByUser(String email) throws Exception {
 		logger.info("INFO: Liste les transactions associées à l'email : " + email);
 		return transactionService.findByUser(email);
 	}
-	
-	@Secured(value={"ROLE_ADMIN","ROLE_USER"})
+
+	@Secured(value = { "ROLE_ADMIN", "ROLE_USER" })
 	@RequestMapping("/ptransactions")
-	public List<Transaction> findByUser(String email, int page, int size){
+	public List<Transaction> findByUser(String email, int page, int size) throws Exception {
 		return transactionService.findByUser(email, page, size);
 	};
 
@@ -100,12 +107,13 @@ public class TransactionController {
 	 * payment
 	 * 
 	 * @return List<Transaction>
+	 * @throws Exception
 	 * 
 	 */
 
-	@Secured(value={"ROLE_ADMIN"})
+	@Secured(value = { "ROLE_ADMIN" })
 	@RequestMapping(value = "/transactions", method = RequestMethod.GET, params = { "type" })
-	public List<Transaction> findByType(String type) {
+	public List<Transaction> findByType(String type) throws Exception {
 		logger.info("INFO: Liste des transactions de l'application du type : " + type);
 		return transactionService.findByType(type);
 	}
@@ -118,10 +126,11 @@ public class TransactionController {
 	 * Creation d'une nouvelle transaction 'payment' dans l'application
 	 * 
 	 * @return Transaction
+	 * @throws Exception
 	 * 
 	 */
 
-	@Secured(value={"ROLE_ADMIN"})
+	@Secured(value = { "ROLE_ADMIN" })
 	@PostMapping("/transactions/createpayment")
 	@ResponseStatus(HttpStatus.CREATED)
 	public Transaction createPayment(@RequestBody Transaction transaction) throws Exception {
@@ -138,7 +147,7 @@ public class TransactionController {
 	 * 
 	 */
 
-	@Secured(value={"ROLE_ADMIN"})
+	@Secured(value = { "ROLE_ADMIN" })
 	@PostMapping("/transactions/createdeposit")
 	@ResponseStatus(HttpStatus.CREATED)
 	public Transaction createDeposit(@RequestBody Transaction transaction) throws Exception {
@@ -155,13 +164,28 @@ public class TransactionController {
 	 * 
 	 */
 
-	@Secured(value={"ROLE_ADMIN"})
+	@Secured(value = { "ROLE_ADMIN" })
 	@PostMapping("/transactions/createwithdrawal")
 	@ResponseStatus(HttpStatus.CREATED)
 	public Transaction createWithdrawal(@RequestBody Transaction transaction) throws Exception {
 		logger.info("INFO: Creation dans l'application d'une nouvelle transaction  'withdrawal': " + transaction);
 		return transactionService.createWithdrawal(transaction);
 	}
+
+	@ExceptionHandler(ReduceAmountException.class)
+	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+	@ResponseBody
+	public String reduceAmountExceptionHandler(ReduceAmountException reduceAmountException) { // ResponseEntity<String>
+		return reduceAmountException.getMessage(); //reduceAmountException.getMessage()  new ResponseEntity<String>(reduceAmountException);
+	}  
+	
+	@ExceptionHandler(FriendEmailNotSpecifiedException.class)
+	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+	@ResponseBody
+	public String FriendEmailNotSpecifiedException(FriendEmailNotSpecifiedException friendEmailNotSpecifiedException) { // ResponseEntity<String>
+		return friendEmailNotSpecifiedException.getMessage(); //reduceAmountException.getMessage()  new ResponseEntity<String>(reduceAmountException);
+	}  
+	
 
 	/* *************** DELETE METHODE *********************** */
 
@@ -171,11 +195,12 @@ public class TransactionController {
 	 * Supprimer une transaction ayant l'id en parametre
 	 * 
 	 * @return Transaction
+	 * @throws Exception
 	 * 
 	 */
-	@Secured(value={"ROLE_ADMIN"})
+	@Secured(value = { "ROLE_ADMIN" })
 	@RequestMapping(value = "/transactions/delete", method = RequestMethod.DELETE, params = { "id" })
-	public Transaction deleteById(@RequestParam("id") UUID id) {
+	public Transaction deleteById(@RequestParam("id") UUID id) throws Exception {
 		logger.info("INFO: Supprimer une transaction ayant l'id :" + id);
 		return transactionService.deleteById(id);
 	}

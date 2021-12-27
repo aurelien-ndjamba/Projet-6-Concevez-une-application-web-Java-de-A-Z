@@ -49,7 +49,7 @@ public class AppUserController {
 	 * 
 	 */
 	@Secured(value={"ROLE_ADMIN"})
-	@GetMapping("/users/all")
+	@GetMapping("/users")
 	public List<AppUser> findAll() {
 		logger.info("INFO: Liste tous les utilisateurs de l'application sans leur mot de passe");
 		return userService.findAll();
@@ -64,7 +64,7 @@ public class AppUserController {
 	 * 
 	 */
 	@Secured(value={"ROLE_ADMIN"})
-	@RequestMapping(value = "/users/user", method = RequestMethod.GET, params = { "email" })
+	@RequestMapping(value = "/users", method = RequestMethod.GET, params = { "email" })
 	public AppUser findByEmail(String email) {
 		logger.info("INFO: Liste des infos d'un utilisateur ayant l'email donné en parametre.");
 		return userService.findByEmail(email);
@@ -83,6 +83,20 @@ public class AppUserController {
 	public List<AppUser> findOtherUsersWithoutThisEmail(String email){
 		logger.info("INFO: Liste des infos de tous les utilisateurs de l'application sauf celui dont l'email est en parametre.");
 		return userService.findOtherUsersWithoutThisEmail(email);
+	}
+	
+	@Secured(value={"ROLE_ADMIN"})
+	@RequestMapping(value = "/users/otheremailusers", method = RequestMethod.GET, params = { "email" })
+	public List<String> findOtherEmailUsersWithoutThisEmail(String email){
+		logger.info("INFO: Liste les emails de tous les utilisateurs de l'application sauf celui dont l'email est en parametre.");
+		return userService.findOtherEmailUsersWithoutThisEmail(email);
+	}
+	
+	@Secured(value={"ROLE_ADMIN"})
+	@RequestMapping(value = "/users/otheremailsfriendsavailable", method = RequestMethod.GET, params = { "email" })
+	public List<String> findOtherEmailsFriendsAvailableForThisEmail(String email){
+		logger.info("INFO: Liste des emails de tous les utilisateurs disponibles pour une amitié avec celui dont l'email est en parametre.");
+		return userService.findOtherEmailsFriendsAvailableForThisEmail(email);
 	}
 	
 	/* *************** POST METHODE *********************** */
@@ -139,6 +153,13 @@ public class AppUserController {
 	public AppUser updatePhone(String email, int phone) {
 		logger.info("Update le numéro de téléphone d'un utilisateur dans la BDD");
 		return userService.updatePhone(email, phone);
+	}
+	
+	@Secured(value={"ROLE_ADMIN"})
+	@PutMapping("/users/updateactive")
+	public AppUser updateActive(String email, boolean active) {
+		logger.info("Update le status d'un utilisateur dans la BDD");
+		return userService.updateActive(email, active);
 	}
 	
 	/* *************** DELETE METHODE *********************** */

@@ -37,7 +37,7 @@ public class UserDetailsServiceImpl implements UserDetailsService{
 		for (GrantedAuthority ga : authorities) {
 			roles.add(ga.getAuthority());
 		}
-		 
+		 // .authorizedGrantTypes(grantType)
 		System.out.println(roles);
 		System.out.println(new User(appUser.getEmail(),appUser.getPassword(),authorities));
 		return new User(appUser.getEmail(),appUser.getPassword(),authorities);

@@ -11,10 +11,12 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -36,6 +38,10 @@ public class AppUser {
 	@Column(name = "email", nullable = false, updatable = false)
 	private String email;
 
+	@JsonInclude()
+	@Transient
+	private String username;
+	
 	@Column(name = "pseudo")
 	private String pseudo;
 
@@ -68,7 +74,7 @@ public class AppUser {
 		this.email = email;
 	}
 
-	@JsonIgnore
+//	@JsonIgnore
 	public String getPassword() {
 		return password;
 	}
@@ -124,6 +130,14 @@ public class AppUser {
 
 	public void setAccount(Account account) {
 		this.account = account;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
 	}
 
 }

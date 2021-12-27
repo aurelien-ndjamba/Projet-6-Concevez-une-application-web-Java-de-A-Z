@@ -13,8 +13,6 @@ import com.paymybuddy.api.model.Transaction;
 @Repository
 public interface TransactionRepository extends JpaRepository<Transaction, UUID> {
 
-//	Optional<Transaction> findById(UUID id);
-	
 	List<Transaction> findByUserOrFriend(String email, String friend);
 	List<Transaction> findByUserOrFriend(String email, String friend, Pageable pageable);
 	

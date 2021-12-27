@@ -5,9 +5,12 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.paymybuddy.api.model.AppUser;
 import com.paymybuddy.api.model.Friend;
 import com.paymybuddy.api.repository.FriendRepository;
 import com.paymybuddy.api.repository.UserRepository;
@@ -17,6 +20,8 @@ public class FriendService {
 
 	@Autowired
 	private FriendRepository friendRepository;
+	@Autowired
+	private UserService appUserService;
 	@Autowired
 	private UserRepository userRepository;
 
@@ -40,12 +45,34 @@ public class FriendService {
 		return friendRepository.findByEmailUserOrEmailFriend(email, email2);
 	}
 
+	public List<Friend> findByEmail(String email, int page, int size) {
+		if (!userRepository.existsById(email))
+			throw new RuntimeException("Email non existant dans la BDD");
+		String email2 = email;
+		Pageable pagelist = PageRequest.of(page, size);
+		return friendRepository.findByEmailUserOrEmailFriend(email, email2, pagelist);
+	}
+	
 	@Transactional
 	public HashSet<String> findEmailsFriendsOnly(String email) {
 		if (!userRepository.existsById(email))
 			throw new RuntimeException("Email non existant dans la BDD");
 		HashSet<String> friendsOnly = new HashSet<>();
 		for (Friend f : findByEmail(email)) {
+			if (f.getEmailUser().equals(email))
+				friendsOnly.add(f.getEmailFriend());
+			else if (f.getEmailFriend().equals(email))
+				friendsOnly.add(f.getEmailUser());
+		}
+		return friendsOnly;
+	}
+	
+	@Transactional
+	public HashSet<String> findEmailsFriendsOnly(String email, int page, int size) {
+		if (!userRepository.existsById(email))
+			throw new RuntimeException("Email non existant dans la BDD");
+		HashSet<String> friendsOnly = new HashSet<>();
+		for (Friend f : findByEmail(email,page,size)) {
 			if (f.getEmailUser().equals(email))
 				friendsOnly.add(f.getEmailFriend());
 			else if (f.getEmailFriend().equals(email))
@@ -64,6 +91,29 @@ public class FriendService {
 		return PseudoFriendsOnly;
 	}
 
+	public HashSet<String> findPseudosFriendsOnly(String email, int page, int size) {
+		HashSet<String> PseudoFriendsOnly = new HashSet<>();
+		HashSet<String> emailsFriendsOnly = findEmailsFriendsOnly(email,page,size);
+		for (String emailFriend : emailsFriendsOnly) {
+			PseudoFriendsOnly.add(findPseudoByEmail(emailFriend));
+		}
+		return PseudoFriendsOnly;
+	}
+
+	@Transactional
+	public HashSet<String> findEmailsavailable(String email) throws Exception {
+		if (!userRepository.existsById(email))
+			throw new Exception("Email non existant dans la BDD");
+		HashSet<String> Emailsavailable = new HashSet<>();
+		// Obternir la liste des emails de tous les utilisateurs de l'app sauf celui en param
+		for (AppUser au : appUserService.findOtherUsersWithoutThisEmail(email)) {
+			Emailsavailable.add(au.getEmail());
+		}
+		// Supprimer de cette liste les emails amis déjà existants avec l'email en param
+		Emailsavailable.removeAll(findEmailsFriendsOnly(email));
+		return Emailsavailable;
+	}
+
 	@Transactional
 	public String findPseudoByEmail(String email) {
 		String pseudo = userRepository.findById(email).get().getPseudo();
@@ -74,20 +124,6 @@ public class FriendService {
 	public String findEmailByPseudo(String pseudo) {
 		String email = userRepository.findByPseudo(pseudo).getEmail();
 		return email;
-	}
-
-	@Transactional
-	public HashSet<String> findOtherEmailsFriends(String email) {
-		if (!userRepository.existsById(email))
-			throw new RuntimeException("Email non existant dans la BDD");
-		HashSet<String> OtherFriends = new HashSet<>();
-		for (Friend f : findAll()) {
-			OtherFriends.add(f.getEmailUser());
-			OtherFriends.add(f.getEmailFriend());
-		}
-		OtherFriends.remove(email);
-		OtherFriends.removeAll(findEmailsFriendsOnly(email));
-		return OtherFriends;
 	}
 
 	@Transactional
@@ -117,7 +153,7 @@ public class FriendService {
 	}
 
 	public Friend deleteByEmailUserAndPseudoFriend(String emailUser, String pseudoFriend) {
-		String emailFriend = userRepository.findByPseudo(pseudoFriend).getEmail(); //??????????????????
+		String emailFriend = userRepository.findByPseudo(pseudoFriend).getEmail();
 		friendRepository.delete(emailUser, emailFriend);
 		return new Friend(emailUser, emailFriend);
 	}
