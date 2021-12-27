@@ -64,7 +64,9 @@
 
 						<tr>
 							<td><span data-th-text="${u.email}"> </span></td>
-							<td><span data-th-text="${#numbers.formatDecimal(u.balance,1,2)}"></span> €</td>
+							<td><span
+								data-th-text="${#numbers.formatDecimal(u.balance,1,2)}"></span>
+								€</td>
 
 							<td><a th:href="@{deleteappuser}">
 									<button class="btn btn-danger">UNSUBSCRIBE</button>
@@ -106,8 +108,8 @@
 						</tr>
 					</tbody>
 
-<!-- 				</table> -->
-<!-- 				<table> -->
+					<!-- 				</table> -->
+					<!-- 				<table> -->
 
 					<tbody>
 
@@ -122,8 +124,8 @@
 									</div>
 								</td>
 								<td>
-										<button type="submit" class="btn btn-primary">UPDATE
-											PHONE</button>
+									<button type="submit" class="btn btn-primary">UPDATE
+										PHONE</button>
 								</td>
 							</form>
 						</tr>
@@ -136,9 +138,12 @@
 									<div class="form-group">
 										<input th:field="*{password}" type="password"
 											class="form-control" aria-describedby="mailHelp"
-											placeholder="New password" required /> <small
-											id="passwordHelp" class="form-text text-muted">
-											Please enter a new password for the update. </small>
+											placeholder="New password"
+											pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+											title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
+											required /> <small id="passwordHelp"
+											class="form-text text-muted"> Please enter a new
+											password for the update. It must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters </small>
 									</div>
 								</td>
 								<td><a>

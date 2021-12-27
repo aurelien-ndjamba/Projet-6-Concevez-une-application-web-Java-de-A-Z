@@ -31,7 +31,7 @@
 						aria-current="true">Transfer</a></li>
 					<li><a class="nav-link" href="/profile">Profile</a></li>
 					<li><a class="nav-link" href="/contact">Contact</a></li>
-<!-- 					<li><a class="nav-link" href="/logout">Logoff</a></li> -->
+					<!-- 					<li><a class="nav-link" href="/logout">Logoff</a></li> -->
 					<li>
 						<form method="post" th:action="@{/logout}">
 							<input type="submit" class="nav-link" value="Log off">
@@ -48,137 +48,138 @@
 	</header>
 
 
-	<section>
+	<div class="container">
 
-		<div class="container special">
+		<h2 class="h2">TRANSFER</h2>
 
-			<h2 class="h2">TRANSFER</h2>
+		<div class="table-responsive">
 
-			<div class="table-responsive">
+			<table class="table">
 
-				<table class="table">
+				<thead>
+					<tr>
+						<th>Send Money</th>
 
-					<thead>
-						<tr>
-							<th>Send Money</th>
+						<th>Balance Available : <span
+							data-th-text="${#numbers.formatDecimal(appUser.balance,1,2)}"></span>
+							€
+						</th>
 
-							<th>Balance Available : <span
-									data-th-text="${#numbers.formatDecimal(appUser.balance,1,2)}"></span> €
-							</th>
+						<th><a href="/contact"><button class="btn btn-primary">Add
+									connection</button> </a></th>
+					</tr>
+				</thead>
 
-							<th><a href="/contact"><button class="btn btn-primary">Add
-										connection</button> </a></th>
-						</tr>
-					</thead>
+				<tbody class="info_transaction">
+					<form th:action="@{/transfer}" th:object="${transaction}"
+						method="post">
 
-					<tbody class="info_transaction">
-						<form th:action="@{/transfer}" th:object="${transaction}"
-							method="post">
+							<tr>
+								<td><select id="type" th:field="*{type}"
+									class="form-control">
+										<option th:each="type:${types}" th:value="${type}"
+											th:text="${type}"></option>
+								</select> <small id="mailHelp" class="form-text text-muted">
+										Select the type of transaction </small></td>
 
-							<div>
-								<tr>
-									<td><select id="type" th:field="*{type}"
-										class="form-control">
-											<option th:each="type:${types}" th:value="${type}"
-												th:text="${type}"></option>
-									</select> <small id="mailHelp" class="form-text text-muted">
-											Select the type of transaction </small></td>
+								<td><input type="number" id="amount" th:field="*{amount}"
+									class="form-control" placeholder="100,00 €" step="0.01"
+									min="0.01" max="99999999.99" required /> <small id="mailHelp"
+									class="form-text text-muted"> Enter the transaction
+										amount in euros excluding fees </small></td>
 
-									<td><input type="number" id="amount" th:field="*{amount}"
-										class="form-control" placeholder="100,00 €" step="0.01"
-										min="0.01" max="99999999.99" required /> <small id="mailHelp"
-										class="form-text text-muted"> Enter the transaction
-											amount in euros excluding fees </small></td>
+								<td><a>YOUR ACCOUNT : <span
+										data-th-text="${appUser.account.id}"></span>
+								</a></td>
+							</tr>
 
-									<td><a>YOUR ACCOUNT : <span
-											data-th-text="${appUser.account.id}"></span>
-									</a></td>
-								</tr>
+							<tr>
+								<td><select id="friend" th:field="*{friend}"
+									class="form-control">
+										<option data-th-each="f: ${myemailsfriendsOrdered}" th:value="${f}">
+											<div data-th-text="${f}"></div>
+										</option>
+								</select> <small id="mailHelp" class="form-text text-muted"> You
+										must select your beneficiary if it is a payment transaction. </small></td>
 
-								<tr>
-									<td><select id="friend" th:field="*{friend}"
-										class="form-control">
-											<option data-th-each="f: ${myemailsfriends}" th:value="${f}">
-												<span data-th-text="${f}"> </span>
-											</option>
-									</select> <small id="mailHelp" class="form-text text-muted"> You
-											must select your beneficiary if it is a payment transaction.
-									</small></td>
+								<td><input type="text" id="description"
+									th:field="*{description}" class="form-control"
+									placeholder="Description" size="20" required /> <small
+									id="mailHelp" class="form-text text-muted"> Enter the
+										description of the transaction </small></td>
 
-									<td><input type="text" id="description"
-										th:field="*{description}" class="form-control"
-										placeholder="Description" size="20" required/> <small id="mailHelp"
-										class="form-text text-muted"> Enter the description of
-											the transaction </small></td>
+								<td><a>
+										<button type="submit" class="btn btn-success">Pay</button>
+								</a></td>
+							</tr>
 
-									<td><a>
-											<button type="submit" class="btn btn-success">Pay</button>
-									</a></td>
-								</tr>
+					</form>
+				</tbody>
 
-							</div>
+			</table>
 
-						</form>
-					</tbody>
-
-				</table>
-
-				<table class="table table-striped table-sm">
-					<thead>
-						<tr>
-							<th  colspan=7>My transactions</th>
-						</tr>
-					</thead>
-
-					<thead class="title_transaction">
-						<tr>
-							<th>Connections</th>
-							<th>Email</th>
-							<th>Type</th>
-							<th>Account</th>
-							<th>Amount</th>
-							<th>Description</th>
-							<th>Date</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr data-th-if="${lts.empty}">
-							<td colspan=10>No transaction added to the database.</td>
-						</tr>
-						<tr data-th-each="transaction:${lts}">
-							<td><span data-th-text="${transaction.pseudo}"> </span></td>
-							<td><span data-th-text="${transaction.friend}"> </span></td>
-							<td><span data-th-text="${transaction.type}"> </span></td>
-							<td><span data-th-text="${transaction.accountUser}">
-							</span></td>
-							<td><span data-th-text="${#numbers.formatDecimal(transaction.amount,1,2)}"></span> €</td>
-							<td><span data-th-text="${transaction.description}">
-							</span></td>
-							<td><span data-th-text="${transaction.date}"> </span></td>
-						</tr>
-					</tbody>
-
-				</table>
-				<nav class="center" aria-label="Page navigation example">
-					<ul class="pagination">
-						<li class="page-item"><a class="page-link" href="#"
-							aria-label="Previous"> <span aria-hidden="true">&laquo;</span>
-						</a></li>
-						<li class="page-item active"><a class="page-link" href="#">1</a></li>
-						<li class="page-item"><a class="page-link" href="#">2</a></li>
-						<li class="page-item"><a class="page-link" href="#">3</a></li>
-						<li class="page-item"><a class="page-link" href="#">4</a></li>
-						<li class="page-item"><a class="page-link" href="#">5</a></li>
-						<li class="page-item"><a class="page-link" href="#"
-							aria-label="Next"> <span aria-hidden="true">&raquo;</span>
-						</a></li>
-					</ul>
-				</nav>
-
+			<div data-th-if="${messageException} != null">
+				<div class="alert alert-danger" role="alert"
+					data-th-text="${messageException}"></div>
 			</div>
-		</div>
 
-	</section>
+
+			<table class="table table-striped table-sm">
+				<thead>
+					<tr>
+						<th colspan=7>My transactions</th>
+					</tr>
+				</thead>
+
+				<thead class="title_transaction">
+					<tr>
+						<th>Connections</th>
+						<th>Email</th>
+						<th>Type</th>
+						<th>Account</th>
+						<th>Amount</th>
+						<th>Description</th>
+						<th>Date</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr data-th-if="${lts.empty}">
+						<td colspan=10>No transaction added to the database.</td>
+					</tr>
+					<tr data-th-each="transaction:${lts}">
+						<td><span data-th-text="${transaction.pseudo}"> </span></td>
+						<td><span data-th-text="${transaction.friend}"> </span></td>
+						<td><span data-th-text="${transaction.type}"> </span></td>
+						<td><span data-th-text="${transaction.accountUser}"> </span></td>
+						<td><span
+							data-th-text="${#numbers.formatDecimal(transaction.amount,1,2)}"></span>
+							€</td>
+						<td><span data-th-text="${transaction.description}"> </span></td>
+						<td><span data-th-text="${transaction.date}"> </span></td>
+					</tr>
+				</tbody>
+
+			</table>
+
+
+			<nav class="center" aria-label="Page navigation example">
+				<ul class="pagination">
+					<li class="page-item"><a class="page-link" href="#"
+						aria-label="Previous"> <span aria-hidden="true">&laquo;</span>
+					</a></li>
+					<li class="page-item active"><a class="page-link" href="#">1</a></li>
+					<li class="page-item"><a class="page-link" href="#">2</a></li>
+					<li class="page-item"><a class="page-link" href="#">3</a></li>
+					<li class="page-item"><a class="page-link" href="#">4</a></li>
+					<li class="page-item"><a class="page-link" href="#">5</a></li>
+					<li class="page-item"><a class="page-link" href="#"
+						aria-label="Next"> <span aria-hidden="true">&raquo;</span>
+					</a></li>
+				</ul>
+			</nav>
+
+		</div>
+	</div>
 
 </body>
 

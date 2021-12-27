@@ -33,9 +33,12 @@ public class TransferController {
 	private FriendService friendService;
 
 	@RequestMapping("/transfer")
-	public String tranferGet(Authentication authentication, Model model) throws RuntimeException, Exception {
+	public String tranferGet(Authentication authentication, Model model) throws Exception {
 		List<TransactionStructured> lts = transactionService.findByEmailStructured(authentication.getName());
 		HashSet<String> myemailsfriends = friendService.findEmailsFriendsOnly(authentication.getName());
+		ArrayList<String> myemailsfriendsOrdered = new ArrayList<String>();
+		myemailsfriendsOrdered.add("");
+		myemailsfriendsOrdered.addAll(myemailsfriends);
 		AppUser appUser = appUserService.findByEmail(authentication.getName());
 		List<String> types = new ArrayList<String>();
 		types.add("payment");
@@ -44,7 +47,7 @@ public class TransferController {
 		Transaction transaction = new Transaction();
 		model.addAttribute("emailUser", authentication.getName());
 		model.addAttribute("lts", lts);
-		model.addAttribute("myemailsfriends", myemailsfriends);
+		model.addAttribute("myemailsfriendsOrdered", myemailsfriendsOrdered);
 		model.addAttribute("appUser", appUser);
 		model.addAttribute("types", types);
 		model.addAttribute("transaction", transaction);
@@ -52,28 +55,68 @@ public class TransferController {
 	}
 
 	@RequestMapping(value = "/transfer", method = RequestMethod.POST)
-	public String transferPost(Authentication authentication, @ModelAttribute("transaction") Transaction transaction) {
+	public String transferPost(Authentication authentication, @ModelAttribute("transaction") Transaction transaction,
+			Model model) {
+		String messageException = null;
 		transaction.setUser(authentication.getName());
 		transaction.setAccountUser(accountService.findByEmail(authentication.getName()).getId());
 
 		switch (transaction.getType()) {
 
 		case "payment":
-			transactionService.createPayment(transaction);
+			try {
+				transactionService.createPayment(transaction);
+			} catch (Exception e) {
+				int length = e.getMessage().length();
+				int beginIndex = 7;
+				int endIndex = length - 1;
+				messageException = e.getMessage().substring(beginIndex, endIndex);
+			}
 			break;
 
 		case "deposit":
-			transactionService.createDeposit(transaction);
+			try {
+				transactionService.createDeposit(transaction);
+			} catch (Exception e) {
+				int length = e.getMessage().length();
+				int beginIndex = 7;
+				int endIndex = length - 1;
+				messageException = e.getMessage().substring(beginIndex, endIndex);
+			}
 			break;
 
 		case "withdrawal":
-			transactionService.createWithdrawal(transaction);
+			try {
+				transactionService.createWithdrawal(transaction);
+			} catch (Exception e) {
+				int length = e.getMessage().length();
+				int beginIndex = 7;
+				int endIndex = length - 1;
+				messageException = e.getMessage().substring(beginIndex, endIndex);
+			}
 			break;
+
 		default:
 
 		}
 
-		return "redirect:/transfer";
+		List<TransactionStructured> lts = transactionService.findByEmailStructured(authentication.getName());
+		HashSet<String> myemailsfriends = friendService.findEmailsFriendsOnly(authentication.getName());
+		AppUser appUser = appUserService.findByEmail(authentication.getName());
+		System.out.println(appUser);
+		List<String> types = new ArrayList<String>();
+		types.add("payment");
+		types.add("deposit");
+		types.add("withdrawal");
+		model.addAttribute("emailUser", authentication.getName());
+		model.addAttribute("lts", lts);
+		model.addAttribute("myemailsfriends", myemailsfriends);
+		model.addAttribute("appUser", appUser);
+		model.addAttribute("types", types);
+		model.addAttribute("transaction", new Transaction());
+		model.addAttribute("messageException", messageException);
+
+		return "transfer";
 	}
 
 }
