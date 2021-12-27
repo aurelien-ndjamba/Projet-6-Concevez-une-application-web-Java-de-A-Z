@@ -1,5 +1,7 @@
 package com.paymybuddy.webapp.service;
 
+import java.util.ArrayList;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,26 +17,13 @@ public class AppUserService {
 	@Autowired
 	private AppUserProxy appUserProxy;  
 
-	public boolean login(AppUser appUser) {
-		return appUserProxy.login(appUser);
-	}
-
 	public AppUser findByEmail(String email) {
 			AppUser appUser = appUserProxy.findByEmail(email);
 		return appUser;
 	}
 	
-	public AppUser save(AppUser appUser) {
-		return appUserProxy.save(appUser);
-		
-	}
-
-	public AppUser updateAll(AppUser appUser) {
-		return appUserProxy.updateAll(appUser);
-	}
-
-	public AppUser deleteAppUser(String email) {
-		return appUserProxy.deleteAppUser(email);
+	public ArrayList<String> findOtherEmailsFriendsAvailableForThisEmail(String email) {
+		return appUserProxy.findOtherEmailsFriendsAvailableForThisEmail(email);
 	}
 
 	public AppUser updatePassword(String email, String password) {
@@ -45,8 +34,13 @@ public class AppUserService {
 		return appUserProxy.updatePhone(email, phone);
 	}
 
-	public AppUser updateActive(String email, boolean active) {
-		return appUserProxy.updateActive(email, active);
-		}
+	public AppUser save(AppUser appUser) {
+		return appUserProxy.save(appUser);
+		
+	}
+
+	public AppUser deleteAppUser(String email) {
+		return appUserProxy.deleteAppUser(email);
+	}
 
 }

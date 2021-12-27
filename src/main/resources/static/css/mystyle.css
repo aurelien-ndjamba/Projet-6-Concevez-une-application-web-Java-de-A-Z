@@ -16,8 +16,10 @@
 	justify-content: space-between;
 }
 
-.header2 {
+.info_transaction {
 	background-color:rgb(245, 245, 240);
+	height:35px;
+	text-align: justify;
 }
 
 .header3 {
@@ -25,10 +27,25 @@
 	align-items: flex-start;
 }
 
-.logo {
-	background-color:#5cb95c;
+.title_transaction {
+	background-color:#7dd076;
+	color: white;
 }
 
-.btn btn-success{
-	background-color:#5cb95c;
+#bootstrap-overrides{
+	color:#fff;
+	background-color:#7dd076;
+	border-color:#198754
+	
+}
+
+/*.btn-success{color:#fff;background-color:#198754;border-color:#198754}*/
+
+/* Style the form icons */
+.icon {
+  padding: 10px;
+  background: dodgerblue;
+  color: white;
+  min-width: 50px;
+  text-align: center;
 }

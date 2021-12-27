@@ -6,6 +6,7 @@ import lombok.Data;
 
 @Data
 public class TransactionStructured {
+	
 		private UUID id;
 		private String friend;
 		private String pseudo;
@@ -14,4 +15,5 @@ public class TransactionStructured {
 		private Double amount;
 		private Timestamp date;
 		private String description;
+		
 	}

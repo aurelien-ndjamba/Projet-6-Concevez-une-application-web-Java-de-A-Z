@@ -7,6 +7,7 @@ import lombok.Data;
 public class AppUser {
 	
 	private String username;
+	private String email;
 	private String pseudo;
 	private String password;
 	private Double balance;

@@ -1,6 +1,7 @@
 package com.paymybuddy.webapp.repository;
 
 import java.util.HashSet;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
@@ -31,6 +32,15 @@ public class FriendProxy {
 	public HashSet<String> findPseudosFriendsOnly(String email) {
 		String baseApiUrl = props.getApiUrl();
 		String getFriendsOnlyUrl = baseApiUrl + "/pseudosfriends?email=" + email;
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<HashSet<String>> response = restTemplate.exchange(getFriendsOnlyUrl, HttpMethod.GET, null,
+				new ParameterizedTypeReference<HashSet<String>>(){});
+		return response.getBody();
+	}
+
+	public HashSet<String> findPseudosFriendsOnly(String email, Optional<Integer> page, Optional<Integer> size) {
+		String baseApiUrl = props.getApiUrl();
+		String getFriendsOnlyUrl = baseApiUrl + "/page_pseudosfriends?email=" + email+"&page="+ page +"&size="+ size;
 		RestTemplate restTemplate = new RestTemplate();
 		ResponseEntity<HashSet<String>> response = restTemplate.exchange(getFriendsOnlyUrl, HttpMethod.GET, null,
 				new ParameterizedTypeReference<HashSet<String>>(){});

@@ -18,11 +18,7 @@ public class TransactionService {
 	@Autowired
 	private TransactionProxy transactionProxy;
 
-	public List<Transaction> getTransactions(String emailUser) {
-		return transactionProxy.getTransactions(emailUser);
-	}
-
-	public List<TransactionStructured> findByEmailStructured(String email) { 
+	public List<TransactionStructured> findByEmailStructured(String email) {
 		return transactionProxy.findByEmailStructured(email);
 	}
 

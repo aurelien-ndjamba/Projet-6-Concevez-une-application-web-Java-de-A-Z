@@ -11,7 +11,7 @@
 	integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
 	crossorigin="anonymous">
 
-<title>home</title>
+<title>Home</title>
 
 </head>
 <body>
@@ -19,7 +19,7 @@
 	<header>
 		<div class="header">
 			<div>
-				<a class="btn btn-success" href="/home">PayMyBuddy</a>
+				<a class="bootstrap-overrides" href="/home">PayMyBuddy</a> 
 			</div>
 			<div class="nav">
 				<ul class="nav nav-tabs card-header-tabs">
@@ -28,11 +28,16 @@
 					<li><a class="nav-link" href="/transfer">Transfer</a></li>
 					<li><a class="nav-link" href="/profile">Profile</a></li>
 					<li><a class="nav-link" href="/contact">Contact</a></li>
-					<li><a class="nav-link" href="/logoff">Log off</a></li>
+					<!-- 					<li><a class="nav-link" href="/logout">Logoff</a></li> -->
+					<li>
+						<form method="post" th:action="@{/logout}">
+							<input type="submit" class="nav-link" value="Log off">
+						</form>
+					</li>
 				</ul>
 			</div>
 		</div>
-		<div class="header2">
+		<div class="info_transaction">
 			<div>
 				<p class="mx-3">Home</p>
 			</div>
@@ -42,13 +47,13 @@
 
 	<div class="container">
 
-		<div class="mt-3">
-			<h2 class="h2">HOME</h2>
+		<h2 class="h2">HOME</h2>
+		<div>
+			<img alt="logo_Pay_My_Buddy" src="pmb.PNG" />
 		</div>
-
-		<p>
-			Bienvenu '<strong data-th-text="${a.pseudo}"> </strong>' sur
-			l'application "PAYMYBUDDY".
+		</br><p>
+			Bienvenu '<strong data-th-text="${appUserHome.pseudo}"> </strong>' sur
+			l'application "PAY MY BUDDY".
 		</p>
 		<p>Vous pouvez effectuer des paiements avec vos amis ou des
 			retraits vers votre compte.</p>

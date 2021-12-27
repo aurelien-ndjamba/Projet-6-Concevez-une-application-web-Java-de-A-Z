@@ -5,7 +5,7 @@
 <head>
 <meta charset="utf-8">
 
-<link rel="stylesheet" href="css/mystyle.css"/>
+<link rel="stylesheet" href="css/mystyle.css" />
 
 <link
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
@@ -30,11 +30,16 @@
 					<li><a class="nav-link active" href="/profile"
 						aria-current="true">Profile</a></li>
 					<li><a class="nav-link" href="/contact">Contact</a></li>
-					<li><a class="nav-link" href="/logoff">Log off</a></li>
+					<!-- 					<li><a class="nav-link" href="/logout">Logoff</a></li> -->
+					<li>
+						<form method="post" th:action="@{/logout}">
+							<input type="submit" class="nav-link" value="Log off">
+						</form>
+					</li>
 				</ul>
 			</div>
 		</div>
-		<div class="header2">
+		<div class="info_transaction">
 			<div>
 				<p class="mx-3">Home / Profile</p>
 			</div>
@@ -59,10 +64,7 @@
 
 						<tr>
 							<td><span data-th-text="${u.email}"> </span></td>
-							<td><span data-th-text="${u.balance}"> </span></td>
-
-							<!-- a
-								th:href="@{/deleteappuser(emailUser=${appUserForm.email})}"-->
+							<td><span data-th-text="${#numbers.formatDecimal(u.balance,1,2)}"></span> €</td>
 
 							<td><a th:href="@{deleteappuser}">
 									<button class="btn btn-danger">UNSUBSCRIBE</button>
@@ -92,7 +94,6 @@
 						<tr>
 							<th>PSEUDO</th>
 							<th>PHONE</th>
-							<!-- th>ACTION</th-->
 						</tr>
 					</thead>
 
@@ -103,7 +104,12 @@
 							<td><span data-th-text="${u.phone}"></span></td>
 
 						</tr>
+					</tbody>
 
+<!-- 				</table> -->
+<!-- 				<table> -->
+
+					<tbody>
 
 						<tr>
 							<form th:action="@{/updatephone}" th:object="${u}" method="post">
@@ -115,10 +121,10 @@
 											phone for the update. </small>
 									</div>
 								</td>
-								<td><a>
+								<td>
 										<button type="submit" class="btn btn-primary">UPDATE
 											PHONE</button>
-								</a></td>
+								</td>
 							</form>
 						</tr>
 
@@ -145,55 +151,6 @@
 
 					</tbody>
 
-
-
-
-
-					<!-- thead>
-						<tr>
-							<th>ACCOUNT</th>
-							<th>BANK</th>
-							<th>ACTION</th>
-						</tr>
-					</thead>
-
-					<tbody>
-
-						<tr>
-							<td><span data-th-text="${a.id}"> </span></td>
-							<td><span data-th-text="${a.bank}"> </span></td>
-						</tr-->
-
-
-
-
-					<!-- tr>
-							<form method="post" th:action="@{/updateaccount}" th:object="${a}">
-								<td>
-									<div class="form-group">
-										<input th:field="*{id}" type="text" class="form-control"
-											aria-describedby="mailHelp" placeholder="New account"
-											required/> <small id="passwordHelp"
-											class="form-text text-muted"> Please enter the new
-											account. </small>
-									</div>
-								</td>
-								<td>
-									<div class="form-group">
-										<input th:field="*{bank}" type="text" class="form-control"
-											aria-describedby="mailHelp" placeholder="New bank" required/>
-										<small id="passwordHelp" class="form-text text-muted">
-											Please enter the bank associated with this account. </small>
-									</div>
-								</td>
-								<td><a>
-										<button type="submit" class="btn btn-info">UPDATE
-											ACCOUNT</button>
-								</a></td>
-							</form>
-						</tr-->
-
-					<!-- /tbody-->
 				</table>
 			</div>
 		</div>

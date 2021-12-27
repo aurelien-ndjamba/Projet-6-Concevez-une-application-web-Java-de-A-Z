@@ -30,11 +30,16 @@
 					<li><a class="nav-link" href="/profile">Profile</a></li>
 					<li><a class="nav-link active" href="/contact"
 						aria-current="true">Contact</a></li>
-					<li><a class="nav-link" href="/logoff">Log off</a></li>
+					<!-- 					<li><a class="nav-link" href="/logout">Logoff</a></li> -->
+					<li>
+						<form method="post" th:action="@{/logout}">
+							<input type="submit" class="nav-link" value="Log off">
+						</form>
+					</li>
 				</ul>
 			</div>
 		</div>
-		<div class="header2">
+		<div class="info_transaction">
 			<div>
 				<p class="mx-3">Home / Contact</p>
 			</div>
@@ -54,28 +59,28 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr data-th-if="${myContactsOnly.empty}">
+						<tr data-th-if="${pseudosFriendsOnly.empty}">
 							<td colspan="2">No contact added to the database.</td>
 						</tr>
 						<tr>
-							<form method="post" th:action="@{/contact/add}"
-								th:object="${friend}">
+							<form method="post" th:action="@{/contact}"
+								th:object="${newFriendContact}">
 								<td>
 									<div class="form-group">
 										<select id="emailFriend" th:field="*{emailFriend}"
 											class="form-control">
-											<option th:each="c:${allOtherContactsExisting}"
-												th:value="${c}" th:text="${c}"></option>
+											<option th:each="c:${emailsFriendsAvailable}" th:value="${c}"
+												th:text="${c}"></option>
 										</select> <small id="mailHelp" class="form-text text-muted">
 											Select email address of your new friend. </small>
 									</div>
 								</td>
-								<td><a>
-										<button type="submit" class="btn btn-primary">ADD</button>
-								</a></td>
+								<td>
+									<button type="submit" class="btn btn-primary">ADD</button>
+								</td>
 							</form>
 						</tr>
-						<tr data-th-each="f: ${myContactsOnly}">
+						<tr data-th-each="f: ${pseudosFriendsOnly}">
 							<td><span data-th-text="${f}"> </span></td>
 							<td><a th:href="@{/deletecontact(friend=${f})}">
 									<button class="btn btn-danger">DELETE</button>
@@ -83,23 +88,41 @@
 						</tr>
 					</tbody>
 				</table>
-
-				<nav class="center" aria-label="Page navigation example">
-					<ul class="pagination">
-						<li class="page-item"><a class="page-link" href="#"
-							aria-label="Previous"> <span aria-hidden="true">&laquo;</span>
-						</a></li>
-						<li class="page-item active"><a class="page-link" href="#">1</a></li>
-						<li class="page-item"><a class="page-link" href="#">2</a></li>
-						<li class="page-item"><a class="page-link" href="#">3</a></li>
-						<li class="page-item"><a class="page-link" href="#">4</a></li>
-						<li class="page-item"><a class="page-link" href="#">5</a></li>
-						<li class="page-item"><a class="page-link" href="#"
-							aria-label="Next"> <span aria-hidden="true">&raquo;</span>
-						</a></li>
-					</ul>
-				</nav>
 	</section>
+	<footer>
+		<nav class="center" aria-label="Page navigation example">
+			<ul class="pagination">
+				<li class="page-item"><a class="page-link" href="#"
+					aria-label="Previous"> <span aria-hidden="true">&laquo;</span>
+				</a></li>
+
+				<li class="page-item active"><a href="/contact"
+					class="page-link active">1</a></li>
+				<li class="page-item"><a
+					th:href="@{/page_contact(page=1,size=5) }" class="page-link">2</a></li>
+				<li class="page-item"><a
+					th:href="@{/page_contact(page=2,size=5) }" class="page-link"> 3</a></li>
+				<li class="page-item"><a
+					th:href="@{/page_contact(page=3,size=5) }" class="page-link"> 4</a></li>
+				<li class="page-item"><a
+					th:href="@{/page_contact(page=4,size=5) }" class="page-link"> 5</a></li>
+
+				<li class="page-item"><a
+					th:href="@{/page_contact(emailUser=${emailUser},page=1,size=5) }"
+					class="page-link">X</a></li>
+
+				<!-- 				<li class="page-item"><a class="page-link" -->
+				<!-- 					href="/page_contact?email=${emailUser}page=3&size=5">4</a></li> -->
+				<!-- 				<li class="page-item"><a class="page-link" -->
+				<!-- 					href="/page_contact?email=${emailUser}page=4&size=5">5</a></li> -->
+
+
+				<li class="page-item"><a class="page-link" href="#"
+					aria-label="Next"> <span aria-hidden="true">&raquo;</span>
+				</a></li>
+			</ul>
+		</nav>
+	</footer>
 
 </body>
 
