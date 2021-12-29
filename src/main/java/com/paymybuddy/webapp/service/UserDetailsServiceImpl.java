@@ -25,7 +25,6 @@ public class UserDetailsServiceImpl implements UserDetailsService{
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		AppUser appUser = userService.findByEmail(username);
-		System.out.println(appUser);
 		if (appUser.getPseudo() == null) throw new UsernameNotFoundException(username);
 		Collection<GrantedAuthority> authorities = new ArrayList<>(); 
 		appUser.getRoles().forEach (r -> {

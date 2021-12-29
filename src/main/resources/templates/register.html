@@ -38,8 +38,8 @@
 							th:field="*{password}" class="form-control"
 							pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
 							title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
-							required /> </br> <input type="tel" name="phone" title="Phone"
-							th:field="*{phone}" class="form-control" min="3" max="20" required /> </br> <input
+							required /> </br> <input type="number" name="phone" placeholder="Phone"
+							th:field="*{phone}" class="form-control" min="3" max="9999999999999999" required /> </br> <input
 							type="number" name="account" th:field="*{account.id}"
 							class="form-control" step="1" placeholder="Account Number"
 							required /> </br> <input type="text" name="bank"

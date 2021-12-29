@@ -76,37 +76,4 @@ public class ContactController {
 		return "redirect:/contact";
 	}
 
-//	@RequestMapping(value = "/contact", method = RequestMethod.GET)
-//	public String contactGet(Authentication authentication, Model model) throws RuntimeException, Exception {
-//		model.addAttribute("emailUser", authentication.getName());
-//		model.addAttribute("newFriendContact", new Friend());
-//		HashSet<String> pseudosFriendsOnly = friendService.findPseudosFriendsOnly(authentication.getName(), 0, 5);
-//		System.out.println(pseudosFriendsOnly);
-//		model.addAttribute("pseudosFriendsOnly", pseudosFriendsOnly);
-//		ArrayList<String> emailsFriendsAvailable = appUserService
-//				.findOtherEmailsFriendsAvailableForThisEmail(authentication.getName());
-//		model.addAttribute("emailsFriendsAvailable", emailsFriendsAvailable);
-//		return "contact";
-//	}
-
-//	@RequestMapping(value = "/contact", method = RequestMethod.GET)
-//	public String contactGet(Authentication authentication, Model model, @RequestParam("page") Optional<Integer> page, 
-//		      @RequestParam("size") Optional<Integer> size) throws RuntimeException, Exception {
-//		int currentPage = page.orElse(1);
-//        int pageSize = size.orElse(5);
-//        
-//        
-//		model.addAttribute("emailUser", authentication.getName());
-//		
-//		model.addAttribute("newFriendContact", new Friend());
-//		HashSet<String> pseudosFriendsOnly = friendService.findPseudosFriendsOnly(authentication.getName(),currentPage-1,pageSize);
-//		
-//		model.addAttribute("pseudosFriendsOnly", pseudosFriendsOnly);
-//		ArrayList<String> emailsFriendsAvailable = appUserService
-//				.findOtherEmailsFriendsAvailableForThisEmail(authentication.getName());
-//		
-//		model.addAttribute("emailsFriendsAvailable", emailsFriendsAvailable);
-//		return "contact";
-//	}
-
 }

@@ -59,7 +59,7 @@
 			<div data-th-if="${messageException} != null"
 				class="alert alert-danger" role="alert">
 				<p>
-					<strong>FAILED TRANSACTION :</strong> 
+					<strong>FAILED TRANSACTION :</strong>
 				</p>
 				<span data-th-text="${messageException}"></span>
 			</div>
@@ -67,7 +67,7 @@
 			<div data-th-if="${transactionResult} != null"
 				class="alert alert-success" role="alert">
 				<p>
-					<strong>SUCCESSFUL TRANSACTION :</strong> 
+					<strong>SUCCESSFUL TRANSACTION :</strong>
 				</p>
 				<span data-th-text="${transactionResult}"> </span>
 			</div>
@@ -76,7 +76,7 @@
 
 			<table class="table">
 
-				<thead>
+				<thead >
 					<tr>
 						<th>Send Money</th>
 
@@ -107,10 +107,20 @@
 								class="form-text text-muted"> Enter the transaction
 									amount in euros excluding fees </small></td>
 
-							<td><strong> <a>My Account : <span
-										data-th-text="${appUser.account.id}"></span>
-								</a>
-							</strong></td>
+							<td><p>
+									<strong> <a>My Account : <span
+											data-th-text="${appUser.account.id}"></span>
+									</a>
+									</strong>
+								</p>
+<!-- 								<p> -->
+<!-- 									<strong> <a>Balance Available : <span -->
+<!-- 											data-th-text="${#numbers.formatDecimal(appUser.balance,1,2)}"></span> -->
+<!-- 											€ -->
+<!-- 									</a> -->
+<!-- 									</strong> -->
+<!-- 								</p> -->
+								</td>
 						</tr>
 
 						<tr>
@@ -175,7 +185,7 @@
 				</table>
 			</div>
 
-			<nav class="center" aria-label="Page navigation example">
+			<!-- nav class="center" aria-label="Page navigation example">
 				<ul class="pagination">
 					<li class="page-item"><a class="page-link" href="#"
 						aria-label="Previous"> <span aria-hidden="true">&laquo;</span>
@@ -189,7 +199,7 @@
 						aria-label="Next"> <span aria-hidden="true">&raquo;</span>
 					</a></li>
 				</ul>
-			</nav>
+			</nav-->
 
 		</div>
 	</div>

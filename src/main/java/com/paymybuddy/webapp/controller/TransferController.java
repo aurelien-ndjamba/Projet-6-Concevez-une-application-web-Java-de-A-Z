@@ -36,8 +36,7 @@ public class TransferController {
 	String messageException;
 
 	@RequestMapping("/transfer")
-	public String tranferGet(Authentication authentication, Model model) throws Exception {
-		System.out.println(transactionResult);
+	public String tranferGet(Authentication authentication, Model model) {
 		List<TransactionStructured> lts = transactionService.findByEmailStructured(authentication.getName());
 		HashSet<String> myemailsfriends = friendService.findEmailsFriendsOnly(authentication.getName());
 		ArrayList<String> myemailsfriendsOrdered = new ArrayList<String>();
@@ -56,11 +55,9 @@ public class TransferController {
 		model.addAttribute("types", types);
 		model.addAttribute("transaction", transaction);
 		model.addAttribute("messageException", messageException);
-		System.out.println(transactionResult);
 		model.addAttribute("transactionResult", transactionResult);
 		messageException = null;
 		transactionResult = null;
-		System.out.println(transactionResult);
 		return "transfer";
 	}
 
@@ -69,7 +66,6 @@ public class TransferController {
 	public String transferPost(Authentication authentication, @ModelAttribute("transaction") Transaction transaction) {
 		transaction.setUser(authentication.getName());
 		transaction.setAccountUser(accountService.findByEmail(authentication.getName()).getId());
-		System.out.println(transaction);
 
 		switch (transaction.getType()) {
 

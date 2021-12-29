@@ -94,9 +94,9 @@
 								data-th-text="${#numbers.formatDecimal(u.balance,1,2)}"></span>
 								€</td>
 
-							<td><a th:href="@{deleteappuser}">
+							<!-- td><a th:href="@{deleteappuser}">
 									<button class="btn btn-danger">UNSUBSCRIBE</button>
-							</a></td>
+							</a></td-->
 
 						</tr>
 					</tbody>
@@ -143,7 +143,7 @@
 							<form th:action="@{/updatephone}" th:object="${u}" method="post">
 								<td colspan="2">
 									<div class="form-group">
-										<input th:field="*{phone}" type="number" min="3" max="20" step="1"
+										<input th:field="*{phone}" type="number" min="3" max="9999999999999999" step="1"
 											class="form-control" placeholder="New phone" required /> <small
 											class="form-text text-muted"> Please enter a new
 											phone for the update. </small>
