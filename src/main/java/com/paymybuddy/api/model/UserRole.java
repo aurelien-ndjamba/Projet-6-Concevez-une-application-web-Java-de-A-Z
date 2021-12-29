@@ -26,12 +26,10 @@ public class UserRole implements Serializable{
 
 	@Id
 	@Column(name ="email")
-//	@JoinColumn(name = "userapp_friend_fk")
 	private String email;
 	
 	@Id
 	@Column(name ="rolename")
-//	@JoinColumn(name = "appUser_friend_fk")
 	private String roleName;
 
 }

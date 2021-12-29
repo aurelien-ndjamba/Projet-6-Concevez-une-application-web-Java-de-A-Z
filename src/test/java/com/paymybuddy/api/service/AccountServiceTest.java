@@ -3,6 +3,7 @@ package com.paymybuddy.api.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.any;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,16 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.paymybuddy.api.model.Account;
-import com.paymybuddy.api.model.AppUser;
 import com.paymybuddy.api.repository.AccountRepository;
 import com.paymybuddy.api.repository.UserRepository;
 
 @SpringBootTest
 public class AccountServiceTest {
-	@Autowired
-	private Account account;
-	@Autowired
-	private AppUser appUser;
 	@Autowired
 	private AccountService accountService;
 
@@ -32,6 +28,8 @@ public class AccountServiceTest {
 	private AccountRepository accountRepositoryMock;
 	@Mock
 	private UserRepository userRepositoryMock;
+	@Autowired
+	private Account account;
 
 	@BeforeEach
 	public void initAccount() {
@@ -42,7 +40,7 @@ public class AccountServiceTest {
 	}
 
 	@Test
-	public void testFindAll() throws Exception {
+	public void testFindAllWhenAllIsOk() throws Exception {
 		// GIVEN
 		List<Account> accounts = new ArrayList<Account>();
 		accounts.add(account);
@@ -75,7 +73,7 @@ public class AccountServiceTest {
 		accountService.setAccountRepository(accountRepositoryMock);
 
 		// THEN
-		assertThatThrownBy(() -> accountService.findById(77777)).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> accountService.findById(77777)).isInstanceOf(Exception.class)
 				.hasMessage("Compte bancaire non existant dans la BDD");
 
 	}
@@ -83,17 +81,16 @@ public class AccountServiceTest {
 	@Test
 	public void testFindByEmailWhenEmailExist() throws Exception {
 		// GIVEN
-		List<Account> accounts = new ArrayList<Account>();
-		accounts.add(account);
+		account.setBank("bankTest");
 
 		// WHEN
-		when(userRepositoryMock.findByEmail("test@gmail.com")).thenReturn(appUser);
-		when(accountRepositoryMock.findByEmail("test@gmail.com")).thenReturn(accounts);
+		when(userRepositoryMock.existsById("test@gmail.com")).thenReturn(true);
+		when(accountRepositoryMock.findByEmail("test@gmail.com")).thenReturn(account);
 		accountService.setUserRepository(userRepositoryMock);
 		accountService.setAccountRepository(accountRepositoryMock);
 
 		// THEN
-		assertThat(accountService.findByEmail("test@gmail.com").size()).isEqualTo(1);
+		assertThat(accountService.findByEmail("test@gmail.com").getBank()).isEqualTo("bankTest");
 	}
 
 	@Test
@@ -107,7 +104,7 @@ public class AccountServiceTest {
 		accountService.setUserRepository(userRepositoryMock);
 
 		// THEN
-		assertThatThrownBy(() -> accountService.findByEmail("test@gmail.com")).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> accountService.findByEmail("test@gmail.com")).isInstanceOf(Exception.class)
 				.hasMessage("Email non existant dans la BDD");
 	}
 
@@ -117,22 +114,22 @@ public class AccountServiceTest {
 		account.setId(null);
 
 		// THEN
-		assertThatThrownBy(() -> accountService.save(account)).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> accountService.save(account)).isInstanceOf(Exception.class)
 				.hasMessage("Vous devez renseigner un numéro de compte!");
 	}
 
 	@Test
 	public void testSaveWhenIdAlreadyPresentInDatabase() throws Exception {
-		// GIVEN
-		Optional<Account> present = Optional.of(account);
-
 		// WHEN
-		when(accountRepositoryMock.findById(account.getId())).thenReturn(present);
+		when(accountRepositoryMock.existsById(account.getId())).thenReturn(true);
+		when(userRepositoryMock.existsById(account.getEmail())).thenReturn(false);
+		when(accountRepositoryMock.save(account)).thenReturn(account);
 		accountService.setAccountRepository(accountRepositoryMock);
+		accountService.setUserRepository(userRepositoryMock);
 
 		// THEN
-		assertThatThrownBy(() -> accountService.save(account)).isInstanceOf(RuntimeException.class)
-				.hasMessage("Compte bancaire déjà existant dans la BDD");
+		assertThatThrownBy(() -> accountService.save(account)).isInstanceOf(Exception.class)
+				.hasMessage("Numéro bancaire déjà existant dans la BDD");
 	}
 
 	@Test
@@ -141,7 +138,7 @@ public class AccountServiceTest {
 		account.setEmail(null);
 
 		// THEN
-		assertThatThrownBy(() -> accountService.save(account)).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> accountService.save(account)).isInstanceOf(Exception.class)
 				.hasMessage("Vous devez renseigner l'email associé à ce compte bancaire!");
 	}
 
@@ -157,37 +154,32 @@ public class AccountServiceTest {
 		accountService.setUserRepository(userRepositoryMock);
 
 		// THEN
-		assertThatThrownBy(() -> accountService.save(account)).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> accountService.save(account)).isInstanceOf(Exception.class)
 				.hasMessage("Email non existant dans la BDD");
 	}
 
 	@Test
 	public void testSaveWhenBankAccountIsEmpty() throws Exception {
 		// GIVEN
-		Optional<Account> notAccountPresent = Optional.empty();
-		AppUser appUser = new AppUser();
 		account.setBank(null);
 
 		// WHEN
-		when(accountRepositoryMock.findById(account.getId())).thenReturn(notAccountPresent);
-		when(userRepositoryMock.findByEmail(account.getEmail())).thenReturn(appUser);
+		when(accountRepositoryMock.existsById(account.getId())).thenReturn(false);
+		when(userRepositoryMock.existsById(account.getEmail())).thenReturn(true);
+		when(accountRepositoryMock.save(account)).thenReturn(account);
 		accountService.setAccountRepository(accountRepositoryMock);
 		accountService.setUserRepository(userRepositoryMock);
 
 		// THEN
-		assertThatThrownBy(() -> accountService.save(account)).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> accountService.save(account)).isInstanceOf(Exception.class)
 				.hasMessage("Vous devez renseigner le nom de la banque associée à votre compte bancaire!");
 	}
 
 	@Test
 	public void testSaveWhenNoErrorExist() throws Exception {
-		// GIVEN
-		Optional<Account> notAccountPresent = Optional.empty();
-		AppUser appUser = new AppUser();
-
 		// WHEN
-		when(accountRepositoryMock.findById(account.getId())).thenReturn(notAccountPresent);
-		when(userRepositoryMock.findByEmail(account.getEmail())).thenReturn(appUser);
+		when(accountRepositoryMock.existsById(account.getId())).thenReturn(false);
+		when(userRepositoryMock.existsById(account.getEmail())).thenReturn(true);
 		when(accountRepositoryMock.save(account)).thenReturn(account);
 		accountService.setAccountRepository(accountRepositoryMock);
 		accountService.setUserRepository(userRepositoryMock);
@@ -197,118 +189,21 @@ public class AccountServiceTest {
 	}
 
 	@Test
-	public void testUpdateWhenIdAccountIsNull() throws Exception {
+	public void testUpdateBank() throws Exception {
 		// GIVEN
-		account.setId(null);
-
-		// THEN
-		assertThatThrownBy(() -> accountService.update(account)).isInstanceOf(RuntimeException.class)
-		.hasMessage("Vous devez renseigner un numéro de compte!");
-	}
-	
-	@Test
-	public void testUpdateWhenIdAccountNotExistInDatabase() throws Exception {
-		// GIVEN
-		Optional<Account> empty = Optional.empty();
+		Account acc = new Account();
+		acc.setEmail("toto_email");
+		acc.setBank("toto");
 
 		// WHEN
-		when(accountRepositoryMock.findById(account.getId())).thenReturn(empty);
-		accountService.setAccountRepository(accountRepositoryMock);
-		
-		// THEN
-		assertThatThrownBy(() -> accountService.update(account)).isInstanceOf(RuntimeException.class)
-		.hasMessage("Compte bancaire non existant dans la BDD");
-	}
-	
-	@Test
-	public void testUpdateWhenEmailIsNull() throws Exception {
-		// GIVEN
-		Optional<Account> o = Optional.of(account);
-		account.setEmail(null);
-
-		// WHEN
-		when(accountRepositoryMock.findById(account.getId())).thenReturn(o);
-		accountService.setAccountRepository(accountRepositoryMock);
-		
-		// THEN
-		assertThatThrownBy(() -> accountService.update(account)).isInstanceOf(RuntimeException.class)
-		.hasMessage("Vous devez renseigner l'email associé à ce compte bancaire!");
-	}
-	
-	@Test
-	public void testUpdateWhenEmailNotExistInDatabase() throws Exception {
-		// GIVEN
-		Optional<Account> o = Optional.of(account);
-
-		// WHEN
-		when(accountRepositoryMock.findById(account.getId())).thenReturn(o);
-		when(userRepositoryMock.findByEmail(account.getEmail())).thenReturn(null);
-		accountService.setAccountRepository(accountRepositoryMock);
-		
-		// THEN
-		assertThatThrownBy(() -> accountService.update(account)).isInstanceOf(RuntimeException.class)
-		.hasMessage("Email non existant dans la BDD");
-	}
-	
-	@Test
-	public void testUpdateWhenBankIsNull() throws Exception {
-		// GIVEN
-		Optional<Account> o = Optional.of(account);
-		account.setBank(null);
-		AppUser appUser = new AppUser();
-
-		// WHEN
-		when(accountRepositoryMock.findById(account.getId())).thenReturn(o);
-		when(userRepositoryMock.findByEmail(account.getEmail())).thenReturn(appUser);
-		accountService.setAccountRepository(accountRepositoryMock);
+		when(userRepositoryMock.existsById(acc.getEmail())).thenReturn(true);
+		when(accountRepositoryMock.findByEmail(acc.getEmail())).thenReturn(new Account());
+		when(accountRepositoryMock.save(any(Account.class))).thenReturn(acc);
 		accountService.setUserRepository(userRepositoryMock);
-		
-		// THEN
-		assertThatThrownBy(() -> accountService.update(account)).isInstanceOf(RuntimeException.class)
-		.hasMessage("Vous devez renseigner le nom de la banque associée à votre compte bancaire!");
-	}
-	
-	@Test
-	public void testUpdateWhenNoErrorExist() throws Exception {
-		// GIVEN
-		Optional<Account> o = Optional.of(account);
-		AppUser appUser = new AppUser();
-
-		// WHEN
-		when(accountRepositoryMock.findById(account.getId())).thenReturn(o);
-		when(userRepositoryMock.findByEmail(account.getEmail())).thenReturn(appUser);
-		when(accountRepositoryMock.save(account)).thenReturn(account);
-		accountService.setAccountRepository(accountRepositoryMock);
-		accountService.setUserRepository(userRepositoryMock);
-		
-		// THEN
-		assertThat(accountService.update(account).getBank()).isEqualTo("BANQUE DU SUD");
-	}
-
-	@Test
-	public void testDeleteByIdWhenIdDontExistInDatabase() throws Exception {
-		// GIVEN
-		Optional<Account> empty = Optional.empty();
-
-		// WHEN
-		when(accountRepositoryMock.findById(account.getId())).thenReturn(empty);
 		accountService.setAccountRepository(accountRepositoryMock);
 
 		// THEN
-		assertThatThrownBy(() -> accountService.deleteById(account.getId())).isInstanceOf(RuntimeException.class)
-				.hasMessage("Compte bancaire non existant dans la BDD");
+		assertThat(accountService.updateBank(acc).getBank()).isEqualTo("toto");
 	}
 
-	@Test
-	public void testDeleteByIdWhenIdExistInDatabase() throws Exception {
-		// GIVEN
-		Optional<Account> o = Optional.of(account);
-
-		// WHEN
-		when(accountRepositoryMock.findById(account.getId())).thenReturn(o);
-		accountService.setAccountRepository(accountRepositoryMock);
-
-		// THEN
-		assertThat(accountService.deleteById(account.getId()).getBank()).isEqualTo("BANQUE DU SUD");
-	}
 }

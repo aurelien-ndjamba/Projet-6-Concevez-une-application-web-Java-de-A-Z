@@ -5,7 +5,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 
 @SpringBootApplication
 public class ApiPaymybuddyApplication implements CommandLineRunner {
@@ -18,7 +17,7 @@ public class ApiPaymybuddyApplication implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 		
 	}
-
+	
 	/*
 	 * Au démarrage de l'app, toute les méthodes avec annotation Bean sont exécuté
 	 * et les resultats retournés deviennent un bean spring et comme ça devient un

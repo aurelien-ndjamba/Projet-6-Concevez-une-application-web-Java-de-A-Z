@@ -32,31 +32,30 @@ public class UserRoleController {
 	/* *************** GET METHODE *********************** */
 	
 	/**
-	 * GET http://localhost:8080/roles/all
 	 * 
-	 * Liste des roles de l'application
+	 * Liste des roles associés à tous utilisateurs de l'application
 	 * 
 	 * @return List<UserRole>
 	 * 
 	 */
 	@Secured(value={"ADMIN"})
-	@GetMapping("/userroles/all")
+	@GetMapping("/userroles")
 	public List<UserRole> findAll() {
 		logger.info("INFO: Liste des roles de l'application");
 		return userRoleService.findAll();
 	}
 	
 	/**
-	 * GET http://localhost:8080/roles?roleName=USER
 	 * 
-	 * Obtenir un role par id
+	 * Obtenir le/les role(s) d'un utilisateur
 	 * 
 	 * @return UserRole
+	 * @throws Exception 
 	 * 
 	 */
 	@Secured(value={"ROLE_ADMIN"})
 	@RequestMapping(value = "/userroles", method = RequestMethod.GET, params = { "email"})
-	public List<UserRole> findByEmail(String email) {
+	public List<UserRole> findByEmail(String email) throws Exception {
 		logger.info("INFO: Obtenir un role par roleName");
 		return userRoleService.findByEmail(email);
 	}
@@ -64,35 +63,35 @@ public class UserRoleController {
 	/* *************** POST METHODE *********************** */
 
 	/**
-	 * POST http://localhost:8080/roles/save
 	 * 
-	 * Ajouter un nouvel role dans l'application
+	 * Ajouter un nouvel role à un utilisateur dans l'application
 	 * 
 	 * @return UserRole
+	 * @throws Exception 
 	 * 
 	 */
 	@Secured(value={"ROLE_ADMIN"})
 	@PostMapping("/userroles/save")
 	@ResponseStatus(HttpStatus.CREATED)
-	public UserRole save(@RequestBody UserRole userRole) {
-		logger.info("INFO: Ajouter un nouvel role dans l'application");
+	public UserRole save(@RequestBody UserRole userRole) throws Exception {
+		logger.info("\"INFO: Ajouter le role " + userRole.getRoleName() +" pour l'utilisateur :" + userRole.getEmail());
 		return userRoleService.save(userRole);
 	}
 	
 	/* *************** DELETE METHODE *********************** */
 
 	/**
-	 * DELETE http://localhost:8080/roles/delete
 	 * 
-	 * Ajouter un nouvel role dans l'application
+	 * Supprimer un role à un utilisateur dans l'application
 	 * 
 	 * @return UserRole
+	 * @throws Exception 
 	 * 
 	 */
 	@Secured(value={"ROLE_ADMIN"})
 	@RequestMapping(value = "/userroles/delete", method = RequestMethod.DELETE, params = { "email", "role" })
-	public UserRole delete(String email, String role) {
-		logger.info("INFO: Ajouter un nouvel role dans l'application");
+	public UserRole delete(String email, String role) throws Exception {
+		logger.info("INFO: Supprimer le role " + role +" pour l'utilisateur :" + email);
 		return userRoleService.delete(email,role);
 	}
 	

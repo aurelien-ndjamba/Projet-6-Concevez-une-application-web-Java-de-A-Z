@@ -38,38 +38,37 @@ public class UserRoleService {
 	}
 
 	@Transactional
-	public List<UserRole> findByEmail(String email) {
-		if (! userRepository.existsById(email))
-			throw new RuntimeException("Email non existant dans la BDD");
+	public List<UserRole> findByEmail(String email) throws Exception {
+		if (!userRepository.existsById(email))
+			throw new Exception("Email non existant dans la BDD");
 		return userRoleRepository.findByEmail(email);
 	}
 
-
 	@Transactional
-	public UserRole save(UserRole userRole) {
+	public UserRole save(UserRole userRole) throws Exception {
 		if (userRole.getEmail() == null)
-			throw new RuntimeException("Vous devez renseigner l'email.");
+			throw new Exception("Vous devez renseigner l'email.");
 		else if (userRole.getRoleName() == null)
-			throw new RuntimeException("Vous devez renseigner le role.");
-		else if (! userRepository.existsById(userRole.getEmail()))
-			throw new RuntimeException("L'email renseigné n'existe pas dans la BDD");
-		else if (userRoleRepository.existsById(new UserRoleId(userRole.getEmail(),userRole.getRoleName())))
-			throw new RuntimeException("Relation UserRole déjà existante dans la BDD");
-		else if (! roleRepository.existsById(userRole.getRoleName()))
-			throw new RuntimeException("Role inexistant dans la BDD");
+			throw new Exception("Vous devez renseigner le role.");
+		else if (!userRepository.existsById(userRole.getEmail()))
+			throw new Exception("L'email renseigné n'existe pas dans la BDD");
+		else if (userRoleRepository.existsById(new UserRoleId(userRole.getEmail(), userRole.getRoleName())))
+			throw new Exception("Relation UserRole déjà existante dans la BDD");
+		else if (!roleRepository.existsById(userRole.getRoleName()))
+			throw new Exception("Role inexistant dans la BDD");
 		return userRoleRepository.save(userRole);
 	}
 
 	@Transactional
-	public UserRole delete(String email, String role) {
-		if (! userRepository.existsById(email))
-			throw new RuntimeException("L'email renseigné n'existe pas dans la BDD");
+	public UserRole delete(String email, String role) throws Exception {
+		if (!userRepository.existsById(email))
+			throw new Exception("L'email renseigné n'existe pas dans la BDD");
 		else if (!roleRepository.existsById(role))
-			throw new RuntimeException("Le role renseigné n'existe pas dans la BDD");
-		else if (!userRoleRepository.existsById(new UserRoleId(email,role)))
-			throw new RuntimeException("Relation UserRole non existante dans la BDD");
-		userRoleRepository.deleteById(new UserRoleId(email,role));
-		return new UserRole(email,role);
+			throw new Exception("Le role renseigné n'existe pas dans la BDD");
+		else if (!userRoleRepository.existsById(new UserRoleId(email, role)))
+			throw new Exception("Relation UserRole non existante dans la BDD");
+		userRoleRepository.deleteById(new UserRoleId(email, role));
+		return new UserRole(email, role);
 	}
-	
+
 }

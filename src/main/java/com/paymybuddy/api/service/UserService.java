@@ -4,14 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.paymybuddy.api.model.AppUser;
 import com.paymybuddy.api.model.Role;
 import com.paymybuddy.api.repository.UserRepository;
-
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Service
 public class UserService {
@@ -27,45 +26,40 @@ public class UserService {
 	@Autowired
 	private FriendService friendService;
 
+	public void setbCryptPasswordEncoder(BCryptPasswordEncoder bCryptPasswordEncoder) {
+		this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+	}
+
 	public void setUserRepository(UserRepository userRepository) {
 		this.userRepository = userRepository;
 	}
 
-	public boolean login(String email, String password) {
-		boolean result = false;
-		if (!userRepository.existsById(email)) {
-			throw new RuntimeException("Email de l'utilisateur non existant dans la BDD");
-		} else if (bCryptPasswordEncoder.matches(password, userRepository.findById(email).get().getPassword())) {
-			result = true;
-			updateActive(email, result);
-		}
-		return result;
-	}
+
 
 	public List<AppUser> findAll() {
 		return userRepository.findAll();
 	}
 
 	@Transactional
-	public AppUser findByEmail(String email) {
+	public AppUser findByEmail(String email) throws Exception {
 		if (!userRepository.existsById(email))
-			throw new RuntimeException("Email de l'utilisateur non existant dans la BDD");
+			throw new Exception("Email de l'utilisateur non existant dans la BDD");
 		AppUser appUser = userRepository.findByEmail(email);
 		appUser.setUsername(appUser.getEmail());
-		return appUser;
+		return  appUser;
 	}
 
 	@Transactional
-	public List<AppUser> findOtherUsersWithoutThisEmail(String email) {
+	public List<AppUser> findOtherUsersWithoutThisEmail(String email) throws Exception {
 		if (!userRepository.existsById(email))
-			throw new RuntimeException("Email de l'utilisateur non existant dans la BDD");
+			throw new Exception("Email de l'utilisateur non existant dans la BDD");
 		List<AppUser> appUsers  = userRepository.findAll();
 		appUsers.remove(userRepository.findByEmail(email));
 		return appUsers;
 	}
 
 	@Transactional
-	public ArrayList<String> findOtherEmailUsersWithoutThisEmail(String email) {
+	public ArrayList<String> findOtherEmailUsersWithoutThisEmail(String email) throws Exception {
 		ArrayList<String> otherEmailUsersWithoutThisEmail = new ArrayList<>();
 		for (AppUser au : findOtherUsersWithoutThisEmail(email)) {
 			otherEmailUsersWithoutThisEmail.add(au.getEmail());
@@ -74,16 +68,16 @@ public class UserService {
 	}
 
 	@Transactional
-	public List<String> findOtherEmailsFriendsAvailableForThisEmail(String email) {
+	public List<String> findOtherEmailsFriendsAvailableForThisEmail(String email) throws Exception {
 		List<String> OtherEmailsFriendsAvailableForThisEmail = findOtherEmailUsersWithoutThisEmail(email);
 		OtherEmailsFriendsAvailableForThisEmail.removeAll(friendService.findEmailsFriendsOnly(email));
 		return OtherEmailsFriendsAvailableForThisEmail;
 	}
 
 	@Transactional
-	public AppUser save(AppUser appUser) {
+	public AppUser save(AppUser appUser) throws Exception {
 		if (userRepository.existsById(appUser.getEmail())) {
-			throw new RuntimeException("Email de l'utilisateur déjà existant dans la BDD");
+			throw new Exception("Email de l'utilisateur déjà existant dans la BDD");
 		}
 		// Cryptage du mot de passe avec algorithme de hashage Bcrypt
 		String passwordEncoder = bCryptPasswordEncoder.encode(appUser.getPassword());
@@ -99,16 +93,16 @@ public class UserService {
 	}
 
 	@Transactional
-	public AppUser updateAll(AppUser au) {
+	public AppUser updateAll(AppUser au) throws Exception {
 		if (au.getEmail() == null)
-			throw new RuntimeException(
+			throw new Exception(
 					"Vous devez renseigner l'email de l'utilisateur pour la mise à jour dans la BDD");
 		else if (au.getPassword() == null)
-			throw new RuntimeException("Vous devez renseigner le nouveau mot de passe à mettre à jour dans la BDD");
+			throw new Exception("Vous devez renseigner le nouveau mot de passe à mettre à jour dans la BDD");
 		else if (au.getBalance() == null)
-			throw new RuntimeException("Vous devez renseigner le nouveau solde à mettre à jour dans la BDD");
+			throw new Exception("Vous devez renseigner le nouveau solde à mettre à jour dans la BDD");
 		else if (!userRepository.existsById(au.getEmail()))
-			throw new RuntimeException("Email de l'utilisateur non existant dans la BDD");
+			throw new Exception("Email de l'utilisateur non existant dans la BDD");
 		appUser = userRepository.findById(au.getEmail()).get();
 		String passwordEncoder = bCryptPasswordEncoder.encode(au.getPassword());
 		appUser.setPassword(passwordEncoder);
@@ -125,27 +119,38 @@ public class UserService {
 	}
 
 	@Transactional
-	public AppUser updateBalance(String email, Double balance) {
+	public AppUser updateBalance(String email, Double balance) throws Exception {
 		if (email == null)
-			throw new RuntimeException(
+			throw new Exception(
 					"Vous devez renseigner l'email de l'utilisateur pour la mise à jour dans la BDD");
 		else if (balance == null)
-			throw new RuntimeException("Vous devez renseigner le nouveau solde à mettre à jour dans la BDD");
+			throw new Exception("Vous devez renseigner le nouveau solde à mettre à jour dans la BDD");
 		else if (!userRepository.existsById(email))
-			throw new RuntimeException("Email de l'utilisateur non existant dans la BDD");
+			throw new Exception("Email de l'utilisateur non existant dans la BDD");
 
 		appUser = userRepository.getById(email);
 		appUser.setBalance(balance);
 		return userRepository.save(appUser);
 	}
 
+	public boolean login(String email, String password) throws Exception {
+		boolean result = false;
+		if (!userRepository.existsById(email)) {
+			throw new Exception("Email de l'utilisateur non existant dans la BDD");
+		} else if (bCryptPasswordEncoder.matches(password, userRepository.findById(email).get().getPassword())) {
+			result = true;
+			updateActive(email, result);
+		}
+		return result;
+	}
+
 	@Transactional
-	public AppUser updateActive(String email, boolean active) {
+	public AppUser updateActive(String email, boolean active) throws Exception {
 		if (email == null)
-			throw new RuntimeException(
+			throw new Exception(
 					"Vous devez renseigner l'email de l'utilisateur pour la mise à jour dans la BDD");
 		else if (!userRepository.existsById(email))
-			throw new RuntimeException("Email de l'utilisateur non existant dans la BDD");
+			throw new Exception("Email de l'utilisateur non existant dans la BDD");
 
 		appUser = userRepository.getById(email);
 		appUser.setActive(active);
@@ -153,22 +158,22 @@ public class UserService {
 	}
 
 	@Transactional
-	public AppUser updatePhone(String email, int phone) {
+	public AppUser updatePhone(String email, int phone) throws Exception {
 		if (email == null)
-			throw new RuntimeException(
+			throw new Exception(
 					"Vous devez renseigner l'email de l'utilisateur pour la mise à jour dans la BDD");
 		else if (!userRepository.existsById(email))
-			throw new RuntimeException("Email de l'utilisateur non existant dans la BDD");
+			throw new Exception("Email de l'utilisateur non existant dans la BDD");
 		appUser = userRepository.getById(email);
 		appUser.setPhone(phone);
 		return userRepository.save(appUser);
 	}
 
 	@Transactional
-	public AppUser deleteById(String email) {
+	public AppUser deleteById(String email) throws Exception {
 		AppUser result = new AppUser();
 		if (!userRepository.existsById(email)) {
-			throw new RuntimeException("Email de l'utilisateur non existant dans la BDD");
+			throw new Exception("Email de l'utilisateur non existant dans la BDD");
 		} else {
 			result = userRepository.findByEmail(email);
 			userRepository.deleteById(email);

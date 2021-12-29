@@ -5,9 +5,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +58,7 @@ public class FriendServiceTest {
 		friendService.setUserRepository(userRepositoryMock);
 
 		// THEN
-		assertThatThrownBy(() -> friendService.findByEmail("friend1@gmail.com")).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> friendService.findByEmail("friend1@gmail.com")).isInstanceOf(Exception.class)
 				.hasMessage("Email non existant dans la BDD");
 	}
 
@@ -86,8 +86,8 @@ public class FriendServiceTest {
 		friendService.setUserRepository(userRepositoryMock);
 
 		// THEN
-		assertThatThrownBy(() -> friendService.findEmailsFriendsOnly("friend1@gmail.com"))
-				.isInstanceOf(RuntimeException.class).hasMessage("Email non existant dans la BDD");
+		assertThatThrownBy(() -> friendService.findEmailsFriendsOnly("friend1@gmail.com")).isInstanceOf(Exception.class)
+				.hasMessage("Email non existant dans la BDD");
 	}
 
 	@Test
@@ -105,12 +105,14 @@ public class FriendServiceTest {
 
 		// WHEN
 		when(userRepositoryMock.existsById("friend1@gmail.com")).thenReturn(true);
-		when(friendRepositoryMock.findByEmailUserOrEmailFriend("friend1@gmail.com", "friend1@gmail.com")).thenReturn(friends);
+		when(friendRepositoryMock.findByEmailUserOrEmailFriend("friend1@gmail.com", "friend1@gmail.com"))
+				.thenReturn(friends);
 		friendService.setUserRepository(userRepositoryMock);
 		friendService.setFriendRepository(friendRepositoryMock);
 
 		// THEN
-		assertThat(friendService.findEmailsFriendsOnly("friend1@gmail.com").contains("email4@gmail.com")).isEqualTo(true);
+		assertThat(friendService.findEmailsFriendsOnly("friend1@gmail.com").contains("email4@gmail.com"))
+				.isEqualTo(true);
 	}
 
 	@Test
@@ -120,7 +122,7 @@ public class FriendServiceTest {
 		friendService.setUserRepository(userRepositoryMock);
 
 		// THEN
-		assertThatThrownBy(() -> friendService.save(friend)).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> friendService.save(friend)).isInstanceOf(Exception.class)
 				.hasMessage("Email(s) 'ami' et/ou 'friend' non existant(s) dans la BDD");
 	}
 
@@ -131,112 +133,124 @@ public class FriendServiceTest {
 		friendService.setUserRepository(userRepositoryMock);
 
 		// THEN
-		assertThatThrownBy(() -> friendService.save(friend)).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> friendService.save(friend)).isInstanceOf(Exception.class)
 				.hasMessage("Email(s) 'ami' et/ou 'friend' non existant(s) dans la BDD");
 	}
 
 	@Test
 	public void testSaveWhenFriendsAlreadyExist() throws Exception {
 		// GIVEN
-		ArrayList<Friend> friends = new ArrayList<Friend>();
-		friends.add(friend);
-		AppUser appUser = new AppUser();
+				Friend friend = new Friend();
+				friend.setEmailUser("paul");
+				friend.setEmailFriend("jean");
+				Friend friend2 = new Friend();
+				friend2.setEmailUser("jean");
+				friend2.setEmailFriend("paul");
+				List<Friend> friends = new ArrayList<Friend>();
+				friends.add(friend2);
 
-		// WHEN
-		when(userRepositoryMock.findByEmail(friend.getEmailUser())).thenReturn(appUser);
-		when(userRepositoryMock.findByEmail(friend.getEmailFriend())).thenReturn(appUser);
-		when(friendRepositoryMock.findByEmailUserOrEmailFriend(friend.getEmailUser(), friend.getEmailFriend()))
-				.thenReturn(friends);
-		friendService.setUserRepository(userRepositoryMock);
-		friendService.setFriendRepository(friendRepositoryMock);
+				// WHEN
+				when(userRepositoryMock.existsById(friend.getEmailUser())).thenReturn(true);
+				when(userRepositoryMock.existsById(friend.getEmailFriend())).thenReturn(true);
+				when(friendRepositoryMock.findByEmailUserOrEmailFriend(friend.getEmailUser(), friend.getEmailFriend())).thenReturn(friends);
+				when(friendRepositoryMock.save(friend)).thenReturn(friend);
+				friendService.setUserRepository(userRepositoryMock);
+				friendService.setFriendRepository(friendRepositoryMock);
 
 		// THEN
-		assertThatThrownBy(() -> friendService.save(friend)).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> friendService
+				.save(friend)).isInstanceOf(Exception.class)
 				.hasMessage("Couple ami déjà existant dans la BDD");
 	}
 
 	@Test
-	@Disabled
 	public void testSaveWhenNoErrorExist() throws Exception {
 		// GIVEN
-//		Friend f2 = new Friend();
-//		String email3 = "friend1@gmail.com";
-//		String email4 = "email4@gmail.com";
-//		f2.setEmailUser(email3);
-//		f2.setEmailFriend(email4);
-		ArrayList<Friend> friends = new ArrayList<Friend>();
-//		friends.add(f2);
-		friends.add(friend);
-		AppUser appUser = new AppUser();
+		Friend f2 = new Friend();
+		f2.setEmailUser("toto");
+		f2.setEmailFriend("tata");
+		List<Friend> friends = new ArrayList<Friend>();
+		friends.add(f2);
 
 		// WHEN
-		when(userRepositoryMock.findByEmail(friend.getEmailUser())).thenReturn(appUser);
-		when(userRepositoryMock.findByEmail(friend.getEmailFriend())).thenReturn(appUser);
-		when(friendRepositoryMock.findByEmailUserOrEmailFriend(friend.getEmailUser(), friend.getEmailFriend()))
-				.thenReturn(friends);
+		when(userRepositoryMock.existsById("toto")).thenReturn(true);
+		when(userRepositoryMock.existsById("tata")).thenReturn(true);
+		when(friendRepositoryMock.findByEmailUserOrEmailFriend(friend.getEmailUser(), friend.getEmailFriend())).thenReturn(friends);
 		when(friendRepositoryMock.save(friend)).thenReturn(friend);
 		friendService.setUserRepository(userRepositoryMock);
 		friendService.setFriendRepository(friendRepositoryMock);
 
 		// THEN
-		assertThat(friendService.save(friend).getEmailUser()).isEqualTo("friend1@gmail.com");
+		assertThat(friendService.save(f2).getEmailUser()).isEqualTo("toto");
 	}
 
 	@Test
-	public void testDeleteWhenEmailUserIsNull() throws Exception {
+	public void testDeleteByEmailUserAndEmailFriendWhenEmailNotExist() throws Exception {
 		// WHEN
-		when(userRepositoryMock.findByEmail("friend1@gmail.com")).thenReturn(null);
+		when(userRepositoryMock.existsById("friend1@gmail.com") || !userRepositoryMock.existsById("friend2@gmail.com"))
+				.thenReturn(false);
 		friendService.setUserRepository(userRepositoryMock);
 
 		// THEN
-		assertThatThrownBy(() -> friendService.deleteByEmailUserAndEmailFriend("friend1@gmail.com","friend2@gmail.com")).isInstanceOf(RuntimeException.class)
-				.hasMessage("Email(s) 'ami' et/ou 'friend' non existant(s) dans la BDD");
+		assertThatThrownBy(
+				() -> friendService.deleteByEmailUserAndEmailFriend("friend1@gmail.com", "friend2@gmail.com"))
+						.isInstanceOf(Exception.class)
+						.hasMessage("Email(s) 'ami' et/ou 'friend' non existant(s) dans la BDD");
 	}
-	
-	@Test
-	public void testDeleteWhenEmailFriendIsNull() throws Exception {
-		// WHEN
-		when(userRepositoryMock.findByEmail("friend2@gmail.com")).thenReturn(null);
-		friendService.setUserRepository(userRepositoryMock);
 
-		// THEN
-		assertThatThrownBy(() -> friendService.deleteByEmailUserAndEmailFriend("friend1@gmail.com","friend2@gmail.com")).isInstanceOf(RuntimeException.class)
-				.hasMessage("Email(s) 'ami' et/ou 'friend' non existant(s) dans la BDD");
-	}
-	
 	@Test
-	public void testDeleteWhenFriendsAlreadyExist() throws Exception {
+	public void testDeleteByEmailUserAndEmailFriendWhenCoupleAlreadyExist() throws Exception {
 		// GIVEN
-		AppUser appUser = new AppUser();
-		
+		String emailUser = "friend1@gmail.com";
+		String emailFriend = "friend2@gmail.com";
+
 		// WHEN
-		when(userRepositoryMock.findByEmail("friend1@gmail.com")).thenReturn(appUser);
-		when(userRepositoryMock.findByEmail("friend2@gmail.com")).thenReturn(appUser);
-		when(friendRepositoryMock.findByEmailUserAndEmailFriend("friend1@gmail.com","friend2@gmail.com")).thenReturn(null);
-		when(friendRepositoryMock.findByEmailUserAndEmailFriend("friend2@gmail.com","friend1@gmail.com")).thenReturn(null);
+		when(userRepositoryMock.existsById(emailUser)).thenReturn(true);
+		when(userRepositoryMock.existsById(emailFriend)).thenReturn(true);
+		when(friendRepositoryMock.findByEmailUserAndEmailFriend(emailUser, emailFriend)).thenReturn(null);
+		when(friendRepositoryMock.findByEmailUserAndEmailFriend(emailFriend, emailUser)).thenReturn(null);
 		friendService.setUserRepository(userRepositoryMock);
 		friendService.setFriendRepository(friendRepositoryMock);
 
 		// THEN
-		assertThatThrownBy(() -> friendService.deleteByEmailUserAndEmailFriend("friend1@gmail.com","friend2@gmail.com")).isInstanceOf(RuntimeException.class)
-				.hasMessage("Couple ami non existant dans la BDD");
+		assertThatThrownBy(
+				() -> friendService.deleteByEmailUserAndEmailFriend("friend1@gmail.com", "friend2@gmail.com"))
+						.isInstanceOf(Exception.class).hasMessage("Couple ami non existant dans la BDD");
 	}
-	
+
 	@Test
-	public void testDeleteWhenNoErrorExist() throws Exception {
+	public void testDeleteByEmailUserAndEmailFriendWhenAllOk() throws Exception {
 		// GIVEN
-		AppUser appUser = new AppUser();
-		
+		String emailUser = "friend1@gmail.com";
+		String emailFriend = "friend2@gmail.com";
+
 		// WHEN
-		when(userRepositoryMock.findByEmail("friend1@gmail.com")).thenReturn(appUser);
-		when(userRepositoryMock.findByEmail("friend2@gmail.com")).thenReturn(appUser);
-		when(friendRepositoryMock.findByEmailUserAndEmailFriend("friend1@gmail.com","friend2@gmail.com")).thenReturn(friend);
-		when(friendRepositoryMock.findByEmailUserAndEmailFriend("friend2@gmail.com","friend1@gmail.com")).thenReturn(friend);
+		when(userRepositoryMock.existsById(emailUser)).thenReturn(true);
+		when(userRepositoryMock.existsById(emailFriend)).thenReturn(true);
+		when(friendRepositoryMock.findByEmailUserAndEmailFriend(emailUser, emailFriend)).thenReturn(new Friend());
+		when(friendRepositoryMock.findByEmailUserAndEmailFriend(emailFriend, emailUser)).thenReturn(new Friend());
 		friendService.setUserRepository(userRepositoryMock);
 		friendService.setFriendRepository(friendRepositoryMock);
 
 		// THEN
-		assertThat(friendService.deleteByEmailUserAndEmailFriend("friend1@gmail.com","friend2@gmail.com").getEmailUser()).isEqualTo("friend1@gmail.com");
+		assertThat(friendService.deleteByEmailUserAndEmailFriend(emailUser,emailFriend).getEmailFriend()).isEqualTo("friend2@gmail.com");
+
+	}
+
+	@Test
+	public void testDeleteByEmailUserAndPseudoFriendWhenFriendsAlreadyExist() throws Exception {
+		// GIVEN
+		String emailUser = "tata";
+		String pseudoFriend = "toto";
+		AppUser appUser = new AppUser(); 
+		appUser.setEmail("titi");
+
+		// WHEN
+		when(userRepositoryMock.findByPseudo(pseudoFriend)).thenReturn(appUser);
+		friendService.setUserRepository(userRepositoryMock);
+
+		// THEN
+		assertThat(friendService.deleteByEmailUserAndPseudoFriend(emailUser,pseudoFriend)).isEqualTo(new Friend(emailUser, "titi"));
 	}
 
 }

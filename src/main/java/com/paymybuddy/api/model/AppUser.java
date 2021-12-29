@@ -15,20 +15,15 @@ import javax.persistence.Transient;
 
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
-
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
 
 /**
  * Classe modélisant un objet entité de type "User"
  * 
  */
-
-@AllArgsConstructor
-@NoArgsConstructor
+//@AllArgsConstructor
+//@NoArgsConstructor
 @Entity
 @Table(name = "appuser", schema = "public")
 @Component

@@ -12,7 +12,6 @@ import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.paymybuddy.api.model.AppUser;
 import com.paymybuddy.api.model.UserRole;
 import com.paymybuddy.api.model.UserRoleId;
 import com.paymybuddy.api.repository.RoleRepository;
@@ -55,7 +54,7 @@ public class UserRoleServiceTest {
 		userRoleService.setUserRepository(userRepositoryMock);
 
 		// THEN
-		assertThatThrownBy(() -> userRoleService.findByEmail(email)).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> userRoleService.findByEmail(email)).isInstanceOf(Exception.class)
 				.hasMessage("Email non existant dans la BDD");
 	}
 
@@ -86,7 +85,7 @@ public class UserRoleServiceTest {
 		ur.setRoleName("USER");
 
 		// THEN
-		assertThatThrownBy(() -> userRoleService.save(ur)).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> userRoleService.save(ur)).isInstanceOf(Exception.class)
 				.hasMessage("Vous devez renseigner l'email.");
 	}
 
@@ -99,7 +98,7 @@ public class UserRoleServiceTest {
 		ur.setEmail("test@gmail.com");
 
 		// THEN
-		assertThatThrownBy(() -> userRoleService.save(ur)).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> userRoleService.save(ur)).isInstanceOf(Exception.class)
 				.hasMessage("Vous devez renseigner le role.");
 	}
 
@@ -115,64 +114,65 @@ public class UserRoleServiceTest {
 		userRoleService.setUserRepository(userRepositoryMock);
 
 		// THEN
-		assertThatThrownBy(() -> userRoleService.save(userRole)).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> userRoleService.save(userRole)).isInstanceOf(Exception.class)
 				.hasMessage("L'email renseigné n'existe pas dans la BDD");
 	}
 
 	@Test
 	public void testSaveWhenUserRoleAlreadyExist() throws Exception {
 		// GIVEN
-		AppUser au = new AppUser();
 		UserRole userRole = new UserRole();
 		userRole.setEmail("test@gmail.com");
 		userRole.setRoleName("USER");
 
 		// WHEN
-		UserRoleId userRoleId = new UserRoleId(userRole.getEmail(), userRole.getRoleName());
-		when(userRepositoryMock.findByEmail(userRole.getEmail())).thenReturn(au);
-		when(userRoleRepositoryMock.existsById(userRoleId)).thenReturn(true);
+		when(userRepositoryMock.existsById(userRole.getEmail())).thenReturn(true);
+		when(userRoleRepositoryMock.existsById(new UserRoleId(userRole.getEmail(), userRole.getRoleName())))
+				.thenReturn(true);
+		when(roleRepositoryMock.existsById(userRole.getRoleName())).thenReturn(true);
+		when(userRoleRepositoryMock.save(userRole)).thenReturn(userRole);
 		userRoleService.setUserRepository(userRepositoryMock);
 		userRoleService.setUserRoleRepository(userRoleRepositoryMock);
+		userRoleService.setRoleRepository(roleRepositoryMock);
 
 		// THEN
-		assertThatThrownBy(() -> userRoleService.save(userRole)).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> userRoleService.save(userRole)).isInstanceOf(Exception.class)
 				.hasMessage("Relation UserRole déjà existante dans la BDD");
 	}
 
 	@Test
 	public void testSaveWhenUserRoleNotExist() throws Exception {
 		// GIVEN
-		AppUser au = new AppUser();
 		UserRole userRole = new UserRole();
 		userRole.setEmail("test@gmail.com");
 		userRole.setRoleName("USER");
 
 		// WHEN
-		UserRoleId userRoleId = new UserRoleId(userRole.getEmail(), userRole.getRoleName());
-		when(userRepositoryMock.findByEmail(userRole.getEmail())).thenReturn(au);
-		when(userRoleRepositoryMock.existsById(userRoleId)).thenReturn(false);
+		when(userRepositoryMock.existsById(userRole.getEmail())).thenReturn(true);
+		when(userRoleRepositoryMock.existsById(new UserRoleId(userRole.getEmail(), userRole.getRoleName())))
+				.thenReturn(false);
 		when(roleRepositoryMock.existsById(userRole.getRoleName())).thenReturn(false);
+		when(userRoleRepositoryMock.save(userRole)).thenReturn(userRole);
 		userRoleService.setUserRepository(userRepositoryMock);
 		userRoleService.setUserRoleRepository(userRoleRepositoryMock);
 		userRoleService.setRoleRepository(roleRepositoryMock);
 
 		// THEN
-		assertThatThrownBy(() -> userRoleService.save(userRole)).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> userRoleService.save(userRole)).isInstanceOf(Exception.class)
 				.hasMessage("Role inexistant dans la BDD");
 	}
 
 	@Test
 	public void testSaveWhenNoErrorExist() throws Exception {
 		// GIVEN
-		AppUser au = new AppUser();
 		UserRole userRole = new UserRole();
 		userRole.setEmail("test@gmail.com");
 		userRole.setRoleName("USER");
 
 		// WHEN
-		UserRoleId userRoleId = new UserRoleId(userRole.getEmail(), userRole.getRoleName());
-		when(userRepositoryMock.findByEmail(userRole.getEmail())).thenReturn(au);
-		when(userRoleRepositoryMock.existsById(userRoleId)).thenReturn(false);
+		when(userRepositoryMock.existsById(userRole.getEmail())).thenReturn(true);
+		when(userRoleRepositoryMock.existsById(new UserRoleId(userRole.getEmail(), userRole.getRoleName())))
+				.thenReturn(false);
 		when(roleRepositoryMock.existsById(userRole.getRoleName())).thenReturn(true);
 		when(userRoleRepositoryMock.save(userRole)).thenReturn(userRole);
 		userRoleService.setUserRepository(userRepositoryMock);
@@ -190,59 +190,58 @@ public class UserRoleServiceTest {
 		String role = "USER";
 
 		// THEN
-		assertThatThrownBy(() -> userRoleService.delete(email, role)).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> userRoleService.delete(email, role)).isInstanceOf(Exception.class)
 				.hasMessage("L'email renseigné n'existe pas dans la BDD");
 	}
 
 	@Test
 	public void testDeleteWhenRoleNotExist() throws Exception {
 		// GIVEN
-		AppUser a = new AppUser();
 		String email = "test@gmail.com";
 		String role = "USER";
 
 		// WHEN
-		when(userRepositoryMock.findByEmail(email)).thenReturn(a);
+		when(userRepositoryMock.existsById(email)).thenReturn(true);
 		when(roleRepositoryMock.existsById(role)).thenReturn(false);
-		userRoleService.setUserRepository(userRepositoryMock);
-		userRoleService.setRoleRepository(roleRepositoryMock);
-
-		// THEN
-		assertThatThrownBy(() -> userRoleService.delete(email, role)).isInstanceOf(RuntimeException.class)
-				.hasMessage("Le role renseigné n'existe pas dans la BDD");
-	}
-	
-	@Test
-	public void testDeleteWhenUserRoleNotExist() throws Exception {
-		// GIVEN
-		AppUser a = new AppUser();
-		String email = "test@gmail.com";
-		String role = "USER";
-
-		// WHEN
-		when(userRepositoryMock.findByEmail(email)).thenReturn(a);
-		when(roleRepositoryMock.existsById(role)).thenReturn(true);
-		when(userRoleRepositoryMock.existsById(new UserRoleId(email,role))).thenReturn(false);
+		when(!userRoleRepositoryMock.existsById(new UserRoleId(email, role))).thenReturn(true);
 		userRoleService.setUserRepository(userRepositoryMock);
 		userRoleService.setRoleRepository(roleRepositoryMock);
 		userRoleService.setUserRoleRepository(userRoleRepositoryMock);
 
 		// THEN
-		assertThatThrownBy(() -> userRoleService.delete(email, role)).isInstanceOf(RuntimeException.class)
-				.hasMessage("Relation UserRole non existante dans la BDD");
+		assertThatThrownBy(() -> userRoleService.delete(email, role)).isInstanceOf(Exception.class)
+				.hasMessage("Le role renseigné n'existe pas dans la BDD");
 	}
-	
+
 	@Test
-	public void testDeleteWhenNoErrorExist() throws Exception {
+	public void testDeleteWhenUserRoleNotExist() throws Exception {
 		// GIVEN
-		AppUser a = new AppUser();
 		String email = "test@gmail.com";
 		String role = "USER";
 
 		// WHEN
-		when(userRepositoryMock.findByEmail(email)).thenReturn(a);
+		when(userRepositoryMock.existsById(email)).thenReturn(true);
 		when(roleRepositoryMock.existsById(role)).thenReturn(true);
-		when(userRoleRepositoryMock.existsById(new UserRoleId(email,role))).thenReturn(true);
+		when(!userRoleRepositoryMock.existsById(new UserRoleId(email, role))).thenReturn(false);
+		userRoleService.setUserRepository(userRepositoryMock);
+		userRoleService.setRoleRepository(roleRepositoryMock);
+		userRoleService.setUserRoleRepository(userRoleRepositoryMock);
+
+		// THEN
+		assertThatThrownBy(() -> userRoleService.delete(email, role)).isInstanceOf(Exception.class)
+				.hasMessage("Relation UserRole non existante dans la BDD");
+	}
+
+	@Test
+	public void testDeleteWhenNoErrorExist() throws Exception {
+		// GIVEN
+		String email = "test@gmail.com";
+		String role = "USER";
+
+		// WHEN
+		when(userRepositoryMock.existsById(email)).thenReturn(true);
+		when(roleRepositoryMock.existsById(role)).thenReturn(true);
+		when(!userRoleRepositoryMock.existsById(new UserRoleId(email, role))).thenReturn(true);
 		userRoleService.setUserRepository(userRepositoryMock);
 		userRoleService.setRoleRepository(roleRepositoryMock);
 		userRoleService.setUserRoleRepository(userRoleRepositoryMock);
@@ -250,5 +249,5 @@ public class UserRoleServiceTest {
 		// THEN
 		assertThat(userRoleService.delete(email, role).getRoleName()).isEqualTo("USER");
 	}
-	
+
 }

@@ -1,6 +1,5 @@
 package com.paymybuddy.api.security;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -33,10 +32,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 //	@Autowired  // -> JDBCAUTHENTICATION Source de donnée injectée comme bean
 //	public void globalConfig(AuthenticationManagerBuilder auth) throws Exception { //, DataSource dataSource
-		// --------------------- INMEMORY AUTHENTICATION 1--------------------- OK
+	// --------------------- INMEMORY AUTHENTICATION 1--------------------- OK
 //		auth.inMemoryAuthentication().withUser("user").password(bCryptPasswordEncoder.encode("password")).roles("USER");
 //
-		// --------------------- JDBC AUTHENTICATION 1---------------------
+	// --------------------- JDBC AUTHENTICATION 1---------------------
 //		auth.jdbcAuthentication()
 //		.dataSource(dataSource)
 //		.usersByUsernameQuery(
@@ -46,11 +45,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //		.rolePrefix("ROLE_")
 ////		.passwordEncoder(bCryptPasswordEncoder)
 //		;
-		// --------------------- USERDETAILSSERVICE AUTHENTICATION 1 ---------------------
+	// --------------------- USERDETAILSSERVICE AUTHENTICATION 1
+	// ---------------------
 //	auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
 //	}
 
-	protected void configure(AuthenticationManagerBuilder auth) throws Exception { //, DataSource dataSource
+	protected void configure(AuthenticationManagerBuilder auth) throws Exception { // , DataSource dataSource
 		// --------------------- INMEMORY AUTHENTICATION 2--------------------- OK
 //		auth.inMemoryAuthentication().withUser("user").password(bCryptPasswordEncoder.encode("password")).roles("USER");
 //		auth.inMemoryAuthentication().withUser("admin").password(bCryptPasswordEncoder.encode("password")).roles("ADMIN","USER");
@@ -62,7 +62,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //				.rolePrefix("ROLE_")
 //		.passwordEncoder(bCryptPasswordEncoder)
 		;
-		
+
 		// --------------------- USERDETAILSSERVICE AUTHENTICATION ---------------------
 		auth.userDetailsService(userDetailsService).passwordEncoder(bCryptPasswordEncoder);
 	}
@@ -87,7 +87,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 		http.csrf().disable();
 		http.authorizeRequests().antMatchers("/**").permitAll(); // Always OK mais NOK if method controller @Secured
-		
+
 //		http
 ////		.csrf().disable()
 //		.authorizeRequests().antMatchers("/","home","/login").permitAll().and()
@@ -95,4 +95,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 //	 .authorizeRequests().anyRequest().authenticated().and().formLogin().permitAll();
 	}
 
+	
 }

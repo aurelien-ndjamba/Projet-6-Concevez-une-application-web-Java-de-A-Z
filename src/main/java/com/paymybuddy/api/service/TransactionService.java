@@ -10,16 +10,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.paymybuddy.api.exception.AccountNotExistException;
-import com.paymybuddy.api.exception.AccountNotForUserException;
-import com.paymybuddy.api.exception.AccountNotSpecifiedException;
-import com.paymybuddy.api.exception.EmailNotExistException;
-import com.paymybuddy.api.exception.EmailNotSpecifiedException;
-import com.paymybuddy.api.exception.FriendEmailNotExistException;
-import com.paymybuddy.api.exception.FriendEmailNotSpecifiedException;
-import com.paymybuddy.api.exception.FriendShipNotExistException;
-import com.paymybuddy.api.exception.ReduceAmountException;
-import com.paymybuddy.api.exception.TransactionTypeException;
 import com.paymybuddy.api.model.Constante;
 import com.paymybuddy.api.model.Transaction;
 import com.paymybuddy.api.model.TransactionStructured;
@@ -144,30 +134,30 @@ public class TransactionService {
 	@Transactional
 	public Transaction createPayment(Transaction transaction) throws Exception {
 		if (!transaction.getType().equals("payment"))
-			throw new TransactionTypeException("La transaction doit être du type : 'payment'.");
+			throw new Exception("La transaction doit être du type : 'payment'.");
 		else if (transaction.getUser() == null)
-			throw new EmailNotSpecifiedException(
+			throw new Exception(
 					"Vous devez renseigner votre email pour effectuer une transaction de paiement !");
 		else if (!userRepository.existsById(transaction.getUser()))
-			throw new EmailNotExistException("Votre email utilisateur n'existe pas en BDD. Veuillez le modifier !");
-		else if (transaction.getFriend() == null)
-			throw new FriendEmailNotSpecifiedException(
+			throw new Exception("Votre email utilisateur n'existe pas en BDD. Veuillez le modifier !");
+		else if (transaction.getFriend() == null || transaction.getFriend()=="")
+			throw new Exception(
 					"Vous devez renseigner l'email de votre ami pour effectuer une transaction de paiement !");
 		else if (!userRepository.existsById(transaction.getFriend()))
-			throw new FriendEmailNotExistException("L'email de votre ami n'existe pas en BDD. Veuillez le modifier !");
+			throw new Exception("L'email de votre ami n'existe pas en BDD. Veuillez le modifier !");
 		else if (!friendService.findEmailsFriendsOnly(transaction.getUser()).contains(transaction.getFriend()))
-			throw new FriendShipNotExistException("Vous n'êtes pas ami avec l'utilisateur ayant l'email : '"
+			throw new Exception("Vous n'êtes pas ami avec l'utilisateur ayant l'email : '"
 					+ transaction.getFriend() + "'. Veuillez choisir un de vos amis pour effectuer un paiement !");
 		else if (userRepository.findByEmail(transaction.getUser()).getBalance() <= transaction.getAmount()
 				* (1 + Constante.feeTransaction))
-			throw new ReduceAmountException("Vous ne pouvez pas effectuer un paiement (frais compris) : '"
+			throw new Exception("Vous ne pouvez pas effectuer un paiement (frais compris) : '"
 					+ transaction.getAmount() * (1 + Constante.feeTransaction)
 					+ "' € supérieur à votre solde disponible : '"
 					+ userRepository.findByEmail(transaction.getUser()).getBalance()
 					+ "' €. Veuillez augmenter votre solde disponible depuis votre compte bancaire avant ou réduire la somme à payer !");
 		else if (userRepository.findByEmail(transaction.getFriend()).getBalance()
 				+ transaction.getAmount() * (1 + Constante.feeTransaction) > Constante.balanceMax)
-			throw new ReduceAmountException(
+			throw new Exception(
 					"Vous devez effectuer un paiement d'un montant inférieur à cet utilisateur pour l'instant !");
 
 		transaction.setLastBalance(userRepository.getById(transaction.getUser()).getBalance());
@@ -187,31 +177,34 @@ public class TransactionService {
 	@Transactional
 	public Transaction createDeposit(Transaction transaction) throws Exception {
 		if (!transaction.getType().equals("deposit"))
-			throw new TransactionTypeException("La transaction doit être du type : 'deposit'.");
+			throw new Exception("La transaction doit être du type : 'deposit'.");
 		else if (transaction.getUser() == null)
-			throw new EmailNotSpecifiedException(
+			throw new Exception(
 					"Vous devez renseigner votre email pour effectuer une transaction de dépot !");
+		else if (transaction.getFriend() != "")
+			throw new Exception(
+					"Vous ne devez pas renseigner l'email d'un ami pour effectuer une transaction de dépot !");
 		else if (!userRepository.existsById(transaction.getUser()))
-			throw new EmailNotExistException("Votre email utilisateur n'existe pas en BDD. Veuillez le modifier !");
+			throw new Exception("Votre email utilisateur n'existe pas en BDD. Veuillez le modifier !");
 		else if (transaction.getAccountUser() == null)
-			throw new AccountNotSpecifiedException(
+			throw new Exception(
 					"Vous devez renseigner votre compte bancaire pour effectuer une transaction de dépot !");
 		else if (accountRepository.findById(transaction.getAccountUser()).isEmpty())
-			throw new AccountNotExistException("Le compte bancaire utilisateur : " + transaction.getAccountUser()
+			throw new Exception("Le compte bancaire utilisateur : " + transaction.getAccountUser()
 					+ " n'existe pas en BDD. Veuillez le modifier !");
 		else if (!accountRepository.findById(transaction.getAccountUser()).get().getEmail()
 				.equals(transaction.getUser()))
-			throw new AccountNotForUserException("Votre compte bancaire utilisateur saisi : "
+			throw new Exception("Votre compte bancaire utilisateur saisi : "
 					+ transaction.getAccountUser() + " ne vous appartient pas. Veuillez le modifier !");
 		else if (userRepository.findByEmail(transaction.getUser()).getBalance()
 				+ transaction.getAmount() * (1 - Constante.feeTransaction) > Constante.balanceMax)
-			throw new ReduceAmountException("Votre solde disponible "
+			throw new Exception("Votre solde disponible "
 					+ userRepository.getById(transaction.getUser()).getBalance() + " € ne doit pas être supérieur à "
 					+ Constante.balanceMax
 					+ " € après la transaction de dépôt (frais compris). Veuillez réduire la somme à déposer !");
 
-		balanceUser = userRepository.findByEmail(transaction.getUser()).getBalance();// 1000
-		newBalanceUser = balanceUser + transaction.getAmount() * (1 - Constante.feeTransaction);
+		balanceUser = userRepository.findByEmail(transaction.getUser()).getBalance();// 200
+		newBalanceUser = balanceUser + transaction.getAmount() * (1 - Constante.feeTransaction); //295
 		transaction.setLastBalance(balanceUser);
 		transaction.setNewBalance(newBalanceUser);
 		transaction.setFee(transaction.getAmount() * Constante.feeTransaction);
@@ -224,25 +217,28 @@ public class TransactionService {
 	@Transactional
 	public Transaction createWithdrawal(Transaction transaction) throws Exception {
 		if (!transaction.getType().equals("withdrawal"))
-			throw new TransactionTypeException("La transaction doit être du type : 'withdrawal'.");
-		else if (transaction.getUser() == null)
-			throw new EmailNotSpecifiedException(
+			throw new Exception("La transaction doit être du type : 'withdrawal'.");
+		else if (transaction.getFriend() != "")
+			throw new Exception(
+					"Vous ne devez pas renseigner l'email d'un ami pour effectuer une transaction de retrait !");
+		else if (transaction.getUser() == null )
+			throw new Exception(
 					"Vous devez renseigner votre email pour effectuer une transaction de retrait !");
 		else if (!userRepository.existsById(transaction.getUser()))
-			throw new EmailNotExistException("Votre email utilisateur n'existe pas en BDD. Veuillez le modifier !");
+			throw new Exception("Votre email utilisateur n'existe pas en BDD. Veuillez le modifier !");
 		else if (transaction.getAccountUser() == null)
-			throw new AccountNotSpecifiedException(
+			throw new Exception(
 					"Vous devez renseigner votre compte bancaire pour effectuer une transaction de retrait !");
 		else if (accountRepository.findById(transaction.getAccountUser()).isEmpty())
-			throw new AccountNotExistException("Le compte bancaire utilisateur : " + transaction.getAccountUser()
+			throw new Exception("Le compte bancaire utilisateur : " + transaction.getAccountUser()
 					+ " n'existe pas en BDD. Veuillez le modifier !");
 		else if (!accountRepository.findById(transaction.getAccountUser()).get().getEmail()
 				.equals(transaction.getUser()))
-			throw new AccountNotForUserException("Votre compte bancaire utilisateur saisi : "
+			throw new Exception("Votre compte bancaire utilisateur saisi : "
 					+ transaction.getAccountUser() + " ne vous appartient pas. Veuillez le modifier !");
 		else if (userRepository.findByEmail(transaction.getUser()).getBalance()
 				- transaction.getAmount() * (1 + Constante.feeTransaction) < Constante.balanceMin)
-			throw new ReduceAmountException("Votre solde disponible ne doit pas être inférieur à "
+			throw new Exception("Votre solde disponible ne doit pas être inférieur à "
 					+ Constante.balanceMin + " € après le retrait (frais compris). Réduire la somme à retirer ! ");
 
 		balanceUser = userRepository.findByEmail(transaction.getUser()).getBalance();

@@ -46,7 +46,7 @@ public class UserRoleControllerTest {
 		userRoleController.setUserRoleService(userRoleServiceMock);
 
 		// THEN
-		mockMvc.perform(get("/userroles/all")).andExpect(status().isOk()).andExpect(jsonPath("$[0].email", is("test@gmail.com")));
+		mockMvc.perform(get("/userroles")).andExpect(status().isOk()).andExpect(jsonPath("$[0].email", is("test@gmail.com")));
 	}
 	
 	@Test

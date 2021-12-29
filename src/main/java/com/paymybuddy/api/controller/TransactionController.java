@@ -18,9 +18,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.paymybuddy.api.exception.FriendEmailNotSpecifiedException;
-import com.paymybuddy.api.exception.InsufficientBalanceException;
-import com.paymybuddy.api.exception.ReduceAmountException;
 import com.paymybuddy.api.model.Transaction;
 import com.paymybuddy.api.model.TransactionStructured;
 import com.paymybuddy.api.service.TransactionService;
@@ -171,19 +168,12 @@ public class TransactionController {
 		logger.info("INFO: Creation dans l'application d'une nouvelle transaction  'withdrawal': " + transaction);
 		return transactionService.createWithdrawal(transaction);
 	}
-
-	@ExceptionHandler(ReduceAmountException.class)
-	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-	@ResponseBody
-	public String reduceAmountExceptionHandler(ReduceAmountException reduceAmountException) { // ResponseEntity<String>
-		return reduceAmountException.getMessage(); //reduceAmountException.getMessage()  new ResponseEntity<String>(reduceAmountException);
-	}  
 	
-	@ExceptionHandler(FriendEmailNotSpecifiedException.class)
+	@ExceptionHandler(Exception.class)
 	@ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
 	@ResponseBody
-	public String FriendEmailNotSpecifiedException(FriendEmailNotSpecifiedException friendEmailNotSpecifiedException) { // ResponseEntity<String>
-		return friendEmailNotSpecifiedException.getMessage(); //reduceAmountException.getMessage()  new ResponseEntity<String>(reduceAmountException);
+	public String FriendEmailNotSpecifiedException(Exception exception) { // ResponseEntity<String>
+		return exception.getMessage(); //new ResponseEntity<String>(reduceAmountException);
 	}  
 	
 

@@ -2,6 +2,7 @@ package com.paymybuddy.api.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 import java.util.ArrayList;
@@ -62,7 +63,7 @@ public class TransactionServiceTest {
 
 	@Test
 	public void testFindByTypeWhenTypeIsFalse() throws Exception {
-		assertThatThrownBy(() -> transactionService.findByType("deposi")).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> transactionService.findByType("deposi")).isInstanceOf(Exception.class)
 				.hasMessage("La transaction doit être du type : 'deposit', 'withdrawal' ou 'payment'.");
 	}
 
@@ -95,7 +96,7 @@ public class TransactionServiceTest {
 		transactionService.setTransactionRepository(transactionRepositoryMock);
 
 		// THEN
-		assertThatThrownBy(() -> transactionService.findById(id)).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> transactionService.findById(id)).isInstanceOf(Exception.class)
 				.hasMessage("Aucune transaction ayant cet id existe dans la BDD");
 	}
 
@@ -128,20 +129,19 @@ public class TransactionServiceTest {
 		transactionService.setTransactionRepository(transactionRepositoryMock);
 
 		// THEN
-		assertThatThrownBy(() -> transactionService.findByUser(email)).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> transactionService.findByUser(email)).isInstanceOf(Exception.class)
 				.hasMessage("Email non existant dans la BDD");
 	}
 
 	@Test
 	public void testFindByUserWhenEmailExist() throws Exception {
 		// GIVEN
-		AppUser u = new AppUser();
 		String email = "test@gmail.com";
 		String friend = "friend@gmail.com";
 		List<Transaction> l = new ArrayList<Transaction>();
 
 		// WHEN
-		when(userRepositoryMock.findByEmail(email)).thenReturn(u);
+		when(userRepositoryMock.existsById(email)).thenReturn(true);
 		when(transactionRepositoryMock.findByUserOrFriend(email, friend)).thenReturn(l);
 		transactionService.setUserRepository(userRepositoryMock);
 		transactionService.setTransactionRepository(transactionRepositoryMock);
@@ -160,7 +160,7 @@ public class TransactionServiceTest {
 		transaction.setType("paymen");
 
 		// THEN
-		assertThatThrownBy(() -> transactionService.createPayment(transaction)).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> transactionService.createPayment(transaction)).isInstanceOf(Exception.class)
 				.hasMessage("La transaction doit être du type : 'payment'.");
 	}
 
@@ -174,7 +174,7 @@ public class TransactionServiceTest {
 		transaction.setType("payment");
 
 		// THEN
-		assertThatThrownBy(() -> transactionService.createPayment(transaction)).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> transactionService.createPayment(transaction)).isInstanceOf(Exception.class)
 				.hasMessage("Vous devez renseigner votre email pour effectuer une transaction de paiement !");
 	}
 
@@ -192,7 +192,7 @@ public class TransactionServiceTest {
 		transactionService.setUserRepository(userRepositoryMock);
 
 		// THEN
-		assertThatThrownBy(() -> transactionService.createPayment(transaction)).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> transactionService.createPayment(transaction)).isInstanceOf(Exception.class)
 				.hasMessage("Votre email utilisateur n'existe pas en BDD. Veuillez le modifier !");
 	}
 
@@ -211,7 +211,7 @@ public class TransactionServiceTest {
 		transactionService.setUserRepository(userRepositoryMock);
 
 		// THEN
-		assertThatThrownBy(() -> transactionService.createPayment(transaction)).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> transactionService.createPayment(transaction)).isInstanceOf(Exception.class)
 				.hasMessage("Vous devez renseigner l'email de votre ami pour effectuer une transaction de paiement !");
 	}
 
@@ -231,7 +231,7 @@ public class TransactionServiceTest {
 		transactionService.setUserRepository(userRepositoryMock);
 
 		// THEN
-		assertThatThrownBy(() -> transactionService.createPayment(transaction)).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> transactionService.createPayment(transaction)).isInstanceOf(Exception.class)
 				.hasMessage("L'email de votre ami n'existe pas en BDD. Veuillez le modifier !");
 	}
 
@@ -254,7 +254,7 @@ public class TransactionServiceTest {
 		transactionService.setFriendService(friendServiceMock);
 
 		// THEN
-		assertThatThrownBy(() -> transactionService.createPayment(transaction)).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> transactionService.createPayment(transaction)).isInstanceOf(Exception.class)
 				.hasMessage("Vous n'êtes pas ami avec l'utilisateur ayant l'email : '" + transaction.getFriend()
 						+ "'. Veuillez choisir un de vos amis pour effectuer un paiement !");
 	}
@@ -283,12 +283,12 @@ public class TransactionServiceTest {
 		transactionService.setFriendService(friendServiceMock);
 
 		// THEN
-		assertThatThrownBy(() -> transactionService.createPayment(transaction)).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> transactionService.createPayment(transaction)).isInstanceOf(Exception.class)
 				.hasMessage("Vous ne pouvez pas effectuer un paiement (frais compris) : '"
 						+ transaction.getAmount() * (1 + Constante.feeTransaction)
-						+ "' supérieur à votre solde disponible : '"
+						+ "' € supérieur à votre solde disponible : '"
 						+ userRepositoryMock.findByEmail(transaction.getUser()).getBalance()
-						+ "'. Veuillez augmenter votre solde disponible depuis votre compte bancaire avant ou réduire la somme à payer !");
+						+ "' €. Veuillez augmenter votre solde disponible depuis votre compte bancaire avant ou réduire la somme à payer !");
 	}
 
 	@Test
@@ -318,7 +318,7 @@ public class TransactionServiceTest {
 		transactionService.setFriendService(friendServiceMock);
 
 		// THEN
-		assertThatThrownBy(() -> transactionService.createPayment(transaction)).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> transactionService.createPayment(transaction)).isInstanceOf(Exception.class)
 				.hasMessage(
 						"Vous devez effectuer un paiement d'un montant inférieur à cet utilisateur pour l'instant !");
 	}
@@ -373,7 +373,7 @@ public class TransactionServiceTest {
 		transaction.setType("deposi");
 
 		// THEN
-		assertThatThrownBy(() -> transactionService.createDeposit(transaction)).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> transactionService.createDeposit(transaction)).isInstanceOf(Exception.class)
 				.hasMessage("La transaction doit être du type : 'deposit'.");
 	}
 
@@ -387,7 +387,7 @@ public class TransactionServiceTest {
 		transaction.setType("deposit");
 
 		// THEN
-		assertThatThrownBy(() -> transactionService.createDeposit(transaction)).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> transactionService.createDeposit(transaction)).isInstanceOf(Exception.class)
 				.hasMessage("Vous devez renseigner votre email pour effectuer une transaction de dépot !");
 	}
 
@@ -397,50 +397,96 @@ public class TransactionServiceTest {
 		Transaction transaction = new Transaction();
 		UUID uuid = UUID.randomUUID();
 		transaction.setUser("test@gmail.com");
+		transaction.setFriend("");
 		transaction.setId(uuid);
 		transaction.setType("deposit");
-		
+
 		// WHEN
+
 		when(userRepositoryMock.existsById(transaction.getUser())).thenReturn(false);
 		transactionService.setUserRepository(userRepositoryMock);
 
 		// THEN
-		assertThatThrownBy(() -> transactionService.createDeposit(transaction)).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> transactionService.createDeposit(transaction)).isInstanceOf(Exception.class)
 				.hasMessage("Votre email utilisateur n'existe pas en BDD. Veuillez le modifier !");
 	}
-	
+
 	@Test
-	public void testCreateDepositWhenAccountUserIsNull() throws Exception {
-		// GIVEN
+	public void testCreateDepositWhenFriendExist() throws Exception {
 		Transaction transaction = new Transaction();
+		Account a = new Account();
+		a.setEmail("test1@gmail.com");
+		Optional<Account> o = Optional.of(a);
+		AppUser au = new AppUser();
+		au.setBalance(99999999.99);
+
 		UUID uuid = UUID.randomUUID();
 		transaction.setUser("test@gmail.com");
+		transaction.setFriend("toto");
 		transaction.setId(uuid);
+		transaction.setAccountUser(688976);
 		transaction.setType("deposit");
-		transaction.setAccountUser(null);
-		
+
 		// WHEN
+
+		when(userRepositoryMock.existsById(transaction.getUser())).thenReturn(false);
+		when(accountRepositoryMock.findById(transaction.getAccountUser())).thenReturn(o);
 		when(userRepositoryMock.existsById(transaction.getUser())).thenReturn(true);
+//		when(accountRepositoryMock.findById(transaction.getAccountUser()).get().getEmail()
+//				.equals(transaction.getUser())).thenReturn(false);
 		transactionService.setUserRepository(userRepositoryMock);
+		transactionService.setAccountRepository(accountRepositoryMock);
 
 		// THEN
-		assertThatThrownBy(() -> transactionService.createDeposit(transaction)).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> transactionService.createDeposit(transaction)).isInstanceOf(Exception.class)
+				.hasMessage("Vous ne devez pas renseigner l'email d'un ami pour effectuer une transaction de dépot !");
+	}
+
+	@Test
+	public void testCreateDepositWhenAccountUserIsNull() throws Exception {
+		Transaction transaction = new Transaction();
+		Account a = new Account();
+		a.setEmail("test1@gmail.com");
+		Optional<Account> o = Optional.of(a);
+		AppUser au = new AppUser();
+		au.setBalance(99999999.99);
+
+		UUID uuid = UUID.randomUUID();
+		transaction.setUser("test@gmail.com");
+		transaction.setFriend("");
+		transaction.setId(uuid);
+//		transaction.setAccountUser(688976);
+		transaction.setType("deposit");
+
+		// WHEN
+
+		when(userRepositoryMock.existsById(transaction.getUser())).thenReturn(false);
+		when(accountRepositoryMock.findById(transaction.getAccountUser())).thenReturn(o);
+		when(userRepositoryMock.existsById(transaction.getUser())).thenReturn(true);
+//		when(accountRepositoryMock.findById(transaction.getAccountUser()).get().getEmail()
+//				.equals(transaction.getUser())).thenReturn(false);
+		transactionService.setUserRepository(userRepositoryMock);
+		transactionService.setAccountRepository(accountRepositoryMock);
+
+		// THEN
+		assertThatThrownBy(() -> transactionService.createDeposit(transaction)).isInstanceOf(Exception.class)
 				.hasMessage("Vous devez renseigner votre compte bancaire pour effectuer une transaction de dépot !");
 	}
-	
+
 	@Test
 	public void testCreateDepositWhenAccountUserNotExist() throws Exception {
 		// GIVEN
 		Transaction transaction = new Transaction();
 		UUID uuid = UUID.randomUUID();
 		transaction.setUser("test@gmail.com");
+		transaction.setFriend("");
 		transaction.setId(uuid);
 		transaction.setType("deposit");
 		transaction.setAccountUser(56789);
 		Account a = new Account();
 		a.setEmail("emailAccount@gmail.com");
 		Optional<Account> o = Optional.empty();
-		
+
 		// WHEN
 		when(userRepositoryMock.existsById(transaction.getUser())).thenReturn(true);
 		when(accountRepositoryMock.findById(transaction.getAccountUser())).thenReturn(o);
@@ -448,100 +494,124 @@ public class TransactionServiceTest {
 		transactionService.setAccountRepository(accountRepositoryMock);
 
 		// THEN
-		assertThatThrownBy(() -> transactionService.createDeposit(transaction)).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> transactionService.createDeposit(transaction)).isInstanceOf(Exception.class)
 				.hasMessage("Le compte bancaire utilisateur : " + transaction.getAccountUser()
-				+ " n'existe pas en BDD. Veuillez le modifier !");
+						+ " n'existe pas en BDD. Veuillez le modifier !");
 	}
-	
+
 	@Test
 	public void testCreateDepositWhenAccountUserIsNotForUser() throws Exception {
 		// GIVEN
 		Transaction transaction = new Transaction();
-		UUID uuid = UUID.randomUUID();
-		transaction.setUser("test@gmail.com");
-		transaction.setId(uuid);
-		transaction.setType("deposit");
-		transaction.setAccountUser(56789);
 		Account a = new Account();
 		a.setEmail("test1@gmail.com");
 		Optional<Account> o = Optional.of(a);
 		AppUser au = new AppUser();
 		au.setBalance(99999999.99);
-		
+
+		UUID uuid = UUID.randomUUID();
+		transaction.setUser("test@gmail.com");
+		transaction.setFriend("");
+		transaction.setId(uuid);
+		transaction.setAccountUser(688976);
+		transaction.setType("deposit");
+
 		// WHEN
-		when(userRepositoryMock.existsById(transaction.getUser())).thenReturn(true);
+
+		when(userRepositoryMock.existsById(transaction.getUser())).thenReturn(false);
 		when(accountRepositoryMock.findById(transaction.getAccountUser())).thenReturn(o);
+		when(userRepositoryMock.existsById(transaction.getUser())).thenReturn(true);
+//		when(accountRepositoryMock.findById(transaction.getAccountUser()).get().getEmail()
+//				.equals(transaction.getUser())).thenReturn(false);
 		transactionService.setUserRepository(userRepositoryMock);
 		transactionService.setAccountRepository(accountRepositoryMock);
 
 		// THEN
-		assertThatThrownBy(() -> transactionService.createDeposit(transaction)).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> transactionService.createDeposit(transaction)).isInstanceOf(Exception.class)
 				.hasMessage("Votre compte bancaire utilisateur saisi : " + transaction.getAccountUser()
-				+ " ne vous appartient pas. Veuillez le modifier !");
+						+ " ne vous appartient pas. Veuillez le modifier !");
 	}
-	
+
 	@Test
 	public void testCreateDepositWhenBalanceCanNotBeHigherBalanceMax() throws Exception {
-		// GIVEN
 		Transaction transaction = new Transaction();
-		UUID uuid = UUID.randomUUID();
-		transaction.setUser("test@gmail.com");
-		transaction.setId(uuid);
-		transaction.setType("deposit");
-		transaction.setAccountUser(56789);
-		transaction.setAmount(10.0);
 		Account a = new Account();
-		a.setEmail("test@gmail.com");
+		a.setEmail("test1@gmail.com");
 		Optional<Account> o = Optional.of(a);
 		AppUser au = new AppUser();
 		au.setBalance(99999999.99);
-		
+
+		UUID uuid = UUID.randomUUID();
+		transaction.setUser("test1@gmail.com");
+		transaction.setFriend("");
+		transaction.setId(uuid);
+		transaction.setAccountUser(688976);
+		transaction.setType("deposit");
+		transaction.setAmount(9999999999.99);
+
+		AppUser aU = new AppUser();
+		aU.setBalance(200.0);
+
 		// WHEN
+
 		when(userRepositoryMock.existsById(transaction.getUser())).thenReturn(true);
 		when(accountRepositoryMock.findById(transaction.getAccountUser())).thenReturn(o);
-		when(userRepositoryMock.findByEmail(transaction.getUser())).thenReturn(au);
-		when(userRepositoryMock.getById(transaction.getUser())).thenReturn(au);
+		when(accountRepositoryMock.findById(transaction.getAccountUser())).thenReturn(o);
+		when(userRepositoryMock.findByEmail(transaction.getUser())).thenReturn(aU);
+		when(userRepositoryMock.getById(transaction.getUser())).thenReturn(aU);
 		transactionService.setUserRepository(userRepositoryMock);
 		transactionService.setAccountRepository(accountRepositoryMock);
 
 		// THEN
-		assertThatThrownBy(() -> transactionService.createDeposit(transaction)).isInstanceOf(RuntimeException.class)
-				.hasMessage("Votre solde disponible "
-						+ userRepositoryMock.getById(transaction.getUser()).getBalance() + " ne doit pas être supérieur à "
-						+ Constante.balanceMax + " après la transaction de dépôt (frais compris). Veuillez réduire la somme à déposer !");
+		assertThatThrownBy(() -> transactionService.createDeposit(transaction)).isInstanceOf(Exception.class)
+				.hasMessage("Votre solde disponible " + userRepositoryMock.getById(transaction.getUser()).getBalance()
+						+ " € ne doit pas être supérieur à " + Constante.balanceMax
+						+ " € après la transaction de dépôt (frais compris). Veuillez réduire la somme à déposer !");
 	}
-	
+
 	@Test
 	public void testCreateDepositWhenNoErrorExist() throws Exception {
 		// GIVEN
 		Transaction transaction = new Transaction();
-		UUID uuid = UUID.randomUUID();
-		transaction.setUser("test@gmail.com");
-		transaction.setId(uuid);
-		transaction.setType("deposit");
-		transaction.setAccountUser(56789);
-		transaction.setAmount(10.0);
 		Account a = new Account();
-		a.setEmail("test@gmail.com");
+		a.setEmail("test1@gmail.com");
 		Optional<Account> o = Optional.of(a);
 		AppUser au = new AppUser();
-		au.setBalance(999.99);
-		
+		au.setBalance(99999999.99);
+
+		UUID uuid = UUID.randomUUID();
+		transaction.setUser("test1@gmail.com");
+		transaction.setFriend("");
+		transaction.setId(uuid);
+		transaction.setAccountUser(688976);
+		transaction.setType("deposit");
+		transaction.setAmount(100.00);
+
+		AppUser aU = new AppUser();
+		aU.setBalance(200.0);
+
 		// WHEN
+
 		when(userRepositoryMock.existsById(transaction.getUser())).thenReturn(true);
 		when(accountRepositoryMock.findById(transaction.getAccountUser())).thenReturn(o);
-		when(userRepositoryMock.findByEmail(transaction.getUser())).thenReturn(au);
-		when(userServiceMock.updateBalance(transaction.getUser(), au.getBalance() + transaction.getAmount() * (1 - Constante.feeTransaction))).thenReturn(au);
-		when(transactionRepositoryMock.save(transaction)).thenReturn(transaction);
+		when(accountRepositoryMock.findById(transaction.getAccountUser())).thenReturn(o);
+		when(userRepositoryMock.findByEmail(transaction.getUser())).thenReturn(aU);// CONDITION 199
+		when(userRepositoryMock.getById(transaction.getUser())).thenReturn(aU); // IF ERROR 202
+		when(userRepositoryMock.findByEmail(transaction.getUser())).thenReturn(aU);// 206
+
+//		when(userServiceMock.updateBalance("test1@gmail.com", 295.00)).thenReturn(aU); ///any(Integer.class), any(Integer.class)
+		when(userServiceMock.updateBalance(any(String.class), any(Double.class))).thenReturn(aU);
+		// when(userRepositoryMock.existsById("test1@gmail.com")).thenReturn(true);
+
+		when(transactionRepositoryMock.save(any(Transaction.class))).thenReturn(new Transaction());
 		transactionService.setUserRepository(userRepositoryMock);
 		transactionService.setAccountRepository(accountRepositoryMock);
 		transactionService.setUserService(userServiceMock);
 		transactionService.setTransactionRepository(transactionRepositoryMock);
-
 		// THEN
-		assertThat(transactionService.createDeposit(transaction)).isEqualTo(transaction);
+		assertThat(transactionService.createDeposit(transaction)).isEqualTo(new Transaction());
 	}
-	
+
 	@Test
 	public void testCreateWithdrawalWhenTypeIsNotWithdrawal() throws Exception {
 		// GIVEN
@@ -552,30 +622,32 @@ public class TransactionServiceTest {
 		transaction.setType("withdrawa");
 
 		// THEN
-		assertThatThrownBy(() -> transactionService.createWithdrawal(transaction)).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> transactionService.createWithdrawal(transaction)).isInstanceOf(Exception.class)
 				.hasMessage("La transaction doit être du type : 'withdrawal'.");
 	}
-	
+
 	@Test
 	public void testCreateWithdrawalWhenEmailUserIsNull() throws Exception {
 		// GIVEN
 		Transaction transaction = new Transaction();
 		UUID uuid = UUID.randomUUID();
 		transaction.setUser(null);
+		transaction.setFriend("");
 		transaction.setId(uuid);
 		transaction.setType("withdrawal");
 
 		// THEN
-		assertThatThrownBy(() -> transactionService.createWithdrawal(transaction)).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> transactionService.createWithdrawal(transaction)).isInstanceOf(Exception.class)
 				.hasMessage("Vous devez renseigner votre email pour effectuer une transaction de retrait !");
 	}
-	
+
 	@Test
 	public void testCreateWithdrawalWhenEmailUserNotExist() throws Exception {
 		// GIVEN
 		Transaction transaction = new Transaction();
 		UUID uuid = UUID.randomUUID();
 		transaction.setUser("test@gmail.com");
+		transaction.setFriend("");
 		transaction.setId(uuid);
 		transaction.setType("withdrawal");
 
@@ -584,16 +656,17 @@ public class TransactionServiceTest {
 		transactionService.setUserRepository(userRepositoryMock);
 
 		// THEN
-		assertThatThrownBy(() -> transactionService.createWithdrawal(transaction)).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> transactionService.createWithdrawal(transaction)).isInstanceOf(Exception.class)
 				.hasMessage("Votre email utilisateur n'existe pas en BDD. Veuillez le modifier !");
 	}
-	
+
 	@Test
 	public void testCreateWithdrawalWhenAccountUserIsNull() throws Exception {
 		// GIVEN
 		Transaction transaction = new Transaction();
 		UUID uuid = UUID.randomUUID();
 		transaction.setUser("test@gmail.com");
+		transaction.setFriend("");
 		transaction.setId(uuid);
 		transaction.setType("withdrawal");
 		transaction.setAccountUser(null);
@@ -603,16 +676,17 @@ public class TransactionServiceTest {
 		transactionService.setUserRepository(userRepositoryMock);
 
 		// THEN
-		assertThatThrownBy(() -> transactionService.createWithdrawal(transaction)).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> transactionService.createWithdrawal(transaction)).isInstanceOf(Exception.class)
 				.hasMessage("Vous devez renseigner votre compte bancaire pour effectuer une transaction de retrait !");
 	}
-	
+
 	@Test
 	public void testCreateWithdrawalWhenAccountUserNotExist() throws Exception {
 		// GIVEN
 		Transaction transaction = new Transaction();
 		UUID uuid = UUID.randomUUID();
 		transaction.setUser("test@gmail.com");
+		transaction.setFriend("");
 		transaction.setId(uuid);
 		transaction.setType("withdrawal");
 		transaction.setAccountUser(1234567);
@@ -622,9 +696,9 @@ public class TransactionServiceTest {
 		transactionService.setUserRepository(userRepositoryMock);
 
 		// THEN
-		assertThatThrownBy(() -> transactionService.createWithdrawal(transaction)).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> transactionService.createWithdrawal(transaction)).isInstanceOf(Exception.class)
 				.hasMessage("Le compte bancaire utilisateur : " + transaction.getAccountUser()
-				+ " n'existe pas en BDD. Veuillez le modifier !");
+						+ " n'existe pas en BDD. Veuillez le modifier !");
 	}
 
 	@Test
@@ -633,6 +707,7 @@ public class TransactionServiceTest {
 		Transaction transaction = new Transaction();
 		UUID uuid = UUID.randomUUID();
 		transaction.setUser("test@gmail.com");
+		transaction.setFriend("");
 		transaction.setId(uuid);
 		transaction.setType("withdrawal");
 		transaction.setAccountUser(1234567);
@@ -647,17 +722,18 @@ public class TransactionServiceTest {
 		transactionService.setAccountRepository(accountRepositoryMock);
 
 		// THEN
-		assertThatThrownBy(() -> transactionService.createWithdrawal(transaction)).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> transactionService.createWithdrawal(transaction)).isInstanceOf(Exception.class)
 				.hasMessage("Votre compte bancaire utilisateur saisi : " + transaction.getAccountUser()
-				+ " ne vous appartient pas. Veuillez le modifier !");
+						+ " ne vous appartient pas. Veuillez le modifier !");
 	}
-	
+
 	@Test
 	public void testCreateWithdrawalWhenBalanceLowerBalanceMin() throws Exception {
 		// GIVEN
 		Transaction transaction = new Transaction();
 		UUID uuid = UUID.randomUUID();
 		transaction.setUser("test@gmail.com");
+		transaction.setFriend("");
 		transaction.setId(uuid);
 		transaction.setType("withdrawal");
 		transaction.setAccountUser(1234567);
@@ -676,17 +752,18 @@ public class TransactionServiceTest {
 		transactionService.setAccountRepository(accountRepositoryMock);
 
 		// THEN
-		assertThatThrownBy(() -> transactionService.createWithdrawal(transaction)).isInstanceOf(RuntimeException.class)
-				.hasMessage("Votre solde disponible ne doit pas être inférieur à " + Constante.balanceMin
-						+ " après le retrait (frais compris). Réduire la somme à retirer ! ");
+		assertThatThrownBy(() -> transactionService.createWithdrawal(transaction)).isInstanceOf(Exception.class)
+				.hasMessage("Votre solde disponible ne doit pas être inférieur à "
+						+  Constante.balanceMin + " € après le retrait (frais compris). Réduire la somme à retirer ! ");
 	}
-	
+
 	@Test
 	public void testCreateWithdrawalWhenNoErrorExist() throws Exception {
 		// GIVEN
 		Transaction transaction = new Transaction();
 		UUID uuid = UUID.randomUUID();
 		transaction.setUser("test@gmail.com");
+		transaction.setFriend("");
 		transaction.setId(uuid);
 		transaction.setType("withdrawal");
 		transaction.setAccountUser(1234567);
@@ -702,7 +779,8 @@ public class TransactionServiceTest {
 		when(accountRepositoryMock.findById(transaction.getAccountUser())).thenReturn(o);
 		when(userRepositoryMock.findByEmail(transaction.getUser())).thenReturn(au);
 		when(userRepositoryMock.findByEmail(transaction.getUser())).thenReturn(au);
-		when(userServiceMock.updateBalance(transaction.getUser(), au.getBalance()- transaction.getAmount() * (1 + Constante.feeTransaction))).thenReturn(au);
+		when(userServiceMock.updateBalance(transaction.getUser(),
+				au.getBalance() - transaction.getAmount() * (1 + Constante.feeTransaction))).thenReturn(au);
 		when(transactionRepositoryMock.save(transaction)).thenReturn(transaction);
 		transactionService.setUserRepository(userRepositoryMock);
 		transactionService.setAccountRepository(accountRepositoryMock);
@@ -712,7 +790,7 @@ public class TransactionServiceTest {
 		// THEN
 		assertThat(transactionService.createWithdrawal(transaction)).isEqualTo(transaction);
 	}
-	
+
 	@Test
 	public void testDeleteByIdWhenTransactionNotExist() throws Exception {
 		// GIVEN
@@ -727,7 +805,7 @@ public class TransactionServiceTest {
 		transactionService.setTransactionRepository(transactionRepositoryMock);
 
 		// THEN
-		assertThatThrownBy(() -> transactionService.deleteById(id)).isInstanceOf(RuntimeException.class)
+		assertThatThrownBy(() -> transactionService.deleteById(id)).isInstanceOf(Exception.class)
 				.hasMessage("La transaction n'est pas existante dans la BDD.");
 	}
 

@@ -1,6 +1,5 @@
 package com.paymybuddy.api.service;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
@@ -38,25 +37,25 @@ public class FriendService {
 	}
 
 	@Transactional
-	public List<Friend> findByEmail(String email) {
+	public List<Friend> findByEmail(String email) throws Exception {
 		if (!userRepository.existsById(email))
-			throw new RuntimeException("Email non existant dans la BDD");
+			throw new Exception("Email non existant dans la BDD");
 		String email2 = email;
 		return friendRepository.findByEmailUserOrEmailFriend(email, email2);
 	}
 
-	public List<Friend> findByEmail(String email, int page, int size) {
+	public List<Friend> findByEmail(String email, int page, int size) throws Exception {
 		if (!userRepository.existsById(email))
-			throw new RuntimeException("Email non existant dans la BDD");
+			throw new Exception("Email non existant dans la BDD");
 		String email2 = email;
 		Pageable pagelist = PageRequest.of(page, size);
 		return friendRepository.findByEmailUserOrEmailFriend(email, email2, pagelist);
 	}
 	
 	@Transactional
-	public HashSet<String> findEmailsFriendsOnly(String email) {
+	public HashSet<String> findEmailsFriendsOnly(String email) throws Exception {
 		if (!userRepository.existsById(email))
-			throw new RuntimeException("Email non existant dans la BDD");
+			throw new Exception("Email non existant dans la BDD");
 		HashSet<String> friendsOnly = new HashSet<>();
 		for (Friend f : findByEmail(email)) {
 			if (f.getEmailUser().equals(email))
@@ -68,9 +67,9 @@ public class FriendService {
 	}
 	
 	@Transactional
-	public HashSet<String> findEmailsFriendsOnly(String email, int page, int size) {
+	public HashSet<String> findEmailsFriendsOnly(String email, int page, int size) throws Exception {
 		if (!userRepository.existsById(email))
-			throw new RuntimeException("Email non existant dans la BDD");
+			throw new Exception("Email non existant dans la BDD");
 		HashSet<String> friendsOnly = new HashSet<>();
 		for (Friend f : findByEmail(email,page,size)) {
 			if (f.getEmailUser().equals(email))
@@ -82,7 +81,7 @@ public class FriendService {
 	}
 	
 	@Transactional
-	public HashSet<String> findPseudosFriendsOnly(String email) {
+	public HashSet<String> findPseudosFriendsOnly(String email) throws Exception {
 		HashSet<String> PseudoFriendsOnly = new HashSet<>();
 		HashSet<String> emailsFriendsOnly = findEmailsFriendsOnly(email);
 		for (String emailFriend : emailsFriendsOnly) {
@@ -91,7 +90,7 @@ public class FriendService {
 		return PseudoFriendsOnly;
 	}
 
-	public HashSet<String> findPseudosFriendsOnly(String email, int page, int size) {
+	public HashSet<String> findPseudosFriendsOnly(String email, int page, int size) throws Exception {
 		HashSet<String> PseudoFriendsOnly = new HashSet<>();
 		HashSet<String> emailsFriendsOnly = findEmailsFriendsOnly(email,page,size);
 		for (String emailFriend : emailsFriendsOnly) {
@@ -127,27 +126,27 @@ public class FriendService {
 	}
 
 	@Transactional
-	public Friend save(Friend friend) {
+	public Friend save(Friend friend) throws Exception {
 		if (!userRepository.existsById(friend.getEmailUser()) || !userRepository.existsById(friend.getEmailFriend()))
-			throw new RuntimeException("Email(s) 'ami' et/ou 'friend' non existant(s) dans la BDD");
+			throw new Exception("Email(s) 'ami' et/ou 'friend' non existant(s) dans la BDD");
 
 		for (Friend f : friendRepository.findByEmailUserOrEmailFriend(friend.getEmailUser(), friend.getEmailFriend())) {
 			if ((f.getEmailUser().equals(friend.getEmailUser()) && f.getEmailFriend().equals(friend.getEmailFriend()))
 					|| (f.getEmailUser().equals(friend.getEmailFriend())
 							&& f.getEmailFriend().equals(friend.getEmailUser())))
-				throw new RuntimeException("Couple ami déjà existant dans la BDD");
+				throw new Exception("Couple ami déjà existant dans la BDD");
 		}
 		friendRepository.save(friend);
 		return friend;
 	}
 
 	@Transactional
-	public Friend deleteByEmailUserAndEmailFriend(String emailUser, String emailFriend) {
+	public Friend deleteByEmailUserAndEmailFriend(String emailUser, String emailFriend) throws Exception {
 		if (!userRepository.existsById(emailUser) || !userRepository.existsById(emailFriend))
-			throw new RuntimeException("Email(s) 'ami' et/ou 'friend' non existant(s) dans la BDD");
+			throw new Exception("Email(s) 'ami' et/ou 'friend' non existant(s) dans la BDD");
 		else if (friendRepository.findByEmailUserAndEmailFriend(emailUser, emailFriend) == null
 				&& friendRepository.findByEmailUserAndEmailFriend(emailFriend, emailUser) == null)
-			throw new RuntimeException("Couple ami non existant dans la BDD");
+			throw new Exception("Couple ami non existant dans la BDD");
 		friendRepository.delete(emailUser, emailFriend);
 		return new Friend(emailUser, emailFriend);
 	}

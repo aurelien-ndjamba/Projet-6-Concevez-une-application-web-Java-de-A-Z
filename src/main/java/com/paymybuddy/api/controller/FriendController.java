@@ -30,7 +30,6 @@ public class FriendController {
 	/* *************** GET METHODE *********************** */
 
 	/**
-	 * GET http://localhost:8080/friend
 	 * 
 	 * Liste de tous les couples amis dans l'application
 	 * 
@@ -45,75 +44,124 @@ public class FriendController {
 	}
 	
 	/**
-	 * GET http://localhost:8080/friend?email=nicolas.sarkozy@gmail.com
 	 * 
-	 * Retourne les emails amis associés à l'adresse email donné en paramètre
+	 * Liste les couples amis associés à l'adresse email
 	 * 
-	 * @return ArrayList<String>
-	 * 
-	 */
-	@Secured(value={"ROLE_ADMIN"})
-	@RequestMapping(value = "/emailsfriendsonly", method = RequestMethod.GET, params = { "email" })
-	public HashSet<String> findEmailsFriendsOnly(String email) {
-		logger.info("INFO: Liste les emails amis associés à l'adresse email : " + email);
-		return friendService.findEmailsFriendsOnly(email);
-	}
-	
-//	@Secured(value={"ROLE_ADMIN"})
-	@RequestMapping(value = "/pseudosfriends", method = RequestMethod.GET, params = { "email" })
-	public HashSet<String> findPseudosFriendsOnly(String email) {
-		logger.info("INFO: Affiche la liste des pseudos des amis de celui dont l'email est en parametre : " + email);
-		return friendService.findPseudosFriendsOnly(email);
-	}
-	
-	@RequestMapping("/page_pseudosfriends")
-	public HashSet<String> findPseudosFriendsOnly(String email, int page, int size) {
-		logger.info("INFO: Affiche la liste des pseudos des amis de celui dont l'email est en parametre : " + email);
-		return friendService.findPseudosFriendsOnly(email,page,size);
-	}
-	
-	@Secured(value={"ROLE_ADMIN"})
-	@RequestMapping("/friends/emailsavailable")
-	public HashSet<String> findEmailsavailable(String email) throws Exception {
-		logger.info("INFO: Liste des emails amis potentiels pour l'utilisateur : " + email);
-		return friendService.findEmailsavailable(email);
-	}
-	@Secured(value={"ROLE_ADMIN"})
-	@RequestMapping(value = "/pseudo", method = RequestMethod.GET, params = { "email" })
-	public String findPseudoByEmail(String email) {
-		logger.info("INFO: Affiche le pseudo de l'ami dont l'email est en parametre : " + email);
-		return friendService.findPseudoByEmail(email);
-	}
-
-	/**
-	 * GET http://localhost:8080/friend?email=nicolas.sarkozy@gmail.com
-	 * 
-	 * Retourne les couples amis associés à l'adresse email donné en paramètre
-	 * 
-	 * @return ArrayList<String>
+	 * @return List<Friend>
+	 * @throws Exception 
 	 * 
 	 */
 	@Secured(value={"ROLE_ADMIN"})
 	@RequestMapping(value = "/friends", method = RequestMethod.GET, params = { "email" })
-	public List<Friend> findByEmail(String email) {
+	public List<Friend> findByEmail(String email) throws Exception {
 		logger.info("INFO: Liste les couples amis associés à l'adresse email : " + email);
 		return friendService.findByEmail(email);
 	}
+
+	/**
+	 * 
+	 * Retourne les emails amis associés à l'adresse email donné en paramètre
+	 * 
+	 * @return HashSet<String>
+	 * @throws Exception 
+	 * 
+	 */
+	@Secured(value={"ROLE_ADMIN"})
+	@RequestMapping(value = "/emailsfriendsonly", method = RequestMethod.GET, params = { "email" })
+	public HashSet<String> findEmailsFriendsOnly(String email) throws Exception {
+		logger.info("INFO: Liste les emails amis associés à l'adresse email : " + email);
+		return friendService.findEmailsFriendsOnly(email);
+	}
+	
+	/**
+	 * 
+	 * Retourne les pseudos des amis associés à l'adresse email donné en paramètre
+	 * 
+	 * @return HashSet<String>
+	 * @throws Exception 
+	 * 
+	 */
+	@Secured(value={"ROLE_ADMIN"})
+	@RequestMapping(value = "/pseudosfriends", method = RequestMethod.GET, params = { "email" })
+	public HashSet<String> findPseudosFriendsOnly(String email) throws Exception {
+		logger.info("INFO: Liste les pseudos amis associés à l'adresse email : " + email);
+		return friendService.findPseudosFriendsOnly(email);
+	}
+	
+	/**
+	 * 
+	 * Retourne les pseudos des amis associés à l'adresse email donné en paramètre
+	 * avec des parametres page et size
+	 * 
+	 * @return HashSet<String>
+	 * @throws Exception 
+	 * 
+	 */
+	@RequestMapping("/page_pseudosfriends")
+	public HashSet<String> findPseudosFriendsOnly(String email, int page, int size) throws Exception {
+		logger.info("INFO: Affiche la liste des pseudos des amis de celui dont l'email est en parametre : " + email);
+		return friendService.findPseudosFriendsOnly(email,page,size);
+	}
+	
+	/**
+	 * 
+	 * Retourne les emails amis disponibles en amitié pour l'utilisateur dont l'email donné en paramètre.
+	 * Sans prendre en compte les emails amis déjà en amitié pour cet utilisateur
+	 * 
+	 * @return HashSet<String>
+	 * 
+	 */
+	@Secured(value={"ROLE_ADMIN","ROLE_USER"})
+	@RequestMapping("/friends/emailsavailable")
+	public HashSet<String> findEmailsavailable(String email) throws Exception {
+		logger.info("INFO: Liste des emails amis disponibles pour une association avec l'utilisateur : " + email);
+		return friendService.findEmailsavailable(email);
+	}
+	
+	/**
+	 * 
+	 * Affiche le pseudo de l'ami dont l'email est en parametre
+	 * 
+	 * @return String
+	 * 
+	 */
+	@Secured(value={"ROLE_ADMIN"})
+	@RequestMapping(value = "/pseudoByEmail", method = RequestMethod.GET, params = { "email" })
+	public String findPseudoByEmail(String email) {
+		logger.info("INFO: Affiche le pseudo de l'ami dont l'email est en parametre : " + email);
+		return friendService.findPseudoByEmail(email);
+	}
+	
+	/**
+	 * 
+	 * Affiche l'email de l'ami dont le pseudo est en parametre
+	 * 
+	 * @return String
+	 * 
+	 */
+	@Secured(value={"ROLE_ADMIN"})
+	@RequestMapping(value = "/emailByPseudo", method = RequestMethod.GET, params = { "pseudo" })
+	public String findEmailByPseudo(String pseudo) {
+		logger.info("INFO: Affiche l'email de l'ami dont le pseudo est en parametre : " + pseudo);
+		return friendService.findEmailByPseudo(pseudo);
+	}
+
+	
 	
 	/* *************** POST METHODE *********************** */
 
 	/**
-	 * POST http://localhost:8080/friend
 	 * 
 	 * Creation d'un couple ami dans la base de donnée
 	 * 
 	 * @return Friend
+	 * @throws Exception 
 	 * 
 	 */
-	@Secured(value={"ROLE_ADMIN"})
+	@Secured(value={"ROLE_ADMIN","ROLE_USER"})
 	@PostMapping("/friends/save")
 	@ResponseStatus(HttpStatus.CREATED)
-	public Friend save(@RequestBody Friend friend) {
+	public Friend save(@RequestBody Friend friend) throws Exception {
 		logger.info("INFO: Creation d'un nouveau couple ami : "+ friend );
 		return friendService.save(friend);
 	}
@@ -121,32 +169,32 @@ public class FriendController {
 	/* *************** DELETE METHODE *********************** */
 	
 	/**
-	 * DELETE http://localhost:8080/friend?emailUser=francois.hollande@gmail.com
 	 * 
-	 * Supprimer le couple ami dont l'emailUser et l'emailFriend sont donnés en paramètre
+	 * Supprimer le couple ami dont emailUser et emailFriend sont donnés en paramètre
 	 * 
-	 * @return String
+	 * @return Friend
+	 * @throws Exception 
 	 * 
 	 */
-	@Secured(value={"ROLE_ADMIN"})
+	@Secured(value={"ROLE_ADMIN","ROLE_USER"})
 	@RequestMapping(value = "/friends/delete", method = RequestMethod.DELETE, params = { "emailUser", "emailFriend" })
-	public Friend deleteByEmailUserAndEmailFriend(String emailUser, String emailFriend) throws ParseException {
+	public Friend deleteByEmailUserAndEmailFriend(String emailUser, String emailFriend) throws Exception {
 		logger.info("INFO: Supprimer les couples amis suivant : " + emailUser + " & " + emailFriend);
 		return friendService.deleteByEmailUserAndEmailFriend(emailUser,emailFriend);
 	}
 	
-	@Secured(value={"ROLE_ADMIN"})
+	/**
+	 * 
+	 * Supprimer le couple ami dont emailUser et pseudoFriend sont donnés en paramètre
+	 * 
+	 * @return Friend
+	 * 
+	 */
+	@Secured(value={"ROLE_ADMIN","ROLE_USER"})
 	@RequestMapping(value = "/friends/delete", method = RequestMethod.DELETE, params = { "emailUser", "pseudoFriend" })
 	public Friend deleteByEmailUserAndPseudoFriend(String emailUser, String pseudoFriend) throws ParseException {
 		logger.info("INFO: Supprimer les couples amis suivant - EmailUser : " + emailUser + " & PseudoFriend :" + pseudoFriend);
 		return friendService.deleteByEmailUserAndPseudoFriend(emailUser,pseudoFriend);
 	}
-
-	//OK
-	@RequestMapping(value = "/test", method = RequestMethod.GET, params = { "pseudo"})
-	public String test(String pseudo) throws ParseException { 
-		return friendService.findEmailByPseudo(pseudo);
-	}
-	
 	
 }

@@ -28,4 +28,15 @@ public class Account {
 	
 	@Column(name = "bank")
 	private String bank;
+
+	public Account(Integer id, String email, String bank) {
+		super();
+		this.id = id;
+		this.email = email;
+		this.bank = bank;
+	}
+
+	public Account() {
+		super();
+	}
 }
