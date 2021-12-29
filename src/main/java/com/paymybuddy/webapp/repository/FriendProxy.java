@@ -29,6 +29,22 @@ public class FriendProxy {
 		return response.getBody();
 	}
 
+	public String findPseudoByEmail(String email) {
+		String baseApiUrl = props.getApiUrl();
+		String Url = baseApiUrl + "/pseudoByEmail?email=" + email;
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> response = restTemplate.exchange(Url, HttpMethod.GET, null,String.class);
+		return response.getBody();
+	}
+
+	public String findEmailByPseudo(String pseudo) {
+		String baseApiUrl = props.getApiUrl();
+		String Url = baseApiUrl + "/emailByPseudo?pseudo=" + pseudo; 
+		RestTemplate restTemplate = new RestTemplate();
+		ResponseEntity<String> response = restTemplate.exchange(Url, HttpMethod.GET, null,String.class);
+		return response.getBody();
+	}
+
 	public HashSet<String> findPseudosFriendsOnly(String email) {
 		String baseApiUrl = props.getApiUrl();
 		String getFriendsOnlyUrl = baseApiUrl + "/pseudosfriends?email=" + email;

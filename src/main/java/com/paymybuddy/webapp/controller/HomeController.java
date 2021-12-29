@@ -13,7 +13,7 @@ public class HomeController {
 
 	@Autowired
 	private AppUserService appUserService;
-	
+
 	@GetMapping("/home")
 	public String home(Authentication authentication, Model model) {
 		model.addAttribute("appUserHome", appUserService.findByEmail(authentication.getName()));

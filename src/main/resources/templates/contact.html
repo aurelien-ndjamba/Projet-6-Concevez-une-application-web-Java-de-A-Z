@@ -6,10 +6,9 @@
 <meta charset="utf-8">
 
 <link rel="stylesheet" href="css/mystyle.css" />
-<link
-	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
-	rel="stylesheet"
-	integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+	integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
 	crossorigin="anonymous">
 
 <title>Contact</title>
@@ -19,9 +18,9 @@
 <body>
 
 	<header>
-		<div class="header">
+		<div class="header_part1">
 			<div>
-				<a class="btn btn-success" href="/home">PayMyBuddy</a>
+				<a class="btn btn-ok" href="/home">Pay My Buddy</a>
 			</div>
 			<div class="nav">
 				<ul class="nav nav-tabs card-header-tabs">
@@ -39,10 +38,8 @@
 				</ul>
 			</div>
 		</div>
-		<div class="info_transaction">
-			<div>
-				<p class="mx-3">Home / Contact</p>
-			</div>
+		<div class="header_part2">
+			<p class="py-2 mx-2">Home / Contact</p>
 		</div>
 	</header>
 
@@ -72,20 +69,56 @@
 											<option th:each="c:${emailsFriendsAvailable}" th:value="${c}"
 												th:text="${c}"></option>
 										</select> <small id="mailHelp" class="form-text text-muted">
-											Select email address of your new friend. His nickname should appear in the list below !</small>
+											Select email address of your new friend. His nickname should
+											appear in the list below !</small>
 									</div>
 								</td>
 								<td>
 									<button type="submit" class="btn btn-primary">ADD</button>
 								</td>
+
+
+
+
 							</form>
 						</tr>
+
+						<a href="/contact">
+							<div data-th-if="${emailAdded} != null"
+								class="alert alert-success" role="alert">
+								<p>
+									<strong>NEW FRIEND ADDED TO YOUR CONTACTS :</strong> 
+								</p>
+								<p>
+									<span data-th-text="${emailAdded}"> </span> : <span
+										data-th-text="${pseudoAdded}"> </span>
+								</p>
+							</div>
+						</a>
+
+						<a href="/contact">
+							<div data-th-if="${pseudoDeleted} != null"
+								class="alert alert-danger" role="alert">
+								<p>
+									<strong>FRIEND DELETED TO YOUR CONTACTS :</strong> 
+								</p>
+								<p>
+									<span data-th-text="${emailDeleted}"> </span> : <span
+										data-th-text="${pseudoDeleted}"> </span>
+								</p>
+							</div>
+						</a>
+
+
 						<tr data-th-each="f: ${pseudosFriendsOnly}">
 							<td><span data-th-text="${f}"> </span></td>
 							<td><a th:href="@{/deletecontact(friend=${f})}">
 									<button class="btn btn-danger">DELETE</button>
 							</a></td>
+
 						</tr>
+
+
 					</tbody>
 				</table>
 	</section>

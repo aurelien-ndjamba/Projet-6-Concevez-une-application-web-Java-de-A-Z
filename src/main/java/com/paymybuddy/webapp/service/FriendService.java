@@ -35,4 +35,12 @@ public class FriendService {
         return friendProxy.deleteContact(emailUser,pseudoFriend);
     }
 
+	public String findPseudoByEmail(String email) {
+		return friendProxy.findPseudoByEmail(email);
+	}
+
+	public String findEmailByPseudo(String pseudo) {
+		return friendProxy.findEmailByPseudo(pseudo);
+	}
+
 }

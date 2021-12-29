@@ -23,6 +23,11 @@ public class ContactController {
 	@Autowired
 	private FriendService friendService;
 
+	String pseudoAdded;
+	String emailAdded;
+	String pseudoDeleted;
+	String emailDeleted;
+
 	@RequestMapping(value = "/contact", method = RequestMethod.GET)
 	public String contactGet(Authentication authentication, Model model) throws RuntimeException, Exception {
 		model.addAttribute("emailUser", authentication.getName()); 
@@ -32,7 +37,43 @@ public class ContactController {
 		ArrayList<String> emailsFriendsAvailable = appUserService
 				.findOtherEmailsFriendsAvailableForThisEmail(authentication.getName());
 		model.addAttribute("emailsFriendsAvailable", emailsFriendsAvailable);
+		
+		model.addAttribute("pseudoAdded",pseudoAdded);
+		model.addAttribute("emailAdded",emailAdded); 
+		model.addAttribute("pseudoDeleted",pseudoDeleted);
+		model.addAttribute("emailDeleted",emailDeleted); 
+		pseudoDeleted = null;
+		emailDeleted =null;
+		emailAdded = null;
+		emailAdded = null;
 		return "contact";
+	}
+
+	@RequestMapping(value = "/contact", method = RequestMethod.POST)
+	public String contactPost(Authentication authentication, @ModelAttribute("newFriendContact") Friend friend
+			) {
+
+		Friend f = new Friend();
+		f.setEmailUser(authentication.getName());
+		f.setEmailFriend(friend.getEmailFriend());
+		
+		emailAdded = friend.getEmailFriend();
+		try {
+		pseudoAdded = friendService.findPseudoByEmail(friend.getEmailFriend());
+		friendService.saveFriend(f);}
+		catch(Exception e) {
+		}
+		return "redirect:/contact";
+	}
+
+	@RequestMapping("/deletecontact")
+	public String contactDelete(Authentication authentication, String friend, Model model) throws Exception {
+		// logger.info("INFO: Supprimer l'amitié avec : " + pseudoFriend ); // ????
+		// pourquoi import impossible
+		pseudoDeleted = friend;
+		emailDeleted = friendService.findEmailByPseudo(friend);
+		friendService.deletecontact(authentication.getName(), friend);
+		return "redirect:/contact";
 	}
 
 //	@RequestMapping(value = "/contact", method = RequestMethod.GET)
@@ -67,22 +108,5 @@ public class ContactController {
 //		model.addAttribute("emailsFriendsAvailable", emailsFriendsAvailable);
 //		return "contact";
 //	}
-
-	@RequestMapping(value = "/contact", method = RequestMethod.POST)
-	public String contactPost(Authentication authentication, @ModelAttribute("newFriendContact") Friend friend) {
-		Friend f = new Friend();
-		f.setEmailUser(authentication.getName());
-		f.setEmailFriend(friend.getEmailFriend());
-		friendService.saveFriend(f);
-		return "redirect:/contact";
-	}
-
-	@RequestMapping("/deletecontact")
-	public String contactDelete(Authentication authentication, String friend) {
-		// logger.info("INFO: Supprimer l'amitié avec : " + pseudoFriend ); // ????
-		// pourquoi import impossible
-		friendService.deletecontact(authentication.getName(), friend);
-		return "redirect:/contact";
-	}
 
 }

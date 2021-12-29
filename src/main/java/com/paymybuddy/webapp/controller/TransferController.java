@@ -32,8 +32,12 @@ public class TransferController {
 	@Autowired
 	private FriendService friendService;
 
+	Transaction transactionResult;
+	String messageException;
+
 	@RequestMapping("/transfer")
 	public String tranferGet(Authentication authentication, Model model) throws Exception {
+		System.out.println(transactionResult);
 		List<TransactionStructured> lts = transactionService.findByEmailStructured(authentication.getName());
 		HashSet<String> myemailsfriends = friendService.findEmailsFriendsOnly(authentication.getName());
 		ArrayList<String> myemailsfriendsOrdered = new ArrayList<String>();
@@ -51,21 +55,28 @@ public class TransferController {
 		model.addAttribute("appUser", appUser);
 		model.addAttribute("types", types);
 		model.addAttribute("transaction", transaction);
+		model.addAttribute("messageException", messageException);
+		System.out.println(transactionResult);
+		model.addAttribute("transactionResult", transactionResult);
+		messageException = null;
+		transactionResult = null;
+		System.out.println(transactionResult);
 		return "transfer";
 	}
 
 	@RequestMapping(value = "/transfer", method = RequestMethod.POST)
-	public String transferPost(Authentication authentication, @ModelAttribute("transaction") Transaction transaction,
-			Model model) {
-		String messageException = null;
+//	@ResponseBody PERMET de renvoyer la reponse de la fonction à l"ecran
+	public String transferPost(Authentication authentication, @ModelAttribute("transaction") Transaction transaction) {
 		transaction.setUser(authentication.getName());
 		transaction.setAccountUser(accountService.findByEmail(authentication.getName()).getId());
+		System.out.println(transaction);
 
 		switch (transaction.getType()) {
 
 		case "payment":
 			try {
-				transactionService.createPayment(transaction);
+				Transaction t = new Transaction();
+				transactionResult = t.success(transactionService.createPayment(transaction));
 			} catch (Exception e) {
 				int length = e.getMessage().length();
 				int beginIndex = 7;
@@ -76,7 +87,8 @@ public class TransferController {
 
 		case "deposit":
 			try {
-				transactionService.createDeposit(transaction);
+				Transaction t = new Transaction();
+				transactionResult = t.success(transactionService.createDeposit(transaction));
 			} catch (Exception e) {
 				int length = e.getMessage().length();
 				int beginIndex = 7;
@@ -87,7 +99,8 @@ public class TransferController {
 
 		case "withdrawal":
 			try {
-				transactionService.createWithdrawal(transaction);
+				Transaction t = new Transaction();
+				transactionResult = t.success(transactionService.createWithdrawal(transaction));
 			} catch (Exception e) {
 				int length = e.getMessage().length();
 				int beginIndex = 7;
@@ -99,24 +112,7 @@ public class TransferController {
 		default:
 
 		}
-
-		List<TransactionStructured> lts = transactionService.findByEmailStructured(authentication.getName());
-		HashSet<String> myemailsfriends = friendService.findEmailsFriendsOnly(authentication.getName());
-		AppUser appUser = appUserService.findByEmail(authentication.getName());
-		System.out.println(appUser);
-		List<String> types = new ArrayList<String>();
-		types.add("payment");
-		types.add("deposit");
-		types.add("withdrawal");
-		model.addAttribute("emailUser", authentication.getName());
-		model.addAttribute("lts", lts);
-		model.addAttribute("myemailsfriends", myemailsfriends);
-		model.addAttribute("appUser", appUser);
-		model.addAttribute("types", types);
-		model.addAttribute("transaction", new Transaction());
-		model.addAttribute("messageException", messageException);
-
-		return "transfer";
+		return "redirect:/transfer";
 	}
 
 }

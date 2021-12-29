@@ -6,12 +6,15 @@
 <meta charset="utf-8">
 
 <link rel="stylesheet" href="css/mystyle.css" />
-
-<link
-	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
-	rel="stylesheet"
-	integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+	integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
 	crossorigin="anonymous">
+<!-- <link -->
+<!-- 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" -->
+<!-- 	rel="stylesheet" -->
+<!-- 	integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" -->
+<!-- 	crossorigin="anonymous"> -->
 
 <title>Profile</title>
 
@@ -19,9 +22,9 @@
 
 <body>
 	<header>
-		<div class="header">
+		<div class="header_part1">
 			<div>
-				<a class="btn btn-success" href="/home">PayMyBuddy</a>
+				<a class="btn btn-ok" href="/home">Pay My Buddy</a>
 			</div>
 			<div class="nav">
 				<ul class="nav nav-tabs card-header-tabs">
@@ -39,16 +42,39 @@
 				</ul>
 			</div>
 		</div>
-		<div class="info_transaction">
-			<div>
-				<p class="mx-3">Home / Profile</p>
-			</div>
+		<div class="header_part2">
+				<p class="py-2 mx-2">Home / Profile</p>
 		</div>
 	</header>
 
 	<section>
 		<div class="container special">
 			<h2 class="h2">PROFILE</h2>
+			
+			<a href="/profile">
+							<div data-th-if="${newNumber} != 1"
+								class="alert alert-success" role="alert">
+								<p>
+									<strong>PHONE SUCCESSFULLY UPDATED :</strong> 
+								</p>
+								<p> Old number :
+									<span data-th-text="${oldNumber}"> </span> - New number <span
+										data-th-text="${newNumber}"> </span>
+								</p>
+							</div>
+						</a>
+						
+									<a href="/profile">
+							<div data-th-if="${passwordModified} != null"
+								class="alert alert-success" role="alert">
+								<p>
+									<strong>PASSWORD UPDATED SUCCESSFULLY :</strong> 
+								</p>
+								<p>
+									<span data-th-text="${passwordModified}"> </span>
+								</p>
+							</div>
+						</a>
 
 			<div class="table-responsive">
 
@@ -117,7 +143,7 @@
 							<form th:action="@{/updatephone}" th:object="${u}" method="post">
 								<td colspan="2">
 									<div class="form-group">
-										<input th:field="*{phone}" type="number" step="1"
+										<input th:field="*{phone}" type="number" min="3" max="20" step="1"
 											class="form-control" placeholder="New phone" required /> <small
 											class="form-text text-muted"> Please enter a new
 											phone for the update. </small>

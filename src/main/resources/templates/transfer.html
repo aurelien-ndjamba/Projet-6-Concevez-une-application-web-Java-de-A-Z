@@ -6,12 +6,15 @@
 <meta charset="utf-8">
 
 <link rel="stylesheet" href="css/mystyle.css" />
-
-<link
-	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
-	rel="stylesheet"
-	integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+<link rel="stylesheet"
+	href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+	integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
 	crossorigin="anonymous">
+<!-- <link -->
+<!-- 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" -->
+<!-- 	rel="stylesheet" -->
+<!-- 	integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" -->
+<!-- 	crossorigin="anonymous"> -->
 
 
 <title>Transfer</title>
@@ -20,9 +23,9 @@
 
 <body>
 	<header>
-		<div class="header">
+		<div class="header_part1">
 			<div>
-				<a class="btn btn-success" href="/home">PayMyBuddy</a>
+				<a class="btn btn-ok" href="/home">Pay My Buddy</a>
 			</div>
 			<div class="nav">
 				<ul class="nav nav-tabs card-header-tabs">
@@ -40,9 +43,9 @@
 				</ul>
 			</div>
 		</div>
-		<div class="info_transaction">
+		<div class="header_part2">
 			<div>
-				<p class="mx-3">Home / Transfer</p>
+				<p class="py-2 mx-2">Home / Transfer</p>
 			</div>
 		</div>
 	</header>
@@ -52,6 +55,23 @@
 
 		<h2 class="h2">TRANSFER</h2>
 
+		<a href="/transfer">
+			<div data-th-if="${messageException} != null"
+				class="alert alert-danger" role="alert">
+				<p>
+					<strong>FAILED TRANSACTION :</strong> 
+				</p>
+				<span data-th-text="${messageException}"></span>
+			</div>
+		</a> <a href="/transfer">
+			<div data-th-if="${transactionResult} != null"
+				class="alert alert-success" role="alert">
+				<p>
+					<strong>SUCCESSFUL TRANSACTION :</strong> 
+				</p>
+				<span data-th-text="${transactionResult}"> </span>
+			</div>
+		</a>
 		<div class="table-responsive">
 
 			<table class="table">
@@ -73,94 +93,87 @@
 				<tbody class="info_transaction">
 					<form th:action="@{/transfer}" th:object="${transaction}"
 						method="post">
+						<tr>
+							<td><select id="type" th:field="*{type}"
+								class="form-control">
+									<option th:each="type:${types}" th:value="${type}"
+										th:text="${type}"></option>
+							</select> <small id="mailHelp" class="form-text text-muted">
+									Select the type of transaction </small></td>
 
-							<tr>
-								<td><select id="type" th:field="*{type}"
-									class="form-control">
-										<option th:each="type:${types}" th:value="${type}"
-											th:text="${type}"></option>
-								</select> <small id="mailHelp" class="form-text text-muted">
-										Select the type of transaction </small></td>
+							<td><input type="number" id="amount" th:field="*{amount}"
+								class="form-control" placeholder="100,00 €" step="0.01"
+								min="0.01" max="99999999.99" required /> <small id="mailHelp"
+								class="form-text text-muted"> Enter the transaction
+									amount in euros excluding fees </small></td>
 
-								<td><input type="number" id="amount" th:field="*{amount}"
-									class="form-control" placeholder="100,00 €" step="0.01"
-									min="0.01" max="99999999.99" required /> <small id="mailHelp"
-									class="form-text text-muted"> Enter the transaction
-										amount in euros excluding fees </small></td>
-
-								<td><a>YOUR ACCOUNT : <span
+							<td><strong> <a>My Account : <span
 										data-th-text="${appUser.account.id}"></span>
-								</a></td>
-							</tr>
+								</a>
+							</strong></td>
+						</tr>
 
-							<tr>
-								<td><select id="friend" th:field="*{friend}"
-									class="form-control">
-										<option data-th-each="f: ${myemailsfriendsOrdered}" th:value="${f}">
-											<div data-th-text="${f}"></div>
-										</option>
-								</select> <small id="mailHelp" class="form-text text-muted"> You
-										must select your beneficiary if it is a payment transaction. </small></td>
+						<tr>
+							<td><select id="friend" th:field="*{friend}"
+								class="form-control">
+									<option data-th-each="f: ${myemailsfriendsOrdered}"
+										th:value="${f}">
+										<div data-th-text="${f}"></div>
+									</option>
+							</select> <small id="mailHelp" class="form-text text-muted"> You
+									must select your beneficiary only if it is a payment
+									transaction. </small></td>
 
-								<td><input type="text" id="description"
-									th:field="*{description}" class="form-control"
-									placeholder="Description" size="20" required /> <small
-									id="mailHelp" class="form-text text-muted"> Enter the
-										description of the transaction </small></td>
+							<td><input type="text" id="description"
+								th:field="*{description}" class="form-control"
+								placeholder="Description" maxlength="20" required /> <small
+								id="mailHelp" class="form-text text-muted"> Enter the
+									description of the transaction </small></td>
 
-								<td><a>
-										<button type="submit" class="btn btn-success">Pay</button>
-								</a></td>
-							</tr>
-
+							<td><a>
+									<button type="submit" class="btn btn-ok">Pay</button>
+							</a></td>
 					</form>
 				</tbody>
-
+				</div>
 			</table>
 
-			<div data-th-if="${messageException} != null">
-				<div class="alert alert-danger" role="alert"
-					data-th-text="${messageException}"></div>
+			<p>
+				<strong>My transactions</strong>
+			</p>
+			<div id="transaction_border">
+				<table class="table table-striped table-sm">
+					<thead class="title_transfer">
+						<tr>
+							<th>Connections</th>
+							<th>Email</th>
+							<th>Type</th>
+							<!-- 							<th>Account</th> -->
+							<th>Amount</th>
+							<th>Description</th>
+							<th>Date</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr data-th-if="${lts.empty}">
+							<td colspan=6>No transaction added to the database.</td>
+						</tr>
+						<tr data-th-each="transaction:${lts}">
+							<td><span data-th-text="${transaction.pseudo}"> </span></td>
+							<td><span data-th-text="${transaction.friend}"> </span></td>
+							<td><span data-th-text="${transaction.type}"> </span></td>
+							<!-- 							<td><span data-th-text="${transaction.accountUser}"> -->
+							<!-- 							</span></td> -->
+							<td><span
+								data-th-text="${#numbers.formatDecimal(transaction.amount,1,2)}"></span>
+								€</td>
+							<td><span data-th-text="${transaction.description}">
+							</span></td>
+							<td><span data-th-text="${transaction.date}"> </span></td>
+						</tr>
+					</tbody>
+				</table>
 			</div>
-
-
-			<table class="table table-striped table-sm">
-				<thead>
-					<tr>
-						<th colspan=7>My transactions</th>
-					</tr>
-				</thead>
-
-				<thead class="title_transaction">
-					<tr>
-						<th>Connections</th>
-						<th>Email</th>
-						<th>Type</th>
-						<th>Account</th>
-						<th>Amount</th>
-						<th>Description</th>
-						<th>Date</th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr data-th-if="${lts.empty}">
-						<td colspan=10>No transaction added to the database.</td>
-					</tr>
-					<tr data-th-each="transaction:${lts}">
-						<td><span data-th-text="${transaction.pseudo}"> </span></td>
-						<td><span data-th-text="${transaction.friend}"> </span></td>
-						<td><span data-th-text="${transaction.type}"> </span></td>
-						<td><span data-th-text="${transaction.accountUser}"> </span></td>
-						<td><span
-							data-th-text="${#numbers.formatDecimal(transaction.amount,1,2)}"></span>
-							€</td>
-						<td><span data-th-text="${transaction.description}"> </span></td>
-						<td><span data-th-text="${transaction.date}"> </span></td>
-					</tr>
-				</tbody>
-
-			</table>
-
 
 			<nav class="center" aria-label="Page navigation example">
 				<ul class="pagination">

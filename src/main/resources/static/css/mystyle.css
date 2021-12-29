@@ -1,7 +1,29 @@
+/* -------------- COMMON ----------------------*/ 
 
+.header_part1 {
+	display: flex;
+	justify-content: space-between;
+}
 
+.header_part2 {
+	background-color:rgb(245, 245, 240);
+	front-size: 30px;
+	text-align: justify;
+	align-items: center;
+}
+
+/* -------------- HOME.HTML ----------------------*/
 .border {
 	border-radius: 10px;
+}
+
+#home {
+	text-align: center;
+}
+
+/* -------------- HOME.HTML ----------------------*/
+.table {
+	background-color:rgb(245, 245, 240);
 }
 
 .center {
@@ -10,42 +32,68 @@
 	align-items: center;
 }
 
-.header {
-	display: flex;
-	align-items: flex-start;
-	justify-content: space-between;
-}
-
-.info_transaction {
-	background-color:rgb(245, 245, 240);
-	height:35px;
-	text-align: justify;
-}
-
 .header3 {
 	display: flex;
 	align-items: flex-start;
 }
 
-.title_transaction {
+.title_transfer {
 	background-color:#7dd076;
 	color: white;
 }
 
-#bootstrap-overrides{
-	color:#fff;
-	background-color:#7dd076;
-	border-color:#198754
-	
+.btn-ok {
+	color: #fff;
+	background-color: #70ca68;
+	border-color: #28a745;
 }
 
-/*.btn-success{color:#fff;background-color:#198754;border-color:#198754}*/
-
-/* Style the form icons */
-.icon {
-  padding: 10px;
-  background: dodgerblue;
-  color: white;
-  min-width: 50px;
-  text-align: center;
+.btn-ok:hover {
+	color: #fff;
+	background-color: #218838;
+	border-color: #1e7e34;
 }
+
+.btn-ok:focus, .btn-ok.focus {
+	box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.5);
+}
+
+.btn {
+	display: inline-block;
+	font-weight: 400;
+	text-align: center;
+	white-space: nowrap;
+	vertical-align: middle;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+	border: 1px solid transparent;
+	padding: 0.375rem 0.75rem;
+	font-size: 1rem;
+	line-height: 1.5;
+	border-radius: 0.25rem;
+	transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.btn:hover, .btn:focus {
+	text-decoration: none;
+}
+
+.btn:focus, .btn.focus {
+	outline: 0;
+	box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.logoff {
+	backgroung-color: white;
+}
+
+.info_transaction {
+	background-color:rgb(245, 245, 240);
+}
+
+#transaction_border {
+	border: 1px solid #121314;
+}
+
